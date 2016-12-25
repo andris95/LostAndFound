@@ -32,10 +32,16 @@
     </android.support.v7.widget.AppCompatSpinner>
 
     <Button
-        android:id="@+id/btn_select_thing_photo"
+        android:id="@+id/btn_select_thing_cover_photo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/select_thing_photo"/>
+        android:text="@string/select_thing_cover_photo"/>
+
+    <Button
+        android:id="@+id/btn_select_thing_photos"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/select_thing_description_photos"/>
 
     <Button
         android:id="@+id/btn_add_thing"

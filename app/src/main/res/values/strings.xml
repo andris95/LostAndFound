@@ -18,7 +18,10 @@
     <string name="hint_thing_title">Title</string>
     <string name="hint_thing_description">Description</string>
 
-    <string name="select_thing_photo">Add a photo about your stuff!</string>
+    <string name="select_thing_cover_photo">Add a photo about your stuff!</string>
+    <string name="select_thing_description_photos">Add more photos about your thing!</string>
+    <string name="thing_last_known_location">Last known location:</string>
+    <string name="thing_found_location">Found location:</string>
     <string name="publishing_progress">Publishing Your Thing</string>
     <string name="publishing_progress_description">Your thing is getting uploaded. Wait a few seconds...</string>
 
@@ -33,6 +36,10 @@ He has a leg injury and is receiving medical treatment but we need your help to 
 Come on folks it’s Christmas and we need to get this little fellow safely back in his stable before the big day!
 Anyone with information about his owner should contact 101.
 Thank you</string>
+
+    <string name="lorem_ipsum_title">Lorem Ipsum</string>
+    <string name="lorem_ipsum">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</string>
+    <string name="description">Давно выяснено, что при оценке дизайна и композиции читаемый текст мешает сосредоточиться. Lorem Ipsum используют потому, что тот обеспечивает более или менее стандартное заполнение шаблона, а также реальное распределение букв и пробелов в абзацах, которое не получается при простой дубликации "Здесь ваш текст.. Здесь ваш текст.. Здесь ваш текст.." Многие программы электронной вёрстки и редакторы HTML используют Lorem Ipsum в качестве текста по умолчанию, так что поиск по ключевым словам "lorem ipsum" сразу показывает, как много веб-страниц всё ещё дожидаются своего настоящего рождения. За прошедшие годы текст Lorem Ipsum получил много версий. Некоторые версии появились по ошибке, некоторые - намеренно (например, юмористические варианты).</string>
 
     <string name="google_web_client_id">1074777416292-6a73597ab06se6j88i8lc2pm78ttq70q.apps.googleusercontent.com</string>
 </resources>

@@ -1,5 +1,7 @@
 package com.sanislo.lostandfound.model;
 
+import java.util.List;
+
 /**
  * Created by root on 24.12.16.
  */
@@ -12,11 +14,12 @@ public class Thing {
     private String title;
     private String description;
     private String photo;
+    private List<String> descriptionPhotos;
     private long timestamp;
 
     public Thing() {}
 
-    public Thing(String key, int type, int category, String userUID, String title, String description, String photo, long timestamp) {
+    public Thing(String key, int type, int category, String userUID, String title, String description, String photo, List<String> descriptionPhotos, long timestamp) {
         this.key = key;
         this.type = type;
         this.category = category;
@@ -24,6 +27,7 @@ public class Thing {
         this.title = title;
         this.description = description;
         this.photo = photo;
+        this.descriptionPhotos = descriptionPhotos;
         this.timestamp = timestamp;
     }
 
@@ -91,6 +95,10 @@ public class Thing {
         this.timestamp = timestamp;
     }
 
+    public List<String> getDescriptionPhotos() {
+        return descriptionPhotos;
+    }
+
     @Override
     public String toString() {
         return "Thing{" +
@@ -113,6 +121,7 @@ public class Thing {
         private String description;
         private int category;
         private String photo;
+        private List<String> descriptionPhotos;
         private long timestamp;
 
         public Builder setKey(String key) {
@@ -155,6 +164,11 @@ public class Thing {
             return this;
         }
 
+        public Builder setDescriptionPhotos(List<String> descriptionPhotos) {
+            this.descriptionPhotos = descriptionPhotos;
+            return this;
+        }
+
         public Thing build() {
             return new Thing(key,
                     type,
@@ -163,6 +177,7 @@ public class Thing {
                     title,
                     description,
                     photo,
+                    descriptionPhotos,
                     timestamp);
         }
     }

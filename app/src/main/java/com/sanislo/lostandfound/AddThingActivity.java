@@ -1,10 +1,14 @@
 package com.sanislo.lostandfound;
 
+import android.*;
+import android.Manifest;
 import android.content.Intent;
-import android.net.Uri;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -14,24 +18,11 @@ import android.widget.EditText;
 import android.widget.Spinner;
 
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-import com.sanislo.lostandfound.model.Thing;
 import com.sanislo.lostandfound.presenter.AddThingPresenter;
 import com.sanislo.lostandfound.presenter.AddThingPresenterImpl;
-import com.sanislo.lostandfound.utils.FirebaseConstants;
 import com.sanislo.lostandfound.view.AddThingView;
 
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -43,7 +34,9 @@ import butterknife.OnClick;
 
 public class AddThingActivity extends AppCompatActivity implements AddThingView {
     public static final String TAG = AddThingActivity.class.getSimpleName();
-    public static final int PICK_THING_PHOTO = 111;
+    public static final int PICK_THING_COVER_PHOTO = 111;
+    public static final int PICK_THING_DESCRIPTION_PHOTOS = 222;
+    public static final int RP_READ_EXTERNAL = 333;
 
     @BindView(R.id.sp_category)
     Spinner spCategory;
@@ -93,6 +86,7 @@ public class AddThingActivity extends AppCompatActivity implements AddThingView 
                 .title(R.string.publishing_progress)
                 .content(R.string.publishing_progress_description)
                 .progress(false, 100, showMinMax)
+                .cancelable(false)
                 .show();
     }
 
@@ -105,26 +99,56 @@ public class AddThingActivity extends AppCompatActivity implements AddThingView 
     private void addThing() {
         String title = edtTitle.getText().toString();
         String description = edtDescription.getText().toString();
-        mPresenter.addThing(title, description);
+        mPresenter.addThing(getString(R.string.lorem_ipsum_title), getString(R.string.description));
     }
 
-    @OnClick(R.id.btn_select_thing_photo)
+    @OnClick(R.id.btn_select_thing_cover_photo)
     public void onClickSelectThingPhoto() {
-        selectPhotoAboutThing();
+        selectThingCoverPhoto();
     }
 
-    private void selectPhotoAboutThing() {
-        Intent getIntent = new Intent(Intent.ACTION_GET_CONTENT);
-        getIntent.setType("image/*");
-        getIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, false);
-        Intent сhooserIntent = Intent.createChooser(getIntent, "Select Image");
-        startActivityForResult(сhooserIntent, PICK_THING_PHOTO);
+    private void selectThingCoverPhoto() {
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.setType("image/*");
+        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, false);
+        Intent сhooserIntent = Intent.createChooser(intent, "Select Image");
+        startActivityForResult(сhooserIntent, PICK_THING_COVER_PHOTO);
+    }
+
+    @OnClick(R.id.btn_select_thing_photos)
+    public void onClickSelectThingDescriptionPhotos() {
+        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_EXTERNAL_STORAGE)
+                == PackageManager.PERMISSION_GRANTED) {
+            selectThingDescriptionPhotos();
+        } else {
+            ActivityCompat.requestPermissions(this,
+                    new String[] {Manifest.permission.READ_EXTERNAL_STORAGE},
+                    RP_READ_EXTERNAL);
+        }
+    }
+
+    private void selectThingDescriptionPhotos() {
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.setType("image/*");
+        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+        Intent сhooserIntent = Intent.createChooser(intent, "Select photos for description");
+        startActivityForResult(сhooserIntent, PICK_THING_DESCRIPTION_PHOTOS);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         mPresenter.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == RP_READ_EXTERNAL) {
+            if (permissions.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                selectThingDescriptionPhotos();
+            }
+        }
     }
 
     @Override
@@ -135,13 +159,14 @@ public class AddThingActivity extends AppCompatActivity implements AddThingView 
     }
 
     @Override
-    public void onThingAdded() {
-        mProgressDialog.dismiss();
-        this.finish();
+    public void onProgress(int progress) {
+        mProgressDialog.setProgress(progress);
+        Log.d(TAG, "onProgress: " + mProgressDialog.getCurrentProgress());
     }
 
     @Override
-    public void onProgress(int progress) {
-        mProgressDialog.incrementProgress(progress);
+    public void onThingAdded() {
+        mProgressDialog.dismiss();
+        this.finish();
     }
 }

@@ -1,10 +1,12 @@
 package com.sanislo.lostandfound.view;
 
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -18,13 +20,18 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.sanislo.lostandfound.R;
+import com.sanislo.lostandfound.adapter.DescriptionPhotosAdapter;
+import com.sanislo.lostandfound.adapter.ThingAdapter;
 import com.sanislo.lostandfound.model.Thing;
 import com.sanislo.lostandfound.model.User;
 import com.sanislo.lostandfound.utils.FirebaseConstants;
 import com.sanislo.lostandfound.utils.FirebaseUtils;
 
+import java.util.List;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 /**
  * Created by root on 25.12.16.
@@ -48,10 +55,20 @@ public class ThingViewHolder extends RecyclerView.ViewHolder {
     @BindView(R.id.tv_thing_description)
     TextView tvDescription;
 
+    @BindView(R.id.rl_thing_description)
+    RelativeLayout rlDescription;
+
+    @BindView(R.id.rv_things_photos)
+    RecyclerView rvDescriptionPhotos;
+
     private View mRootView;
+    private ThingAdapter.OnClickListener mOnClickListener;
+    private boolean mIsExpanded;
+    private int mPosition;
     private Thing mThing;
     private User mUser;
     private StorageReference mStorageReference;
+    private DescriptionPhotosAdapter mDescriptionPhotosAdapter;
 
     public ThingViewHolder(View itemView) {
         super(itemView);
@@ -60,13 +77,20 @@ public class ThingViewHolder extends RecyclerView.ViewHolder {
         initFirebaseStorage();
     }
 
-    public void populate(Thing thing) {
+    public void setOnClickListener(ThingAdapter.OnClickListener onClickListener) {
+        mOnClickListener = onClickListener;
+    }
+
+    public void populate(Thing thing, int position) {
         mThing = thing;
-        Log.d(TAG, "populate: " + thing);
+        mPosition = position;
         getAuthorUser();
         setTitle();
+        setTypeAndDate();
         setDescription();
         setThingPhoto();
+        setDescriptionVisibility();
+        setDescriptionPhotos();
     }
 
     private void getAuthorUser() {
@@ -96,8 +120,15 @@ public class ThingViewHolder extends RecyclerView.ViewHolder {
         tvDescription.setText(mThing.getDescription());
     }
 
-    private void setType() {
-        tvType.setText("qwerty");
+    private void setTypeAndDate() {
+        String type = (mThing.getType() == 0) ? "lost" : "found";
+        String time = String.valueOf(mThing.getTimestamp());
+        StringBuilder sb = new StringBuilder();
+        sb.append("Posted in ");
+        sb.append(type);
+        sb.append(" ");
+        sb.append(time);
+        tvType.setText(sb.toString());
     }
 
     private void initFirebaseStorage() {
@@ -142,9 +173,43 @@ public class ThingViewHolder extends RecyclerView.ViewHolder {
                 .into(targetView);
     }
 
+    private void setDescriptionPhotos() {
+        if (mThing.getDescriptionPhotos() != null) {
+            List<String> descriptionPhotos = mThing.getDescriptionPhotos();
+            mDescriptionPhotosAdapter = new DescriptionPhotosAdapter(descriptionPhotos);
+            LinearLayoutManager layoutManager = new LinearLayoutManager(mRootView.getContext(),
+                    LinearLayoutManager.HORIZONTAL,
+                    false);
+            rvDescriptionPhotos.setLayoutManager(layoutManager);
+            rvDescriptionPhotos.setAdapter(mDescriptionPhotosAdapter);
+        } else {
+            rvDescriptionPhotos.setVisibility(View.GONE);
+        }
+    }
+
     private void displayErrorPhoto(int drawableID, ImageView targetView) {
         Glide.with(mRootView.getContext())
                 .load(drawableID)
                 .into(targetView);
     }
+
+    public void setIsExpanded(boolean isExpanded) {
+        mIsExpanded = isExpanded;
+    }
+
+    private void setDescriptionVisibility() {
+        if (mIsExpanded) {
+            rlDescription.setVisibility(View.VISIBLE);
+        } else {
+            rlDescription.setVisibility(View.GONE);
+        }
+    }
+
+    @OnClick({R.id.tv_click_description, R.id.ib_description})
+    public void onClickDescription() {
+        if (mOnClickListener != null) {
+            mOnClickListener.onClickDescription(mPosition);
+        }
+    }
+
 }

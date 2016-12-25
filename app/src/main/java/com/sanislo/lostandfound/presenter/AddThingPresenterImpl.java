@@ -1,12 +1,13 @@
 package com.sanislo.lostandfound.presenter;
 
+import android.content.ClipData;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.util.Log;
-import android.util.StringBuilderPrinter;
+import android.widget.Toast;
 
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -20,18 +21,19 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
-import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.sanislo.lostandfound.AddThingActivity;
-import com.sanislo.lostandfound.R;
 import com.sanislo.lostandfound.model.Thing;
+import com.sanislo.lostandfound.utils.FileUtils;
 import com.sanislo.lostandfound.utils.FirebaseConstants;
 import com.sanislo.lostandfound.utils.FirebaseUtils;
 import com.sanislo.lostandfound.view.AddThingView;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 
 import static android.app.Activity.RESULT_OK;
@@ -42,22 +44,27 @@ import static android.app.Activity.RESULT_OK;
 
 public class AddThingPresenterImpl implements AddThingPresenter {
     public static final String TAG = AddThingPresenterImpl.class.getSimpleName();
+    private final int MAX_DESCRIPTION_PHOTO_NUMBER = 10;
 
+    private Context mContext;
     private AddThingView mView;
     private FirebaseUser mFirebaseUser;
     private DatabaseReference mDatabaseReference;
     private StorageReference mStorageReference;
     private Thing.Builder mThingBuilder;
     private String mThingKey;
-    private Uri mThingPhotoUri;
     private int mCategory;
 
-    private MaterialDialog mProgressDialog;
+    private Uri mCoverPhotoUri;
+    private long mFirebaseTotalBytesToTransfer = 0;
+    private long mTotalBytesToTransfer = 0;
+    private long mBytesTransferred = 0;
+    private LinkedList<Uri> mDescriptionPhotoUris;
+    private List<String> mDescriptionPhotoPaths = new ArrayList<>();
 
-
-
-    public AddThingPresenterImpl(AddThingView addThingView) {
-        mView = addThingView;
+    public AddThingPresenterImpl(AddThingActivity context) {
+        mContext = context;
+        mView = context;
         mThingBuilder = new Thing.Builder();
         initFirebase();
         getCategories();
@@ -103,7 +110,7 @@ public class AddThingPresenterImpl implements AddThingPresenter {
     @Override
     public void addThing(String title, String description) {
         configureThing(title, description);
-        setNewThingValue();
+        startThingDataUpload();
     }
 
     private void configureThing(String title, String description) {
@@ -115,45 +122,66 @@ public class AddThingPresenterImpl implements AddThingPresenter {
                 .setDescription(description)
                 .setCategory(mCategory)
                 .setTimestamp(timestamp);
-        if (mThingPhotoUri != null) {
-            uploadThingPhoto();
+    }
+
+    private void startThingDataUpload() {
+        if (mCoverPhotoUri != null) {
+            uploadCoverPhoto();
+        } else if (!mDescriptionPhotoUris.isEmpty()) {
+            uploadDescriptionPhotos();
         } else {
             setNewThingValue();
         }
     }
 
-    private void uploadThingPhoto() {
-        mStorageReference.child(FirebaseConstants.THINGS)
+    private void uploadCoverPhoto() {
+        UploadTask uploadCoverPhotoTask = mStorageReference.child(FirebaseConstants.THINGS)
                 .child(mThingKey)
-                .child(FirebaseConstants.THING_PHOTO)
+                .child(FirebaseConstants.THING_COVER_PHOTO)
+                .child(FileUtils.getFileName(mContext, mCoverPhotoUri))
+                .putFile(mCoverPhotoUri);
+        uploadCoverPhotoTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                setPhotoPath(taskSnapshot.getStorage().getPath());
+                if (mDescriptionPhotoUris != null && !mDescriptionPhotoUris.isEmpty()) {
+                    uploadDescriptionPhotos();
+                } else {
+                    setNewThingValue();
+                }
+            }
+        }).addOnProgressListener(mProgressListener);
+    }
+
+    private void uploadDescriptionPhotos() {
+        Uri uri = mDescriptionPhotoUris.remove();
+        UploadTask descriptionPhotoUploadTask = mStorageReference.child(FirebaseConstants.THINGS)
                 .child(mThingKey)
-                .putFile(mThingPhotoUri)
-                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                    @Override
-                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                        Log.d(TAG, "onSuccess: " + taskSnapshot.getStorage().getPath());
-                        setPhotoPath(taskSnapshot.getStorage().getPath());
-                        setNewThingValue();
-                    }
-                }).addOnProgressListener(mProgressListener)
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.d(TAG, "onFailure: error uploading photo " + mThingPhotoUri.toString());
-                        e.printStackTrace();
-                    }
-        });
+                .child(FirebaseConstants.THING_DESCRIPTION_PHOTOS)
+                .child(FileUtils.getFileName(mContext, uri))
+                .putFile(uri);
+        descriptionPhotoUploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                String path = taskSnapshot.getStorage().getPath();
+                Log.d(TAG, "onSuccess: " + path);
+                mDescriptionPhotoPaths.add(path);
+                if (!mDescriptionPhotoUris.isEmpty()) {
+                    uploadDescriptionPhotos();
+                } else {
+                    mThingBuilder.setDescriptionPhotos(mDescriptionPhotoPaths);
+                    setNewThingValue();
+                }
+            }
+        }).addOnProgressListener(mProgressListener);
     }
 
     private OnProgressListener<UploadTask.TaskSnapshot> mProgressListener = new OnProgressListener<UploadTask.TaskSnapshot>() {
         @Override
         public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
-            long bytesTransferred = taskSnapshot.getBytesTransferred();
-            long totalByteCount = taskSnapshot.getTotalByteCount();
-            float progress = (float) bytesTransferred / totalByteCount;
-            progress = progress * 100;
+            mBytesTransferred += taskSnapshot.getBytesTransferred();
+            float progress = (float) (mBytesTransferred / mTotalBytesToTransfer);
             mView.onProgress((int) progress);
-            Log.d(TAG, "onProgress: " + progress);
         }
     };
 
@@ -191,11 +219,45 @@ public class AddThingPresenterImpl implements AddThingPresenter {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode == RESULT_OK && requestCode == AddThingActivity.PICK_THING_PHOTO) {
+        if (resultCode == RESULT_OK && requestCode == AddThingActivity.PICK_THING_COVER_PHOTO) {
             if (data != null) {
-                mThingPhotoUri = data.getData();
-                Log.d(TAG, "onActivityResult: " + mThingPhotoUri.toString());
+                mCoverPhotoUri = data.getData();
+                incrementTotalByteCount(mCoverPhotoUri);
             }
+        }
+        if (resultCode == RESULT_OK && requestCode == AddThingActivity.PICK_THING_DESCRIPTION_PHOTOS) {
+            getDescriptionPhotoUris(data);
+        }
+    }
+
+    private void getDescriptionPhotoUris(Intent data) {
+        mDescriptionPhotoUris = new LinkedList<>();
+        ClipData clipData = data.getClipData();
+        if (clipData == null) {
+            Uri onlyUri = data.getData();
+            mDescriptionPhotoUris.add(onlyUri);
+            incrementTotalByteCount(onlyUri);
+        } else {
+            int photoCount = clipData.getItemCount();
+            if (photoCount > MAX_DESCRIPTION_PHOTO_NUMBER) {
+                Toast.makeText(mContext, "You can only select up to 10 photos...", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            for (int i = 0; i < photoCount; i++) {
+                Uri uri = clipData.getItemAt(i).getUri();
+                mDescriptionPhotoUris.add(uri);
+                incrementTotalByteCount(uri);
+            }
+        }
+    }
+
+    private void incrementTotalByteCount(Uri uri) {
+        String path = FileUtils.getPath(mContext, uri);
+        //if (TextUtils.isEmpty(path)) return;
+        File file = new File(path);
+        if (file.exists()) {
+            mTotalBytesToTransfer += file.length();
+            Log.d(TAG, "incrementTotalByteCount: " + mTotalBytesToTransfer);
         }
     }
 }

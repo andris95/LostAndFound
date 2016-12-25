@@ -1,17 +1,18 @@
 package com.sanislo.lostandfound;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.transition.TransitionManager;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.Query;
+import com.sanislo.lostandfound.adapter.ThingAdapter;
 import com.sanislo.lostandfound.model.Thing;
 import com.sanislo.lostandfound.utils.FirebaseConstants;
 import com.sanislo.lostandfound.utils.FirebaseUtils;
@@ -32,6 +33,17 @@ public class MainActivity extends BaseActivity {
     private FirebaseAuth mFirebaseAuth;
     private Query mThingQuery;
     private ThingAdapter mThingAdapter;
+
+    private ThingAdapter.OnClickListener mThingClickListener = new ThingAdapter.OnClickListener() {
+        @Override
+        public void onClickDescription(int position) {
+            boolean isExpaned = (position == mThingAdapter.getExpandedPosition());
+            int expandedPosition = isExpaned ? RecyclerView.NO_POSITION : position;
+            mThingAdapter.setExpandedPosition(expandedPosition);
+            TransitionManager.beginDelayedTransition(rvThings);
+            mThingAdapter.notifyDataSetChanged();
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +71,7 @@ public class MainActivity extends BaseActivity {
                 R.layout.item_thing,
                 ThingViewHolder.class,
                 mThingQuery);
+        mThingAdapter.setOnClickListener(mThingClickListener);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         rvThings.setLayoutManager(layoutManager);
         rvThings.setAdapter(mThingAdapter);

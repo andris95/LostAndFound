@@ -1,4 +1,6 @@
-package com.sanislo.lostandfound;
+package com.sanislo.lostandfound.adapter;
+
+import android.support.v7.widget.RecyclerView;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.database.Query;
@@ -10,6 +12,9 @@ import com.sanislo.lostandfound.view.ThingViewHolder;
  */
 
 public class ThingAdapter extends FirebaseRecyclerAdapter<Thing, ThingViewHolder> {
+    private int mExpandedPosition = RecyclerView.NO_POSITION;
+    private OnClickListener mOnClickListener;
+
     /**
      * @param modelClass      Firebase will marshall the data at a location into an instance of a class that you provide
      * @param modelLayout     This is the layout used to represent a single item in the list. You will be responsible for populating an
@@ -22,8 +27,26 @@ public class ThingAdapter extends FirebaseRecyclerAdapter<Thing, ThingViewHolder
         super(modelClass, modelLayout, viewHolderClass, ref);
     }
 
+    public void setOnClickListener(OnClickListener onClickListener) {
+        mOnClickListener = onClickListener;
+    }
+
+    public int getExpandedPosition() {
+        return mExpandedPosition;
+    }
+
+    public void setExpandedPosition(int expandedPosition) {
+        mExpandedPosition = expandedPosition;
+    }
+
     @Override
     protected void populateViewHolder(ThingViewHolder viewHolder, Thing model, int position) {
-        viewHolder.populate(model);
+        viewHolder.setIsExpanded(position == mExpandedPosition);
+        viewHolder.setOnClickListener(mOnClickListener);
+        viewHolder.populate(model, position);
+    }
+
+    public interface OnClickListener {
+        void onClickDescription(int position);
     }
 }
