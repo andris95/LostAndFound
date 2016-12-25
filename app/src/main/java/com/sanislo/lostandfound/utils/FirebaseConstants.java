@@ -8,4 +8,5 @@ public class FirebaseConstants {
     public static final String USERS = "users";
     public static final String CATEGORIES = "categories";
     public static final String THINGS = "things";
+    public static final String THING_PHOTO = "thing_photo";
 }

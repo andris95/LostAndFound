@@ -13,6 +13,26 @@
     <string name="signup_a_new_account">Sign up for a new account!</string>
     <string name="sign_out">sign out</string>
     <string name="forgot_password">Forgot Your Password? Click here!</string>
+    <string name="share">share</string>
+
+    <string name="hint_thing_title">Title</string>
+    <string name="hint_thing_description">Description</string>
+
+    <string name="select_thing_photo">Add a photo about your stuff!</string>
+    <string name="publishing_progress">Publishing Your Thing</string>
+    <string name="publishing_progress_description">Your thing is getting uploaded. Wait a few seconds...</string>
+
+    <string name="found_keys">Keys found on Aigburth Road, Liverpool, between the Maccies and the garage. It’s got two keyrings on as well but I’ve covered them up for the owner to identify.</string>
+    <string name="found_ring">Was found at willy’s car wash, near the dog wash side in blacks beach.
+Sterling silver ring, has one stone missing and engraving on the inside (must be able to identify what it says!)
+Would love to find the owner.</string>
+    <string name="lost_cat">Please help get our little baby back to us. Missing since December 20th from Thornton Curtis near Ulceby in North Lincolnshire and only a kitten with little experience of the outdoors.
+If you have any information about her or have found her please contact me on 07912 222548 or 07989 150888, she is missed more than I can describe. Please help!</string>
+    <string name="lost_donkey">This little donkey escaped from a field in Shildon, County Durham on the morning of December 20th and has unfortunately been hit by a car.
+He has a leg injury and is receiving medical treatment but we need your help to track down his owner.
+Come on folks it’s Christmas and we need to get this little fellow safely back in his stable before the big day!
+Anyone with information about his owner should contact 101.
+Thank you</string>
 
     <string name="google_web_client_id">1074777416292-6a73597ab06se6j88i8lc2pm78ttq70q.apps.googleusercontent.com</string>
 </resources>

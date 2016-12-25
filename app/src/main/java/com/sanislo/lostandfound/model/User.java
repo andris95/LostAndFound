@@ -201,6 +201,30 @@ public class User {
         return hashMap;
     }
 
+    @Override
+    public String toString() {
+        return "User{" +
+                "uid='" + uid + '\'' +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", fullName='" + fullName + '\'' +
+                ", birthDate=" + birthDate +
+                ", showBirthDate=" + showBirthDate +
+                ", city='" + city + '\'' +
+                ", gender=" + gender +
+                ", phoneNumber='" + phoneNumber + '\'' +
+                ", linkInstagram='" + linkInstagram + '\'' +
+                ", linkFacebook='" + linkFacebook + '\'' +
+                ", linkTwitter='" + linkTwitter + '\'' +
+                ", avatarURL='" + avatarURL + '\'' +
+                ", avatarBlurURL='" + avatarBlurURL + '\'' +
+                ", isOnline=" + isOnline +
+                ", lastActiveTimestamp=" + lastActiveTimestamp +
+                ", emailAddress='" + emailAddress + '\'' +
+                ", websiteAddress='" + websiteAddress + '\'' +
+                '}';
+    }
+
     public static class Builder {
         private String uid;
         private String firstName;

@@ -7,7 +7,7 @@ package com.sanislo.lostandfound.model;
 public class Thing {
     private String key;
     private int type;
-    private String category;
+    private int category;
     private String userUID;
     private String title;
     private String description;
@@ -16,9 +16,10 @@ public class Thing {
 
     public Thing() {}
 
-    public Thing(String key, int type, String userUID, String title, String description, String photo, long timestamp) {
+    public Thing(String key, int type, int category, String userUID, String title, String description, String photo, long timestamp) {
         this.key = key;
         this.type = type;
+        this.category = category;
         this.userUID = userUID;
         this.title = title;
         this.description = description;
@@ -42,11 +43,11 @@ public class Thing {
         this.type = type;
     }
 
-    public String getCategory() {
+    public int getCategory() {
         return category;
     }
 
-    public void setCategory(String category) {
+    public void setCategory(int category) {
         this.category = category;
     }
 
@@ -110,6 +111,7 @@ public class Thing {
         private String userUID;
         private String title;
         private String description;
+        private int category;
         private String photo;
         private long timestamp;
 
@@ -138,6 +140,11 @@ public class Thing {
             return this;
         }
 
+        public Builder setCategory(int category) {
+            this.category = category;
+            return this;
+        }
+
         public Builder setPhoto(String photo) {
             this.photo = photo;
             return this;
@@ -151,6 +158,7 @@ public class Thing {
         public Thing build() {
             return new Thing(key,
                     type,
+                    category,
                     userUID,
                     title,
                     description,

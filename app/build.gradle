@@ -35,8 +35,14 @@ dependencies {
     compile 'com.google.android.gms:play-services-auth:10.0.1'
     compile 'com.google.firebase:firebase-auth:10.0.1'
     compile 'com.google.firebase:firebase-database:10.0.1'
+    compile 'com.google.firebase:firebase-storage:10.0.1'
+
     compile 'com.firebaseui:firebase-ui-database:1.0.1'
     compile 'com.firebaseui:firebase-ui-storage:1.0.1'
+
+    compile 'com.github.bumptech.glide:glide:3.7.0'
+    compile 'de.hdodenhof:circleimageview:2.1.0'
+    compile 'com.afollestad.material-dialogs:core:0.9.1.0'
 
     testCompile 'junit:junit:4.12'
 }

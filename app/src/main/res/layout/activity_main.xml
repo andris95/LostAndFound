@@ -14,15 +14,10 @@
         app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
         android:background="@color/colorPrimary"/>
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/toolbar_main"
-        android:text="test"/>
-
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rv_things"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_below="@id/toolbar_main">
     </android.support.v7.widget.RecyclerView>
 </RelativeLayout>
