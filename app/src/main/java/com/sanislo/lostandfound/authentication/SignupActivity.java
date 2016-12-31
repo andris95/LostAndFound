@@ -17,7 +17,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.sanislo.lostandfound.BaseActivity;
 import com.sanislo.lostandfound.utils.FirebaseConstants;
 import com.sanislo.lostandfound.utils.FirebaseUtils;
-import com.sanislo.lostandfound.MainActivity;
+import com.sanislo.lostandfound.ThingsActivity;
 import com.sanislo.lostandfound.R;
 import com.sanislo.lostandfound.model.User;
 
@@ -121,7 +121,7 @@ public class SignupActivity extends BaseActivity {
     }
 
     private void launchMainActivity() {
-        startActivity(new Intent(SignupActivity.this, MainActivity.class));
+        startActivity(new Intent(SignupActivity.this, ThingsActivity.class));
         finish();
     }
 }

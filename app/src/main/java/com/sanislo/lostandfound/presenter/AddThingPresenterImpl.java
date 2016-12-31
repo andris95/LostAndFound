@@ -43,7 +43,7 @@ import static android.app.Activity.RESULT_OK;
  */
 
 public class AddThingPresenterImpl implements AddThingPresenter {
-    public static final String TAG = AddThingPresenterImpl.class.getSimpleName();
+    public final String TAG = AddThingPresenterImpl.class.getSimpleName();
     private final int MAX_DESCRIPTION_PHOTO_NUMBER = 10;
 
     private Context mContext;

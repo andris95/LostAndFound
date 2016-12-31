@@ -27,7 +27,7 @@ import butterknife.ButterKnife;
  */
 
 public class DescriptionPhotosAdapter extends RecyclerView.Adapter<DescriptionPhotosAdapter.DescriptionPhotoViewHolder> {
-    public static final String TAG = DescriptionPhotoViewHolder.class.getSimpleName();
+    public final String TAG = DescriptionPhotoViewHolder.class.getSimpleName();
     private List<String> mDescriptionPhotos;
     private StorageReference mStorageReference;
 

@@ -18,7 +18,7 @@ import java.io.File;
  */
 
 public class FileUtils {
-    public static final String TAG = FileUtils.class.getSimpleName();
+    public final String TAG = FileUtils.class.getSimpleName();
 
     public static String getFileName(String filePath) {
         String fileName = null;

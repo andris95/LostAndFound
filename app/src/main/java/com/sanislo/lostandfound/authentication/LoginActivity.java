@@ -20,9 +20,9 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.sanislo.lostandfound.BaseActivity;
+import com.sanislo.lostandfound.ThingsActivity;
 import com.sanislo.lostandfound.utils.FirebaseConstants;
 import com.sanislo.lostandfound.utils.FirebaseUtils;
-import com.sanislo.lostandfound.MainActivity;
 import com.sanislo.lostandfound.R;
 import com.sanislo.lostandfound.model.User;
 
@@ -38,8 +38,8 @@ public class LoginActivity extends BaseActivity {
     @BindView(R.id.password)
     EditText edtPassword;
 
-    public static final String TAG = LoginActivity.class.getSimpleName();
-    private static final int RC_GOOGLE_SIGNIN = 22228;
+    public final String TAG = LoginActivity.class.getSimpleName();
+    private final int RC_GOOGLE_SIGNIN = 22228;
 
     private FirebaseAuth mFirebaseAuth = FirebaseAuth.getInstance();
     private String mEmail, mPassword;
@@ -49,7 +49,7 @@ public class LoginActivity extends BaseActivity {
         @Override
         public void onComplete(@NonNull Task task) {
             if (task.isSuccessful()) {
-                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                Intent intent = new Intent(LoginActivity.this, ThingsActivity.class);
                 startActivity(intent);
                 finish();
             }
@@ -68,7 +68,7 @@ public class LoginActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (mFirebaseAuth.getCurrentUser() != null) {
-            startActivity(new Intent(LoginActivity.this, MainActivity.class));
+            startActivity(new Intent(LoginActivity.this, ThingsActivity.class));
             finish();
         }
 
@@ -179,7 +179,7 @@ public class LoginActivity extends BaseActivity {
     }
 
     private void launchMainActivity() {
-        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+        Intent intent = new Intent(LoginActivity.this, ThingsActivity.class);
         startActivity(intent);
         finish();
     }

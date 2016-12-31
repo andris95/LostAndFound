@@ -4,7 +4,10 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -16,14 +19,18 @@ import com.bumptech.glide.request.target.Target;
 import com.firebase.ui.storage.images.FirebaseImageLoader;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.sanislo.lostandfound.R;
+import com.sanislo.lostandfound.adapter.CommentsAdapter;
 import com.sanislo.lostandfound.adapter.DescriptionPhotosAdapter;
 import com.sanislo.lostandfound.adapter.ThingAdapter;
+import com.sanislo.lostandfound.model.Comment;
 import com.sanislo.lostandfound.model.Thing;
 import com.sanislo.lostandfound.model.User;
+import com.sanislo.lostandfound.utils.DateUtils;
 import com.sanislo.lostandfound.utils.FirebaseConstants;
 import com.sanislo.lostandfound.utils.FirebaseUtils;
 
@@ -61,7 +68,13 @@ public class ThingViewHolder extends RecyclerView.ViewHolder {
     @BindView(R.id.rv_things_photos)
     RecyclerView rvDescriptionPhotos;
 
-    private View mRootView;
+    @BindView(R.id.rv_things_comments)
+    RecyclerView rvComments;
+
+    @BindView(R.id.edt_thing_comment)
+    EditText edtComment;
+
+    View mRootView;
     private ThingAdapter.OnClickListener mOnClickListener;
     private boolean mIsExpanded;
     private int mPosition;
@@ -69,11 +82,15 @@ public class ThingViewHolder extends RecyclerView.ViewHolder {
     private User mUser;
     private StorageReference mStorageReference;
     private DescriptionPhotosAdapter mDescriptionPhotosAdapter;
+    private CommentsAdapter mCommentsAdapter;
 
     public ThingViewHolder(View itemView) {
         super(itemView);
         mRootView = itemView;
         ButterKnife.bind(this, mRootView);
+        edtComment.setImeOptions(EditorInfo.IME_ACTION_DONE);
+        Log.d(TAG, "ThingViewHolder: " + edtComment.getImeActionId());
+        Log.d(TAG, "ThingViewHolder: " + edtComment.getImeOptions());
         initFirebaseStorage();
     }
 
@@ -91,6 +108,21 @@ public class ThingViewHolder extends RecyclerView.ViewHolder {
         setThingPhoto();
         setDescriptionVisibility();
         setDescriptionPhotos();
+        setComments();
+        setCommentEditorActionListener();
+    }
+
+    private void setCommentEditorActionListener() {
+        edtComment.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_DONE && event.getAction() == KeyEvent.ACTION_DOWN) {
+                    mOnClickListener.onClickAddComment(mThing, edtComment.getText().toString());
+                    return true;
+                }
+                return false;
+            }
+        });
     }
 
     private void getAuthorUser() {
@@ -122,7 +154,7 @@ public class ThingViewHolder extends RecyclerView.ViewHolder {
 
     private void setTypeAndDate() {
         String type = (mThing.getType() == 0) ? "lost" : "found";
-        String time = String.valueOf(mThing.getTimestamp());
+        String time = DateUtils.getDateText(mThing.getTimestamp());
         StringBuilder sb = new StringBuilder();
         sb.append("Posted in ");
         sb.append(type);
@@ -187,6 +219,19 @@ public class ThingViewHolder extends RecyclerView.ViewHolder {
         }
     }
 
+    private void setComments() {
+        Query commentQuery = FirebaseUtils.getDatabase()
+                .getReference()
+                .child(FirebaseConstants.THINGS_COMMENTS)
+                .child(mThing.getKey());
+        mCommentsAdapter = new CommentsAdapter(Comment.class,
+                R.layout.item_comment,
+                CommentViewHolder.class,
+                commentQuery);
+        rvComments.setLayoutManager(new LinearLayoutManager(mRootView.getContext()));
+        rvComments.setAdapter(mCommentsAdapter);
+    }
+
     private void displayErrorPhoto(int drawableID, ImageView targetView) {
         Glide.with(mRootView.getContext())
                 .load(drawableID)
@@ -212,4 +257,10 @@ public class ThingViewHolder extends RecyclerView.ViewHolder {
         }
     }
 
+    @OnClick(R.id.btn_send_comment)
+    public void sendComment() {
+        if (mOnClickListener != null) {
+            mOnClickListener.onClickAddComment(mThing, edtComment.getText().toString());
+        }
+    }
 }

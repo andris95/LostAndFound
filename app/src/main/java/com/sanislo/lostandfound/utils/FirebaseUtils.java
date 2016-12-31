@@ -5,6 +5,8 @@ import android.text.TextUtils;
 import android.widget.Toast;
 
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -22,6 +24,14 @@ public class FirebaseUtils {
             mDatabase.setPersistenceEnabled(true);
         }
         return mDatabase;
+    }
+
+    public static StorageReference getStorageRef() {
+        String bucket = "gs://lostandfound-326c3.appspot.com";
+        StorageReference storageRef = FirebaseStorage
+                .getInstance()
+                .getReferenceFromUrl(bucket);
+        return storageRef;
     }
 
     public static boolean validateEmailPwrd(Context context, String email, String password) {

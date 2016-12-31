@@ -19,7 +19,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".authentication.SignupActivity" />
-        <activity android:name=".MainActivity" />
+        <activity android:name=".ThingsActivity" />
         <activity android:name=".AddThingActivity" />
     </application>
 

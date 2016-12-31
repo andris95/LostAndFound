@@ -47,6 +47,7 @@ public class ThingAdapter extends FirebaseRecyclerAdapter<Thing, ThingViewHolder
     }
 
     public interface OnClickListener {
+        void onClickAddComment(Thing thing, String text);
         void onClickDescription(int position);
     }
 }

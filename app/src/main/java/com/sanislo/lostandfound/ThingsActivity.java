@@ -10,10 +10,13 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.Query;
 import com.sanislo.lostandfound.adapter.ThingAdapter;
+import com.sanislo.lostandfound.interfaces.ThingsView;
 import com.sanislo.lostandfound.model.Thing;
+import com.sanislo.lostandfound.presenter.ThingsPresenter;
 import com.sanislo.lostandfound.utils.FirebaseConstants;
 import com.sanislo.lostandfound.utils.FirebaseUtils;
 import com.sanislo.lostandfound.view.ThingViewHolder;
@@ -21,8 +24,8 @@ import com.sanislo.lostandfound.view.ThingViewHolder;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class MainActivity extends BaseActivity {
-    public static final String TAG = MainActivity.class.getSimpleName();
+public class ThingsActivity extends BaseActivity implements ThingsView {
+    public static final String TAG = ThingsActivity.class.getSimpleName();
 
     @BindView(R.id.rv_things)
     RecyclerView rvThings;
@@ -34,7 +37,15 @@ public class MainActivity extends BaseActivity {
     private Query mThingQuery;
     private ThingAdapter mThingAdapter;
 
+    @InjectPresenter
+    ThingsPresenter mThingsPresenter;
+
     private ThingAdapter.OnClickListener mThingClickListener = new ThingAdapter.OnClickListener() {
+        @Override
+        public void onClickAddComment(Thing thing, String text) {
+            mThingsPresenter.addComment(thing, text);
+        }
+
         @Override
         public void onClickDescription(int position) {
             boolean isExpaned = (position == mThingAdapter.getExpandedPosition());
@@ -50,6 +61,8 @@ public class MainActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
+
+        mThingsPresenter = new ThingsPresenter();
         initFirebase();
         initToolbar();
         initThings();
@@ -75,13 +88,6 @@ public class MainActivity extends BaseActivity {
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         rvThings.setLayoutManager(layoutManager);
         rvThings.setAdapter(mThingAdapter);
-        rvThings.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, AddThingActivity.class);
-                startActivity(intent);
-            }
-        });
     }
 
     @Override
@@ -94,8 +100,7 @@ public class MainActivity extends BaseActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_add_thing:
-                Intent intent = new Intent(MainActivity.this, AddThingActivity.class);
-                startActivity(intent);
+                startAddThingActivity();
                 return true;
             case R.id.menu_sign_out:
                 mFirebaseAuth.signOut();
@@ -108,5 +113,10 @@ public class MainActivity extends BaseActivity {
     public void onDestroy() {
         super.onDestroy();
         mThingAdapter.cleanup();
+    }
+
+    private void startAddThingActivity() {
+        Intent intent = new Intent(ThingsActivity.this, AddThingActivity.class);
+        startActivity(intent);
     }
 }

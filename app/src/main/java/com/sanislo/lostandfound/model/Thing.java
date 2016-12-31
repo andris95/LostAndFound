@@ -15,6 +15,8 @@ public class Thing {
     private String description;
     private String photo;
     private List<String> descriptionPhotos;
+    private int commentCount;
+    private String commentKey;
     private long timestamp;
 
     public Thing() {}
@@ -122,6 +124,8 @@ public class Thing {
         private int category;
         private String photo;
         private List<String> descriptionPhotos;
+        private int commentCount;
+        private String commentsKey;
         private long timestamp;
 
         public Builder setKey(String key) {
