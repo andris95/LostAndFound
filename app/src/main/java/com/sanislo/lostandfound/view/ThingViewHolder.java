@@ -1,5 +1,6 @@
 package com.sanislo.lostandfound.view;
 
+import android.content.Intent;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -17,6 +18,14 @@ import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.firebase.ui.storage.images.FirebaseImageLoader;
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.MapsInitializer;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.Query;
@@ -44,8 +53,8 @@ import butterknife.OnClick;
  * Created by root on 25.12.16.
  */
 
-public class ThingViewHolder extends RecyclerView.ViewHolder {
-    public static final String TAG = ThingViewHolder.class.getSimpleName();
+public class ThingViewHolder extends RecyclerView.ViewHolder implements OnMapReadyCallback {
+    public final String TAG = ThingViewHolder.class.getSimpleName();
 
     @BindView(R.id.iv_thing_author_avatar)
     ImageView ivAuthorAvatar;
@@ -74,6 +83,9 @@ public class ThingViewHolder extends RecyclerView.ViewHolder {
     @BindView(R.id.edt_thing_comment)
     EditText edtComment;
 
+    @BindView(R.id.map_thing_location)
+    MapView mMapView;
+
     View mRootView;
     private ThingAdapter.OnClickListener mOnClickListener;
     private boolean mIsExpanded;
@@ -83,15 +95,20 @@ public class ThingViewHolder extends RecyclerView.ViewHolder {
     private StorageReference mStorageReference;
     private DescriptionPhotosAdapter mDescriptionPhotosAdapter;
     private CommentsAdapter mCommentsAdapter;
+    private GoogleMap mGoogleMap;
 
     public ThingViewHolder(View itemView) {
         super(itemView);
         mRootView = itemView;
         ButterKnife.bind(this, mRootView);
         edtComment.setImeOptions(EditorInfo.IME_ACTION_DONE);
-        Log.d(TAG, "ThingViewHolder: " + edtComment.getImeActionId());
-        Log.d(TAG, "ThingViewHolder: " + edtComment.getImeOptions());
         initFirebaseStorage();
+        initMapView();
+    }
+
+    private void initMapView() {
+        mMapView.onCreate(null);
+        mMapView.getMapAsync(this);
     }
 
     public void setOnClickListener(ThingAdapter.OnClickListener onClickListener) {
@@ -209,6 +226,12 @@ public class ThingViewHolder extends RecyclerView.ViewHolder {
         if (mThing.getDescriptionPhotos() != null) {
             List<String> descriptionPhotos = mThing.getDescriptionPhotos();
             mDescriptionPhotosAdapter = new DescriptionPhotosAdapter(descriptionPhotos);
+            mDescriptionPhotosAdapter.setOnClickListener(new DescriptionPhotosAdapter.OnClickListener() {
+                @Override
+                public void onClickPhoto(int position) {
+                    launchDescriptionPhotosActivity(position);
+                }
+            });
             LinearLayoutManager layoutManager = new LinearLayoutManager(mRootView.getContext(),
                     LinearLayoutManager.HORIZONTAL,
                     false);
@@ -217,6 +240,13 @@ public class ThingViewHolder extends RecyclerView.ViewHolder {
         } else {
             rvDescriptionPhotos.setVisibility(View.GONE);
         }
+    }
+
+    private void launchDescriptionPhotosActivity(int position) {
+        Intent intent = new Intent(mRootView.getContext(), DescriptionPhotosActivity.class);
+        intent.putExtra("THING_KEY", mThing.getKey());
+        intent.putExtra("POSITION", position);
+        mRootView.getContext().startActivity(intent);
     }
 
     private void setComments() {
@@ -262,5 +292,26 @@ public class ThingViewHolder extends RecyclerView.ViewHolder {
         if (mOnClickListener != null) {
             mOnClickListener.onClickAddComment(mThing, edtComment.getText().toString());
         }
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        Log.d(TAG, "onMapReady: ");
+        if (mGoogleMap == null) {
+            mGoogleMap = googleMap;
+            MapsInitializer.initialize(mRootView.getContext());
+        }
+        displayThingMarker();
+    }
+
+    private void displayThingMarker() {
+        mGoogleMap.clear();
+        LatLng latLng = new LatLng(40.750580, -73.993584);
+        MarkerOptions markerOptions = new MarkerOptions();
+        markerOptions.position(latLng);
+        mGoogleMap.addMarker(markerOptions);
+        Log.d(TAG, "displayThingMarker: ");
+        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 10f);
+        mGoogleMap.moveCamera(cameraUpdate);
     }
 }

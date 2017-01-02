@@ -16,12 +16,12 @@ public class Thing {
     private String photo;
     private List<String> descriptionPhotos;
     private int commentCount;
-    private String commentKey;
+    private String thingLocationKey;
     private long timestamp;
 
     public Thing() {}
 
-    public Thing(String key, int type, int category, String userUID, String title, String description, String photo, List<String> descriptionPhotos, long timestamp) {
+    public Thing(String key, int type, int category, String userUID, String title, String description, String photo, List<String> descriptionPhotos, int commentCount, String thingLocationKey, long timestamp) {
         this.key = key;
         this.type = type;
         this.category = category;
@@ -30,6 +30,8 @@ public class Thing {
         this.description = description;
         this.photo = photo;
         this.descriptionPhotos = descriptionPhotos;
+        this.commentCount = commentCount;
+        this.thingLocationKey = thingLocationKey;
         this.timestamp = timestamp;
     }
 
@@ -101,6 +103,26 @@ public class Thing {
         return descriptionPhotos;
     }
 
+    public void setDescriptionPhotos(List<String> descriptionPhotos) {
+        this.descriptionPhotos = descriptionPhotos;
+    }
+
+    public int getCommentCount() {
+        return commentCount;
+    }
+
+    public void setCommentCount(int commentCount) {
+        this.commentCount = commentCount;
+    }
+
+    public String getThingLocationKey() {
+        return thingLocationKey;
+    }
+
+    public void setThingLocationKey(String thingLocationKey) {
+        this.thingLocationKey = thingLocationKey;
+    }
+
     @Override
     public String toString() {
         return "Thing{" +
@@ -125,7 +147,7 @@ public class Thing {
         private String photo;
         private List<String> descriptionPhotos;
         private int commentCount;
-        private String commentsKey;
+        private String thingLocationKey;
         private long timestamp;
 
         public Builder setKey(String key) {
@@ -173,6 +195,16 @@ public class Thing {
             return this;
         }
 
+        public Builder setCommentCount(int commentCount) {
+            this.commentCount = commentCount;
+            return this;
+        }
+
+        public Builder setThingLocationKey(String thingLocationKey) {
+            this.thingLocationKey = thingLocationKey;
+            return this;
+        }
+
         public Thing build() {
             return new Thing(key,
                     type,
@@ -182,6 +214,8 @@ public class Thing {
                     description,
                     photo,
                     descriptionPhotos,
+                    commentCount,
+                    thingLocationKey,
                     timestamp);
         }
     }

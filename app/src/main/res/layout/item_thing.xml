@@ -122,12 +122,21 @@
                     android:layout_below="@+id/rv_things_photos">
                 </android.support.v7.widget.RecyclerView>
 
+                <com.google.android.gms.maps.MapView
+                    xmlns:map="http://schemas.android.com/apk/res-auto"
+                    android:name="com.google.android.gms.maps.SupportMapFragment"
+                    android:id="@+id/map_thing_location"
+                    android:layout_width="match_parent"
+                    android:layout_height="150dp"
+                    android:layout_below="@id/rv_things_comments"
+                    map:liteMode="true" />
+
                 <EditText
                     android:id="@+id/edt_thing_comment"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:imeOptions="actionSend"
-                    android:layout_below="@+id/rv_things_comments"
+                    android:layout_below="@+id/map_thing_location"
                     android:hint="@string/add_a_comment"/>
 
                 <Button
