@@ -8,6 +8,9 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.ui.PlacePicker;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -25,6 +28,7 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.sanislo.lostandfound.AddThingActivity;
 import com.sanislo.lostandfound.model.Thing;
+import com.sanislo.lostandfound.model.ThingLocation;
 import com.sanislo.lostandfound.utils.FileUtils;
 import com.sanislo.lostandfound.utils.FirebaseConstants;
 import com.sanislo.lostandfound.utils.FirebaseUtils;
@@ -45,6 +49,10 @@ import static android.app.Activity.RESULT_OK;
 public class AddThingPresenterImpl implements AddThingPresenter {
     public final String TAG = AddThingPresenterImpl.class.getSimpleName();
     private final int MAX_DESCRIPTION_PHOTO_NUMBER = 10;
+    private final int PICK_THING_COVER_PHOTO = 111;
+    private final int PICK_THING_DESCRIPTION_PHOTOS = 222;
+    private final int PICK_THING_PLACE = 333;
+    private final int RP_READ_EXTERNAL = 444;
 
     private Context mContext;
     private AddThingView mView;
@@ -54,9 +62,10 @@ public class AddThingPresenterImpl implements AddThingPresenter {
     private Thing.Builder mThingBuilder;
     private String mThingKey;
     private int mCategory;
+    private Place mThingPlace;
+    private ThingLocation mThingLocation;
 
     private Uri mCoverPhotoUri;
-    private long mFirebaseTotalBytesToTransfer = 0;
     private long mTotalBytesToTransfer = 0;
     private long mBytesTransferred = 0;
     private LinkedList<Uri> mDescriptionPhotoUris;
@@ -72,10 +81,8 @@ public class AddThingPresenterImpl implements AddThingPresenter {
 
     private void initFirebase() {
         mFirebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        FirebaseDatabase firebaseDatabase = FirebaseUtils.getDatabase();
-        mDatabaseReference = firebaseDatabase.getReference();
-        String storageBucket = "gs://lostandfound-326c3.appspot.com";
-        mStorageReference = FirebaseStorage.getInstance().getReferenceFromUrl(storageBucket);
+        mDatabaseReference = FirebaseUtils.getDatabase().getReference();
+        mStorageReference = FirebaseUtils.getStorageRef();
     }
 
     private void getCategories() {
@@ -124,13 +131,24 @@ public class AddThingPresenterImpl implements AddThingPresenter {
                 .setTimestamp(timestamp);
     }
 
+    private void configureThingPlace() {
+        if (mThingPlace != null) {
+            mThingLocation = new ThingLocation(
+                    mThingKey,
+                    mThingPlace.getAddress().toString(),
+                    mThingPlace.getLatLng(),
+                    mThingPlace.getViewport().northeast,
+                    mThingPlace.getViewport().southwest);
+        }
+    }
+
     private void startThingDataUpload() {
         if (mCoverPhotoUri != null) {
             uploadCoverPhoto();
-        } else if (!mDescriptionPhotoUris.isEmpty()) {
+        } else if (mDescriptionPhotoUris != null && !mDescriptionPhotoUris.isEmpty()) {
             uploadDescriptionPhotos();
         } else {
-            setNewThingValue();
+            setValues();
         }
     }
 
@@ -147,7 +165,7 @@ public class AddThingPresenterImpl implements AddThingPresenter {
                 if (mDescriptionPhotoUris != null && !mDescriptionPhotoUris.isEmpty()) {
                     uploadDescriptionPhotos();
                 } else {
-                    setNewThingValue();
+                    setValues();
                 }
             }
         }).addOnProgressListener(mProgressListener);
@@ -170,7 +188,7 @@ public class AddThingPresenterImpl implements AddThingPresenter {
                     uploadDescriptionPhotos();
                 } else {
                     mThingBuilder.setDescriptionPhotos(mDescriptionPhotoPaths);
-                    setNewThingValue();
+                    setValues();
                 }
             }
         }).addOnProgressListener(mProgressListener);
@@ -189,25 +207,55 @@ public class AddThingPresenterImpl implements AddThingPresenter {
         mThingBuilder.setPhoto(path);
     }
 
+    private void setValues() {
+        if (mThingPlace != null) {
+            setThingPlaceValue();
+        } else {
+            setNewThingValue();
+        }
+    }
+
     private void setNewThingValue() {
         Thing thing = mThingBuilder.build();
         DatabaseReference newThingReference = mDatabaseReference
                 .child(FirebaseConstants.THINGS)
                 .child(thing.getKey());
         newThingReference.setValue(thing)
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if (task.isComplete() && task.isSuccessful()) {
-                            mView.onThingAdded();
-                        }
+                    public void onSuccess(Void aVoid) {
+                        mView.onThingAdded();
                     }
-                }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                e.printStackTrace();
-            }
-        });
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        e.printStackTrace();
+                    }
+                });
+    }
+
+    private void setThingPlaceValue() {
+        configureThingPlace();
+        final String thingPlaceKey = generateThingPlaceKey();
+        DatabaseReference thingPlaceReference = mDatabaseReference.child(FirebaseConstants.THINGS_PLACE)
+                .child(mThingKey)
+                .child(thingPlaceKey);
+        thingPlaceReference.setValue(mThingLocation)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        mThingBuilder.setThingLocationKey(thingPlaceKey);
+                        setNewThingValue();
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        e.printStackTrace();
+                        setNewThingValue();
+                    }
+                });
     }
 
     private String generateNewThingKey() {
@@ -217,16 +265,26 @@ public class AddThingPresenterImpl implements AddThingPresenter {
                 .getKey();
     }
 
+    private String generateThingPlaceKey() {
+        return mDatabaseReference.child(FirebaseConstants.THINGS_PLACE)
+                .child(mThingKey)
+                .push()
+                .getKey();
+    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode == RESULT_OK && requestCode == AddThingActivity.PICK_THING_COVER_PHOTO) {
+        if (resultCode == RESULT_OK && requestCode == PICK_THING_COVER_PHOTO) {
             if (data != null) {
                 mCoverPhotoUri = data.getData();
                 incrementTotalByteCount(mCoverPhotoUri);
             }
         }
-        if (resultCode == RESULT_OK && requestCode == AddThingActivity.PICK_THING_DESCRIPTION_PHOTOS) {
+        if (resultCode == RESULT_OK && requestCode == PICK_THING_DESCRIPTION_PHOTOS) {
             getDescriptionPhotoUris(data);
+        }
+        if (resultCode == RESULT_OK && requestCode == PICK_THING_PLACE) {
+            mThingPlace = PlacePicker.getPlace(data, mContext);
         }
     }
 

@@ -10,6 +10,7 @@ android {
         versionCode 1
         versionName "1.0"
         multiDexEnabled true
+        vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -38,6 +39,7 @@ dependencies {
     compile 'com.arello-mobile:moxy-app-compat:1.4.3'
     annotationProcessor 'com.arello-mobile:moxy-compiler:1.4.3'
 
+    compile 'com.google.android.gms:play-services-places:10.0.1'
     compile 'com.google.android.gms:play-services-maps:10.0.1'
     compile 'com.google.android.gms:play-services-location:10.0.1'
     compile 'com.google.android.gms:play-services-auth:10.0.1'

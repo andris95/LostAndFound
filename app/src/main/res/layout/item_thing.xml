@@ -89,7 +89,7 @@
                     android:layout_alignParentRight="true"
                     android:layout_alignParentEnd="true"
                     android:background="@null"
-                    android:src="@drawable/chevron_down"/>
+                    card_view:srcCompat="@drawable/animated_vector_chevron"/>
             </RelativeLayout>
 
             <RelativeLayout

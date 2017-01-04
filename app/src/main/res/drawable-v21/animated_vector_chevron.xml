@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animated-vector 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:drawable="@drawable/chevron_down">
+
+    <target
+        android:animation="@animator/chevron_down_to_up"
+        android:name="path_chevron_up" />
+
+    <target
+        android:animation="@animator/chevron_up_to_down"
+        android:name="path_chevron_down" />
+</animated-vector>

@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "1074777416292-6g5kpi8ptv3pkg9djt5rov480ccj3jv7.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.sanislo.lostandfound",
+            "certificate_hash": "097D8E4CF13F33B543A28A7EFEF814D8CB1D7E62"
+          }
+        },
+        {
           "client_id": "1074777416292-6a73597ab06se6j88i8lc2pm78ttq70q.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -29,8 +37,13 @@
           "status": 1
         },
         "appinvite_service": {
-          "status": 1,
-          "other_platform_oauth_client": []
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1074777416292-6a73597ab06se6j88i8lc2pm78ttq70q.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         },
         "ads_service": {
           "status": 2

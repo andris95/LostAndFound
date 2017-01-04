@@ -18,6 +18,9 @@ import android.widget.EditText;
 import android.widget.Spinner;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.common.GooglePlayServicesRepairableException;
+import com.google.android.gms.location.places.ui.PlacePicker;
 import com.sanislo.lostandfound.presenter.AddThingPresenter;
 import com.sanislo.lostandfound.presenter.AddThingPresenterImpl;
 import com.sanislo.lostandfound.view.AddThingView;
@@ -33,10 +36,12 @@ import butterknife.OnClick;
  */
 
 public class AddThingActivity extends AppCompatActivity implements AddThingView {
-    public static final String TAG = AddThingActivity.class.getSimpleName();
-    public static final int PICK_THING_COVER_PHOTO = 111;
-    public static final int PICK_THING_DESCRIPTION_PHOTOS = 222;
-    public static final int RP_READ_EXTERNAL = 333;
+    public final String TAG = AddThingActivity.class.getSimpleName();
+    private final int PICK_THING_COVER_PHOTO = 111;
+    private final int PICK_THING_DESCRIPTION_PHOTOS = 222;
+    private final int PICK_THING_PLACE = 333;
+    private final int RP_READ_EXTERNAL = 444;
+    private final int RP_FINE_LOCATION = 555;
 
     @BindView(R.id.sp_category)
     Spinner spCategory;
@@ -127,6 +132,18 @@ public class AddThingActivity extends AppCompatActivity implements AddThingView 
         }
     }
 
+    @OnClick(R.id.btn_select_thing_place)
+    public void onClickSelectPlace() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            selectPlace();
+        } else {
+            ActivityCompat.requestPermissions(this,
+                    new String[] {Manifest.permission.ACCESS_FINE_LOCATION},
+                    RP_FINE_LOCATION);
+        }
+    }
+
     private void selectThingDescriptionPhotos() {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.setType("image/*");
@@ -149,6 +166,11 @@ public class AddThingActivity extends AppCompatActivity implements AddThingView 
                 selectThingDescriptionPhotos();
             }
         }
+        if (requestCode == RP_FINE_LOCATION) {
+            if (permissions.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                selectPlace();
+            }
+        }
     }
 
     @Override
@@ -168,5 +190,16 @@ public class AddThingActivity extends AppCompatActivity implements AddThingView 
     public void onThingAdded() {
         mProgressDialog.dismiss();
         this.finish();
+    }
+
+    private void selectPlace() {
+        try {
+            PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
+            startActivityForResult(builder.build(this), PICK_THING_PLACE);
+        } catch (GooglePlayServicesNotAvailableException e) {
+            e.printStackTrace();
+        } catch (GooglePlayServicesRepairableException e2) {
+            e2.printStackTrace();
+        }
     }
 }

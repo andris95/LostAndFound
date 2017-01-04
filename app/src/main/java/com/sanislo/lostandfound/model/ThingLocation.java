@@ -1,22 +1,38 @@
 package com.sanislo.lostandfound.model;
 
+import com.google.android.gms.maps.model.LatLng;
+
 /**
  * Created by root on 01.01.17.
  */
 
 public class ThingLocation {
     private String thingKey;
-    private String key;
-    private double lat;
-    private double lng;
+    private String address;
+
+    private double centerLat;
+    private double centerLng;
+
+    private double southWestLat;
+    private double southWestLng;
+
+    private double northEastLat;
+    private double northEastLng;
 
     public ThingLocation() {}
 
-    public ThingLocation(String thingKey, String key, double lat, double lng) {
+    public ThingLocation(String thingKey, String address,
+                         LatLng center,
+                         LatLng northEast,
+                         LatLng southWest) {
         this.thingKey = thingKey;
-        this.key = key;
-        this.lat = lat;
-        this.lng = lng;
+        this.address = address;
+        this.centerLat = center.latitude;
+        this.centerLng = center.longitude;
+        this.southWestLat = southWest.latitude;
+        this.southWestLng = southWest.longitude;
+        this.northEastLat = northEast.latitude;
+        this.northEastLng = northEast.longitude;
     }
 
     public String getThingKey() {
@@ -27,27 +43,78 @@ public class ThingLocation {
         this.thingKey = thingKey;
     }
 
-    public String getKey() {
-        return key;
+    public String getAddress() {
+        return address;
     }
 
-    public void setKey(String key) {
-        this.key = key;
+    public void setAddress(String address) {
+        this.address = address;
     }
 
-    public double getLat() {
-        return lat;
+    public double getCenterLat() {
+        return centerLat;
     }
 
-    public void setLat(double lat) {
-        this.lat = lat;
+    public void setCenterLat(double centerLat) {
+        this.centerLat = centerLat;
     }
 
-    public double getLng() {
-        return lng;
+    public double getCenterLng() {
+        return centerLng;
     }
 
-    public void setLng(double lng) {
-        this.lng = lng;
+    public void setCenterLng(double centerLng) {
+        this.centerLng = centerLng;
+    }
+
+    public double getSouthWestLat() {
+        return southWestLat;
+    }
+
+    public void setSouthWestLat(double southWestLat) {
+        this.southWestLat = southWestLat;
+    }
+
+    public double getSouthWestLng() {
+        return southWestLng;
+    }
+
+    public void setSouthWestLng(double southWestLng) {
+        this.southWestLng = southWestLng;
+    }
+
+    public double getNorthEastLat() {
+        return northEastLat;
+    }
+
+    public void setNorthEastLat(double northEastLat) {
+        this.northEastLat = northEastLat;
+    }
+
+    public double getNorthEastLng() {
+        return northEastLng;
+    }
+
+    public void setNorthEastLng(double northEastLng) {
+        this.northEastLng = northEastLng;
+    }
+
+    public LatLng getCenter() {
+        LatLng center = new LatLng(centerLat, centerLng);
+        return center;
+    }
+
+    @Override
+    public String toString() {
+        return "ThingLocation{" +
+                "thingKey='" + thingKey + '\'' +
+                ", address='" + address + '\'' +
+                ", centerLat=" + centerLat +
+                ", centerLng=" + centerLng +
+                ", southWestLat=" + southWestLat +
+                ", southWestLng=" + southWestLng +
+                ", northEastLat=" + northEastLat +
+                ", northEastLng=" + northEastLng +
+                '}';
     }
 }

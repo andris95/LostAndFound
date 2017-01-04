@@ -1,6 +1,8 @@
 package com.sanislo.lostandfound.view;
 
 import android.content.Intent;
+import android.graphics.drawable.Animatable;
+import android.graphics.drawable.Drawable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -9,6 +11,7 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -38,6 +41,7 @@ import com.sanislo.lostandfound.adapter.DescriptionPhotosAdapter;
 import com.sanislo.lostandfound.adapter.ThingAdapter;
 import com.sanislo.lostandfound.model.Comment;
 import com.sanislo.lostandfound.model.Thing;
+import com.sanislo.lostandfound.model.ThingLocation;
 import com.sanislo.lostandfound.model.User;
 import com.sanislo.lostandfound.utils.DateUtils;
 import com.sanislo.lostandfound.utils.FirebaseConstants;
@@ -86,6 +90,9 @@ public class ThingViewHolder extends RecyclerView.ViewHolder implements OnMapRea
     @BindView(R.id.map_thing_location)
     MapView mMapView;
 
+    @BindView(R.id.ib_description)
+    ImageButton ibDescription;
+
     View mRootView;
     private ThingAdapter.OnClickListener mOnClickListener;
     private boolean mIsExpanded;
@@ -127,6 +134,13 @@ public class ThingViewHolder extends RecyclerView.ViewHolder implements OnMapRea
         setDescriptionPhotos();
         setComments();
         setCommentEditorActionListener();
+        displayMap();
+    }
+
+    private void displayMap() {
+        if (!isPlaceKnown()) {
+            mMapView.setVisibility(View.GONE);
+        }
     }
 
     private void setCommentEditorActionListener() {
@@ -181,8 +195,7 @@ public class ThingViewHolder extends RecyclerView.ViewHolder implements OnMapRea
     }
 
     private void initFirebaseStorage() {
-        String bucket = "gs://lostandfound-326c3.appspot.com";
-        mStorageReference = FirebaseStorage.getInstance().getReferenceFromUrl(bucket);
+        mStorageReference = FirebaseUtils.getStorageRef();
     }
 
     private void setAuthorPhoto() {
@@ -297,20 +310,47 @@ public class ThingViewHolder extends RecyclerView.ViewHolder implements OnMapRea
     @Override
     public void onMapReady(GoogleMap googleMap) {
         Log.d(TAG, "onMapReady: ");
+        if (!isPlaceKnown()) return;
         if (mGoogleMap == null) {
             mGoogleMap = googleMap;
             MapsInitializer.initialize(mRootView.getContext());
         }
-        displayThingMarker();
+        getThingPlace();
     }
 
-    private void displayThingMarker() {
+    private boolean isPlaceKnown() {
+        return !TextUtils.isEmpty(mThing.getThingLocationKey());
+    }
+
+    private void getThingPlace() {
+        if (isPlaceKnown()) {
+            FirebaseUtils.getDatabase().getReference()
+                    .child(FirebaseConstants.THINGS_PLACE)
+                    .child(mThing.getKey())
+                    .child(mThing.getThingLocationKey())
+                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            ThingLocation thingLocation = dataSnapshot.getValue(ThingLocation.class);
+                            Log.d(TAG, "onDataChange: " + thingLocation);
+                            displayThingMarker(thingLocation);
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
+        }
+    }
+
+    private void displayThingMarker(ThingLocation thingLocation) {
         mGoogleMap.clear();
-        LatLng latLng = new LatLng(40.750580, -73.993584);
+        LatLng latLng = thingLocation.getCenter();
         MarkerOptions markerOptions = new MarkerOptions();
         markerOptions.position(latLng);
         mGoogleMap.addMarker(markerOptions);
-        Log.d(TAG, "displayThingMarker: ");
+        Log.d(TAG, "displayThingMarker: " + latLng);
         CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 10f);
         mGoogleMap.moveCamera(cameraUpdate);
     }
