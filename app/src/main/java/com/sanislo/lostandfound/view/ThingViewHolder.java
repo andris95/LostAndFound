@@ -110,6 +110,7 @@ public class ThingViewHolder extends RecyclerView.ViewHolder implements OnMapRea
         edtComment.setImeOptions(EditorInfo.IME_ACTION_DONE);
         initFirebaseStorage();
         initMapView();
+        setDescriptionArrow();
     }
 
     private void initMapView() {
@@ -134,7 +135,6 @@ public class ThingViewHolder extends RecyclerView.ViewHolder implements OnMapRea
         setComments();
         setCommentEditorActionListener();
         displayMap();
-        setDescriptionArrow();
     }
 
     private void displayMap() {
