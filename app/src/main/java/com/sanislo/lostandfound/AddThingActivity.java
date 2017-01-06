@@ -7,7 +7,6 @@ import android.graphics.drawable.AnimatedVectorDrawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.graphics.drawable.AnimatedVectorDrawableCompat;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -43,7 +42,8 @@ public class AddThingActivity extends AppCompatActivity implements AddThingView 
     private final int PICK_THING_COVER_PHOTO = 111;
     private final int PICK_THING_DESCRIPTION_PHOTOS = 222;
     private final int PICK_THING_PLACE = 333;
-    private final int RP_READ_EXTERNAL = 444;
+    private final int RP_READ_EXTERNAL_FOR_COVER = 666;
+    private final int RP_READ_EXTERNAL_FOR_DESCRIPTION_PHOTOS = 444;
     private final int RP_FINE_LOCATION = 555;
 
     @BindView(R.id.sp_category)
@@ -127,7 +127,14 @@ public class AddThingActivity extends AppCompatActivity implements AddThingView 
 
     @OnClick(R.id.btn_select_thing_cover_photo)
     public void onClickSelectThingPhoto() {
-        selectThingCoverPhoto();
+        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_EXTERNAL_STORAGE)
+                == PackageManager.PERMISSION_GRANTED) {
+            selectThingCoverPhoto();
+        } else {
+            ActivityCompat.requestPermissions(this,
+                    new String[] {Manifest.permission.READ_EXTERNAL_STORAGE},
+                    RP_READ_EXTERNAL_FOR_COVER);
+        }
     }
 
     private void selectThingCoverPhoto() {
@@ -146,7 +153,7 @@ public class AddThingActivity extends AppCompatActivity implements AddThingView 
         } else {
             ActivityCompat.requestPermissions(this,
                     new String[] {Manifest.permission.READ_EXTERNAL_STORAGE},
-                    RP_READ_EXTERNAL);
+                    RP_READ_EXTERNAL_FOR_DESCRIPTION_PHOTOS);
         }
     }
 
@@ -179,9 +186,14 @@ public class AddThingActivity extends AppCompatActivity implements AddThingView 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == RP_READ_EXTERNAL) {
+        if (requestCode == RP_READ_EXTERNAL_FOR_DESCRIPTION_PHOTOS) {
             if (permissions.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 selectThingDescriptionPhotos();
+            }
+        }
+        if (requestCode == RP_READ_EXTERNAL_FOR_COVER) {
+            if (permissions.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                selectThingCoverPhoto();
             }
         }
         if (requestCode == RP_FINE_LOCATION) {

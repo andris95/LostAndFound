@@ -51,7 +51,7 @@ public class ThingsActivity extends BaseActivity implements ThingsView {
             boolean isExpaned = (position == mThingAdapter.getExpandedPosition());
             int expandedPosition = isExpaned ? RecyclerView.NO_POSITION : position;
             mThingAdapter.setExpandedPosition(expandedPosition);
-            TransitionManager.beginDelayedTransition(rvThings);
+            //TransitionManager.beginDelayedTransition(rvThings);
             mThingAdapter.notifyDataSetChanged();
         }
     };

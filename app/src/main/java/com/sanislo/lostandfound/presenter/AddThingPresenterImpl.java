@@ -132,13 +132,11 @@ public class AddThingPresenterImpl implements AddThingPresenter {
     }
 
     private void configureThingPlace() {
+        Log.d(TAG, "configureThingPlace: " + mThingPlace);
         if (mThingPlace != null) {
             mThingLocation = new ThingLocation(
                     mThingKey,
-                    mThingPlace.getAddress().toString(),
-                    mThingPlace.getLatLng(),
-                    mThingPlace.getViewport().northeast,
-                    mThingPlace.getViewport().southwest);
+                    mThingPlace);
         }
     }
 
@@ -285,6 +283,7 @@ public class AddThingPresenterImpl implements AddThingPresenter {
         }
         if (resultCode == RESULT_OK && requestCode == PICK_THING_PLACE) {
             mThingPlace = PlacePicker.getPlace(data, mContext);
+            Log.d(TAG, "onActivityResult: " + mThingPlace);
         }
     }
 

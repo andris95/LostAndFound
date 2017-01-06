@@ -1,5 +1,6 @@
 package com.sanislo.lostandfound.model;
 
+import com.google.android.gms.location.places.Place;
 import com.google.android.gms.maps.model.LatLng;
 
 /**
@@ -33,6 +34,20 @@ public class ThingLocation {
         this.southWestLng = southWest.longitude;
         this.northEastLat = northEast.latitude;
         this.northEastLng = northEast.longitude;
+    }
+
+    public ThingLocation(String thingKey,
+                         Place place) {
+        this.thingKey = thingKey;
+        this.address = place.getAddress().toString();
+        this.centerLat = place.getLatLng().latitude;
+        this.centerLng = place.getLatLng().longitude;
+        if (place.getViewport() != null) {
+            setNorthEastLat(place.getViewport().northeast.latitude);
+            setNorthEastLng(place.getViewport().northeast.longitude);
+            setSouthWestLat(place.getViewport().southwest.latitude);
+            setSouthWestLng(place.getViewport().southwest.longitude);
+        }
     }
 
     public String getThingKey() {
@@ -97,11 +112,6 @@ public class ThingLocation {
 
     public void setNorthEastLng(double northEastLng) {
         this.northEastLng = northEastLng;
-    }
-
-    public LatLng getCenter() {
-        LatLng center = new LatLng(centerLat, centerLng);
-        return center;
     }
 
     @Override

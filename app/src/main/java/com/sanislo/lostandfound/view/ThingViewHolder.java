@@ -1,8 +1,7 @@
 package com.sanislo.lostandfound.view;
 
 import android.content.Intent;
-import android.graphics.drawable.Animatable;
-import android.graphics.drawable.Drawable;
+import android.graphics.drawable.AnimatedVectorDrawable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -33,7 +32,6 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.sanislo.lostandfound.R;
 import com.sanislo.lostandfound.adapter.CommentsAdapter;
@@ -93,6 +91,7 @@ public class ThingViewHolder extends RecyclerView.ViewHolder implements OnMapRea
     @BindView(R.id.ib_description)
     ImageButton ibDescription;
 
+    private AnimatedVectorDrawable mChevronVectorDrawable;
     View mRootView;
     private ThingAdapter.OnClickListener mOnClickListener;
     private boolean mIsExpanded;
@@ -135,6 +134,7 @@ public class ThingViewHolder extends RecyclerView.ViewHolder implements OnMapRea
         setComments();
         setCommentEditorActionListener();
         displayMap();
+        setDescriptionArrow();
     }
 
     private void displayMap() {
@@ -285,6 +285,15 @@ public class ThingViewHolder extends RecyclerView.ViewHolder implements OnMapRea
         mIsExpanded = isExpanded;
     }
 
+    private void setDescriptionArrow() {
+        mChevronVectorDrawable = mIsExpanded ?
+                (AnimatedVectorDrawable) mRootView.getContext()
+                .getDrawable(R.drawable.animated_vector_chevron_up)
+                : (AnimatedVectorDrawable) mRootView.getContext()
+                .getDrawable(R.drawable.animated_vector_chevron_down);
+        ibDescription.setImageDrawable(mChevronVectorDrawable);
+    }
+
     private void setDescriptionVisibility() {
         if (mIsExpanded) {
             rlDescription.setVisibility(View.VISIBLE);
@@ -297,6 +306,13 @@ public class ThingViewHolder extends RecyclerView.ViewHolder implements OnMapRea
     public void onClickDescription() {
         if (mOnClickListener != null) {
             mOnClickListener.onClickDescription(mPosition);
+            mChevronVectorDrawable = mIsExpanded ?
+                    (AnimatedVectorDrawable) mRootView.getContext()
+                            .getDrawable(R.drawable.animated_vector_chevron_up)
+                    : (AnimatedVectorDrawable) mRootView.getContext()
+                    .getDrawable(R.drawable.animated_vector_chevron_down);
+            ibDescription.setImageDrawable(mChevronVectorDrawable);
+            mChevronVectorDrawable.start();
         }
     }
 
@@ -315,38 +331,42 @@ public class ThingViewHolder extends RecyclerView.ViewHolder implements OnMapRea
             mGoogleMap = googleMap;
             MapsInitializer.initialize(mRootView.getContext());
         }
-        getThingPlace();
+        checkThingPlace();
     }
 
     private boolean isPlaceKnown() {
         return !TextUtils.isEmpty(mThing.getThingLocationKey());
     }
 
-    private void getThingPlace() {
+    private void checkThingPlace() {
         if (isPlaceKnown()) {
-            FirebaseUtils.getDatabase().getReference()
-                    .child(FirebaseConstants.THINGS_PLACE)
-                    .child(mThing.getKey())
-                    .child(mThing.getThingLocationKey())
-                    .addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-                            ThingLocation thingLocation = dataSnapshot.getValue(ThingLocation.class);
-                            Log.d(TAG, "onDataChange: " + thingLocation);
-                            displayThingMarker(thingLocation);
-                        }
-
-                        @Override
-                        public void onCancelled(DatabaseError databaseError) {
-
-                        }
-                    });
+            getThingPlace();
         }
+    }
+
+    private void getThingPlace() {
+        FirebaseUtils.getDatabase().getReference()
+                .child(FirebaseConstants.THINGS_PLACE)
+                .child(mThing.getKey())
+                .child(mThing.getThingLocationKey())
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        ThingLocation thingLocation = dataSnapshot.getValue(ThingLocation.class);
+                        Log.d(TAG, "onDataChange: " + thingLocation);
+                        displayThingMarker(thingLocation);
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
     }
 
     private void displayThingMarker(ThingLocation thingLocation) {
         mGoogleMap.clear();
-        LatLng latLng = thingLocation.getCenter();
+        LatLng latLng = new LatLng(thingLocation.getCenterLat(), thingLocation.getCenterLng());
         MarkerOptions markerOptions = new MarkerOptions();
         markerOptions.position(latLng);
         mGoogleMap.addMarker(markerOptions);
