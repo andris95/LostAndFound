@@ -16,6 +16,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
@@ -76,6 +77,14 @@ public class AddThingActivity extends AppCompatActivity implements AddThingView 
 
         mPresenter = new AddThingPresenterImpl(this);
         initCategories();
+        displayNotificationText();
+    }
+
+    private void displayNotificationText() {
+        if (getIntent().getExtras().containsKey("NOTIFICATION_TEXT")) {
+            String notificationText = getIntent().getStringExtra("NOTIFICATION_TEXT");
+            Toast.makeText(this, notificationText, Toast.LENGTH_LONG).show();
+        }
     }
 
     private void initCategories() {

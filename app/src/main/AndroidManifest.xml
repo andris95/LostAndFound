@@ -28,6 +28,19 @@
         <activity android:name=".AddThingActivity" />
         <activity android:name=".view.DescriptionPhotosActivity" />
 
+        <service
+            android:name=".notifications.LostAndFoundMessagingService">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+            </intent-filter>
+        </service>
+        <service
+            android:name=".notifications.TokenChangeListenerService">
+            <intent-filter>
+                <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
+            </intent-filter>
+        </service>
+
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyDzTcBPeBMGRKHynuMkZx0VrSmnT-40Qgc"/>
