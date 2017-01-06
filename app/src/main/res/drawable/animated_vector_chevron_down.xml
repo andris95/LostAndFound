@@ -2,5 +2,7 @@
 <animated-vector
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:drawable="@drawable/chevron_down">
-
+    <target
+        android:name="chevron_down"
+        android:animation="@animator/anim_chevron_up"/>
 </animated-vector>

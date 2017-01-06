@@ -1,0 +1,8 @@
+<!-- drawable/chevron-down.xml -->
+<animated-vector
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:drawable="@drawable/chevron_up">
+    <target
+        android:name="chevron_up"
+        android:animation="@animator/anim_chevron_down"/>
+</animated-vector>

@@ -1,12 +1,13 @@
 package com.sanislo.lostandfound;
 
-import android.*;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.AnimatedVectorDrawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.graphics.drawable.AnimatedVectorDrawableCompat;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -15,6 +16,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -53,9 +55,14 @@ public class AddThingActivity extends AppCompatActivity implements AddThingView 
     @BindView(R.id.edt_thing_description)
     EditText edtDescription;
 
+    @BindView(R.id.iv_vector)
+    ImageView ivVector;
+
     private AddThingPresenter mPresenter;
     private ArrayAdapter<String> mCategoriesAdapter;
     private MaterialDialog mProgressDialog;
+    private AnimatedVectorDrawable mChevronVectorDrawable;
+    private boolean mIsExpanded;
 
     private AdapterView.OnItemSelectedListener mCategorySelectedListener = new AdapterView.OnItemSelectedListener() {
         @Override
@@ -78,10 +85,12 @@ public class AddThingActivity extends AppCompatActivity implements AddThingView 
         mPresenter = new AddThingPresenterImpl(this);
         initCategories();
         displayNotificationText();
+        setVector();
     }
 
     private void displayNotificationText() {
-        if (getIntent().getExtras().containsKey("NOTIFICATION_TEXT")) {
+        Bundle extras = getIntent().getExtras();
+        if (extras != null && extras.containsKey("NOTIFICATION_TEXT")) {
             String notificationText = getIntent().getStringExtra("NOTIFICATION_TEXT");
             Toast.makeText(this, notificationText, Toast.LENGTH_LONG).show();
         }
@@ -210,5 +219,25 @@ public class AddThingActivity extends AppCompatActivity implements AddThingView 
         } catch (GooglePlayServicesRepairableException e2) {
             e2.printStackTrace();
         }
+    }
+
+    private void setVector() {
+        mChevronVectorDrawable = (AnimatedVectorDrawable) getResources()
+                .getDrawable(R.drawable.animated_vector_chevron_up);
+        ivVector.setImageDrawable(mChevronVectorDrawable);
+    }
+
+    @OnClick(R.id.iv_vector)
+    public void onClickVector() {
+        mChevronVectorDrawable = !mIsExpanded ?
+                (AnimatedVectorDrawable) getResources()
+                .getDrawable(R.drawable.animated_vector_chevron_up)
+                :
+                (AnimatedVectorDrawable) getResources()
+                        .getDrawable(R.drawable.animated_vector_chevron_down);
+        ivVector.setImageDrawable(mChevronVectorDrawable);
+        mChevronVectorDrawable.start();
+        mIsExpanded = !mIsExpanded;
+        Log.d(TAG, "onClickVector: " + mIsExpanded);
     }
 }

@@ -88,8 +88,7 @@
                     android:layout_height="@dimen/action_size"
                     android:layout_alignParentRight="true"
                     android:layout_alignParentEnd="true"
-                    android:background="@null"
-                    card_view:srcCompat="@drawable/animated_vector_chevron"/>
+                    android:background="@null"/>
             </RelativeLayout>
 
             <RelativeLayout
