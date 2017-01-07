@@ -44,6 +44,8 @@ public class ThingsActivity extends BaseActivity implements ThingsView {
     private FirebaseAuth mFirebaseAuth;
     private Query mThingQuery;
     private ThingAdapter mThingAdapter;
+
+    private boolean mIsDescriptionPhotosActivityStarted;
     private Bundle mTmpReenterState;
 
     @InjectPresenter
