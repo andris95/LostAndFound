@@ -2,12 +2,14 @@ package com.sanislo.lostandfound.view;
 
 import android.content.Intent;
 import android.graphics.drawable.AnimatedVectorDrawable;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -33,6 +35,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.StorageReference;
+import com.sanislo.lostandfound.DescriptionPhotosActivity;
 import com.sanislo.lostandfound.R;
 import com.sanislo.lostandfound.adapter.CommentsAdapter;
 import com.sanislo.lostandfound.adapter.DescriptionPhotosAdapter;
@@ -55,7 +58,8 @@ import butterknife.OnClick;
  * Created by root on 25.12.16.
  */
 
-public class ThingViewHolder extends RecyclerView.ViewHolder implements OnMapReadyCallback {
+public class ThingViewHolder extends RecyclerView.ViewHolder implements OnMapReadyCallback,
+        ThingAdapter.ScrollListener {
     public final String TAG = ThingViewHolder.class.getSimpleName();
 
     @BindView(R.id.iv_thing_author_avatar)
@@ -107,7 +111,6 @@ public class ThingViewHolder extends RecyclerView.ViewHolder implements OnMapRea
         super(itemView);
         mRootView = itemView;
         ButterKnife.bind(this, mRootView);
-        edtComment.setImeOptions(EditorInfo.IME_ACTION_DONE);
         initFirebaseStorage();
         initMapView();
         setDescriptionArrow();
@@ -241,8 +244,8 @@ public class ThingViewHolder extends RecyclerView.ViewHolder implements OnMapRea
             mDescriptionPhotosAdapter = new DescriptionPhotosAdapter(descriptionPhotos);
             mDescriptionPhotosAdapter.setOnClickListener(new DescriptionPhotosAdapter.OnClickListener() {
                 @Override
-                public void onClickPhoto(int position) {
-                    launchDescriptionPhotosActivity(position);
+                public void onClickPhoto(View view, int position) {
+                    launchDescriptionPhotosActivity(view, position);
                 }
             });
             LinearLayoutManager layoutManager = new LinearLayoutManager(mRootView.getContext(),
@@ -255,11 +258,8 @@ public class ThingViewHolder extends RecyclerView.ViewHolder implements OnMapRea
         }
     }
 
-    private void launchDescriptionPhotosActivity(int position) {
-        Intent intent = new Intent(mRootView.getContext(), DescriptionPhotosActivity.class);
-        intent.putExtra("THING_KEY", mThing.getKey());
-        intent.putExtra("POSITION", position);
-        mRootView.getContext().startActivity(intent);
+    private void launchDescriptionPhotosActivity(View view, int position) {
+        mOnClickListener.onClickDescriptionPhoto(view, position, mThing.getKey());
     }
 
     private void setComments() {
@@ -373,5 +373,28 @@ public class ThingViewHolder extends RecyclerView.ViewHolder implements OnMapRea
         Log.d(TAG, "displayThingMarker: " + latLng);
         CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 10f);
         mGoogleMap.moveCamera(cameraUpdate);
+    }
+
+    @Override
+    public void scrollToPosition(int position) {
+        rvDescriptionPhotos.scrollToPosition(position);
+    }
+
+    public void scrollToPositionPublic(int position) {
+        rvDescriptionPhotos.scrollToPosition(position);
+        rvDescriptionPhotos.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+            @Override
+            public boolean onPreDraw() {
+                rvDescriptionPhotos.getViewTreeObserver().removeOnPreDrawListener(this);
+                // TODO: figure out why it is necessary to request layout here in order to get a smooth transition.
+                rvDescriptionPhotos.requestLayout();
+                mOnClickListener.onScrolledDescriptionList();
+                return true;
+            }
+        });
+    }
+
+    public View getSharedView(int position) {
+        return mDescriptionPhotosAdapter.getSharedView(position);
     }
 }

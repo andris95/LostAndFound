@@ -26,7 +26,7 @@
         <activity android:name=".authentication.SignupActivity" />
         <activity android:name=".ThingsActivity" />
         <activity android:name=".AddThingActivity" />
-        <activity android:name=".view.DescriptionPhotosActivity" />
+        <activity android:name=".DescriptionPhotosActivity" />
 
         <service
             android:name=".notifications.LostAndFoundMessagingService">

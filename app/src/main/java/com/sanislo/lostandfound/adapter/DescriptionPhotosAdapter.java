@@ -17,6 +17,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.sanislo.lostandfound.R;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -29,12 +30,14 @@ import butterknife.OnClick;
 
 public class DescriptionPhotosAdapter extends RecyclerView.Adapter<DescriptionPhotosAdapter.DescriptionPhotoViewHolder> {
     public final String TAG = DescriptionPhotoViewHolder.class.getSimpleName();
+    private ArrayList<DescriptionPhotosAdapter.DescriptionPhotoViewHolder> mDescriptionPhotoViewHolders;
     private List<String> mDescriptionPhotos;
     private StorageReference mStorageReference;
     private OnClickListener mOnClickListener;
 
     public DescriptionPhotosAdapter(List<String> descriptionPhotos) {
         mDescriptionPhotos = descriptionPhotos;
+        mDescriptionPhotoViewHolders = new ArrayList<>();
         initFirebaseStorage();
     }
 
@@ -49,6 +52,7 @@ public class DescriptionPhotosAdapter extends RecyclerView.Adapter<DescriptionPh
         LayoutInflater inflater = LayoutInflater.from(context);
         View contactView = inflater.inflate(R.layout.item_description_photo, parent, false);
         DescriptionPhotoViewHolder viewHolder = new DescriptionPhotoViewHolder(contactView);
+        mDescriptionPhotoViewHolders.add(viewHolder);
         return viewHolder;
     }
 
@@ -64,12 +68,16 @@ public class DescriptionPhotosAdapter extends RecyclerView.Adapter<DescriptionPh
         return mDescriptionPhotos.size();
     }
 
+    public View getSharedView(int position) {
+        return mDescriptionPhotoViewHolders.get(position).getSharedView();
+    }
+
     public void setOnClickListener(OnClickListener onClickListener) {
         mOnClickListener = onClickListener;
     }
 
     public interface OnClickListener {
-        void onClickPhoto(int position);
+        void onClickPhoto(View view, int position);
     }
 
     class DescriptionPhotoViewHolder extends RecyclerView.ViewHolder {
@@ -92,6 +100,8 @@ public class DescriptionPhotosAdapter extends RecyclerView.Adapter<DescriptionPh
 
         public void bind(String photoPath, int position) {
             mPosition = position;
+            ivDescriptionPhoto.setTransitionName(itemView.getContext()
+                    .getString(R.string.transition_description_photo) + "_" + mPosition);
             StorageReference reference = mStorageReference.child(photoPath);
             Glide.with(mRootView.getContext())
                     .using(new FirebaseImageLoader())
@@ -115,8 +125,12 @@ public class DescriptionPhotosAdapter extends RecyclerView.Adapter<DescriptionPh
         @OnClick(R.id.iv_description_photo)
         public void onClickDescriptionPhoto() {
             if (mOnClickListener != null) {
-                mOnClickListener.onClickPhoto(mPosition);
+                mOnClickListener.onClickPhoto(ivDescriptionPhoto, mPosition);
             }
+        }
+
+        public View getSharedView() {
+            return ivDescriptionPhoto;
         }
     }
 }

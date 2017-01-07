@@ -8,12 +8,11 @@ import android.os.Handler;
  */
 
 public class AVDWrapper {
-
     private Handler mHandler;
     private Animatable mDrawable;
     private Callback mCallback;
-    private Runnable mAnimationDoneRunnable = new Runnable() {
 
+    private Runnable mAnimationDoneRunnable = new Runnable() {
         @Override
         public void run() {
             if (mCallback != null)
