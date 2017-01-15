@@ -49,6 +49,7 @@ public class DescriptionPhotosActivity extends BaseActivity {
         public void onMapSharedElements(List<String> names, Map<String, View> sharedElements) {
             if (mIsReturning) {
                 ImageView sharedElement = mFragmentDescriptionPhoto.getDescriptionImageView();
+                Log.d(TAG, "onMapSharedElements: sharedElement: " + (sharedElement == null));
                 if (sharedElement == null) {
                     // If shared element is null, then it has been scrolled off screen and
                     // no longer visible. In this case we cancel the shared element transition by

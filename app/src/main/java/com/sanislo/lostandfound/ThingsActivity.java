@@ -62,6 +62,7 @@ public class ThingsActivity extends BaseActivity implements ThingsView {
                     // different page in the DetailsActivity. We must update the shared element
                     // so that the correct one falls into place.
                     View newSharedElement = mThingAdapter.getSharedView(currentPosition);
+                    Log.d(TAG, "onMapSharedElements: newSharedElement: " + (newSharedElement == null));
                     if (newSharedElement != null) {
                         names.clear();
                         names.add(newSharedElement.getTransitionName());

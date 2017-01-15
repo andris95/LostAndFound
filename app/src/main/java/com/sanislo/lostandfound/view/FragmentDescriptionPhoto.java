@@ -51,7 +51,8 @@ public class FragmentDescriptionPhoto extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_description_photo, container, false);
         ButterKnife.bind(this, view);
-        ivDescriptionPhoto.setTransitionName(getString(R.string.transition_description_photo) + "_" + mPosition);
+        ivDescriptionPhoto.setTransitionName(getString(R.string.transition_description_photo)
+                + "_" + mPosition);
         displayDescriptionPhoto();
         return view;
     }
@@ -105,9 +106,10 @@ public class FragmentDescriptionPhoto extends Fragment {
     /**
      * Returns true if {@param view} is contained within {@param container}'s bounds.
      */
-    private static boolean isViewInBounds(@NonNull View container, @NonNull View view) {
+    private boolean isViewInBounds(@NonNull View container, @NonNull View view) {
         Rect containerBounds = new Rect();
         container.getHitRect(containerBounds);
+        Log.d(TAG, "isViewInBounds: " + view.getLocalVisibleRect(containerBounds));
         return view.getLocalVisibleRect(containerBounds);
     }
 }
