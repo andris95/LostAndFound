@@ -2,12 +2,14 @@ package com.sanislo.lostandfound;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 
 import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.google.firebase.auth.FirebaseAuth;
@@ -44,14 +46,19 @@ public class ThingsActivity extends BaseActivity implements ThingsView {
         @Override
         public void onClickRootView(View view, String thingKey) {
             Intent intent = new Intent(ThingsActivity.this, ThingDetailsActivity.class);
+            ActivityOptionsCompat options = ActivityOptionsCompat.
+                    makeSceneTransitionAnimation(ThingsActivity.this,
+                            view.findViewById(R.id.iv_thing_photo),
+                            getString(R.string.transition_description_photo));
             intent.putExtra(ThingDetailsActivity.EXTRA_THING_PATH, thingKey);
-            startActivity(intent);
+            startActivity(intent, options.toBundle());
         }
     };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getWindow().requestFeature(Window.FEATURE_CONTENT_TRANSITIONS);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
         mThingsPresenter = new ThingsPresenter();

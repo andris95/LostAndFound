@@ -5,6 +5,7 @@ import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -60,6 +61,7 @@ public class ThingViewHolder extends RecyclerView.ViewHolder {
         super(itemView);
         mRootView = itemView;
         ButterKnife.bind(this, mRootView);
+        ivThingPhoto.setTransitionName(mRootView.getContext().getString(R.string.transition_description_photo));
         initFirebaseStorage();
     }
 

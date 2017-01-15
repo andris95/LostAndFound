@@ -47,6 +47,7 @@ Thank you</string>
     <string name="path_chevron_up">M7.41,15.41L12,10.83L16.59,15.41L18,14L12,8L6,14L7.41,15.41Z</string>
 
     <string name="transition_description_photo">transition_description_photo</string>
+    <string name="transition_description_text">transition_description_text</string>
 
     <string name="google_web_client_id">1074777416292-6a73597ab06se6j88i8lc2pm78ttq70q.apps.googleusercontent.com</string>
 </resources>

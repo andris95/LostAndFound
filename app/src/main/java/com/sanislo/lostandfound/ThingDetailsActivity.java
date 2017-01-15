@@ -11,6 +11,8 @@ import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewTreeObserver;
+import android.view.Window;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -105,10 +107,13 @@ public class ThingDetailsActivity extends BaseActivity implements ThingDetailsVi
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getWindow().requestFeature(Window.FEATURE_CONTENT_TRANSITIONS);
         setContentView(R.layout.activity_thing_details);
+        postponeEnterTransition();
         ButterKnife.bind(this);
         fetchIntentExtras();
         initFirebase();
+        ivThingPhoto.setTransitionName(getString(R.string.transition_description_photo));
         mThingDetailsPresenter = new ThingDetailsPresenterImpl(this, mThingPath);
     }
 
@@ -144,19 +149,22 @@ public class ThingDetailsActivity extends BaseActivity implements ThingDetailsVi
         setThingPhoto();
         setDescriptionPhotos();
         setComments();
-        
-        Log.d(TAG, "onThingLoaded: " + hasLocation());
-        if (hasLocation() && mGoogleMap == null) {
-            initMapView();
-        } else {
-            hideMapView();
-        }
+        setMap();
         Log.d(TAG, "onThingLoaded: " + thing);
     }
 
     /** check if thing has location */
     private boolean hasLocation() {
         return !TextUtils.isEmpty(mThing.getThingLocationKey());
+    }
+
+    private void setMap() {
+        Log.d(TAG, "onThingLoaded: " + hasLocation());
+        if (hasLocation() && mGoogleMap == null) {
+            initMapView();
+        } else {
+            hideMapView();
+        }
     }
 
     @Override
@@ -238,6 +246,18 @@ public class ThingDetailsActivity extends BaseActivity implements ThingDetailsVi
         Glide.with(ThingDetailsActivity.this)
                 .using(new FirebaseImageLoader())
                 .load(thingPhotoRef)
+                .listener(new RequestListener<StorageReference, GlideDrawable>() {
+                    @Override
+                    public boolean onException(Exception e, StorageReference model, Target<GlideDrawable> target, boolean isFirstResource) {
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onResourceReady(GlideDrawable resource, StorageReference model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                        scheduleStartPostponedTransition(ivThingPhoto);
+                        return false;
+                    }
+                })
                 .into(ivThingPhoto);
     }
 
@@ -319,5 +339,32 @@ public class ThingDetailsActivity extends BaseActivity implements ThingDetailsVi
     @OnClick(R.id.btn_send_comment)
     public void onClickAddComment() {
         mThingDetailsPresenter.addComment(mThing, edtComment.getText().toString());
+    }
+
+    /**
+     * Schedules the shared element transition to be started immediately
+     * after the shared element has been measured and laid out within the
+     * activity's view hierarchy. Some common places where it might make
+     * sense to call this method are:
+     *
+     * (1) Inside a Fragment's onCreateView() method (if the shared element
+     *     lives inside a Fragment hosted by the called Activity).
+     *
+     * (2) Inside a Picasso Callback object (if you need to wait for Picasso to
+     *     asynchronously load/scale a bitmap before the transition can begin).
+     *
+     * (3) Inside a LoaderCallback's onLoadFinished() method (if the shared
+     *     element depends on data queried by a Loader).
+     */
+    private void scheduleStartPostponedTransition(final View sharedElement) {
+        sharedElement.getViewTreeObserver().addOnPreDrawListener(
+                new ViewTreeObserver.OnPreDrawListener() {
+                    @Override
+                    public boolean onPreDraw() {
+                        sharedElement.getViewTreeObserver().removeOnPreDrawListener(this);
+                        startPostponedEnterTransition();
+                        return true;
+                    }
+                });
     }
 }
