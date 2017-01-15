@@ -25,6 +25,7 @@
         </activity>
         <activity android:name=".authentication.SignupActivity" />
         <activity android:name=".ThingsActivity" />
+        <activity android:name=".ThingDetailsActivity" />
         <activity android:name=".AddThingActivity" />
         <activity android:name=".DescriptionPhotosActivity" />
 

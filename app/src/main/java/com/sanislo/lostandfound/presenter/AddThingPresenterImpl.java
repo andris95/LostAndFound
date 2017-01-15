@@ -10,25 +10,21 @@ import android.widget.Toast;
 
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlacePicker;
-import com.google.android.gms.maps.model.LatLngBounds;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.sanislo.lostandfound.AddThingActivity;
 import com.sanislo.lostandfound.model.Thing;
 import com.sanislo.lostandfound.model.ThingLocation;
+import com.sanislo.lostandfound.model.User;
 import com.sanislo.lostandfound.utils.FileUtils;
 import com.sanislo.lostandfound.utils.FirebaseConstants;
 import com.sanislo.lostandfound.utils.FirebaseUtils;
@@ -56,12 +52,15 @@ public class AddThingPresenterImpl implements AddThingPresenter {
 
     private Context mContext;
     private AddThingView mView;
+
+    private User mUser;
     private FirebaseUser mFirebaseUser;
     private DatabaseReference mDatabaseReference;
     private StorageReference mStorageReference;
     private Thing.Builder mThingBuilder;
     private String mThingKey;
     private int mCategory;
+
     private Place mThingPlace;
     private ThingLocation mThingLocation;
 
@@ -70,6 +69,19 @@ public class AddThingPresenterImpl implements AddThingPresenter {
     private long mBytesTransferred = 0;
     private LinkedList<Uri> mDescriptionPhotoUris;
     private List<String> mDescriptionPhotoPaths = new ArrayList<>();
+
+    private ValueEventListener mUserListener = new ValueEventListener() {
+        @Override
+        public void onDataChange(DataSnapshot dataSnapshot) {
+            mUser = dataSnapshot.getValue(User.class);
+            Log.d(TAG, "onDataChange: " + mUser);
+        }
+
+        @Override
+        public void onCancelled(DatabaseError databaseError) {
+
+        }
+    };
 
     public AddThingPresenterImpl(AddThingActivity context) {
         mContext = context;
@@ -115,6 +127,20 @@ public class AddThingPresenterImpl implements AddThingPresenter {
     }
 
     @Override
+    public void onResume() {
+        mDatabaseReference.child(FirebaseConstants.USERS)
+                .child(mFirebaseUser.getUid())
+                .addValueEventListener(mUserListener);
+    }
+
+    @Override
+    public void onPause() {
+        mDatabaseReference.child(FirebaseConstants.USERS)
+                .child(mFirebaseUser.getUid())
+                .removeEventListener(mUserListener);
+    }
+
+    @Override
     public void addThing(String title, String description) {
         configureThing(title, description);
         startThingDataUpload();
@@ -132,7 +158,6 @@ public class AddThingPresenterImpl implements AddThingPresenter {
     }
 
     private void configureThingPlace() {
-        Log.d(TAG, "configureThingPlace: " + mThingPlace);
         if (mThingPlace != null) {
             mThingLocation = new ThingLocation(
                     mThingKey,
@@ -214,6 +239,9 @@ public class AddThingPresenterImpl implements AddThingPresenter {
     }
 
     private void setNewThingValue() {
+        mThingBuilder.setUserName(mUser.getFullName());
+        mThingBuilder.setUserAvatar(mUser.getAvatarURL());
+        Log.d(TAG, "setNewThingValue: " + mUser.getAvatarURL() + " / " + mUser.getFullName());
         Thing thing = mThingBuilder.build();
         DatabaseReference newThingReference = mDatabaseReference
                 .child(FirebaseConstants.THINGS)

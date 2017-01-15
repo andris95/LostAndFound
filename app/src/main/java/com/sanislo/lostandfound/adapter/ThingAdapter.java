@@ -19,10 +19,7 @@ import java.util.ArrayList;
  */
 
 public class ThingAdapter extends FirebaseRecyclerAdapter<Thing, ThingViewHolder> {
-    private int mExpandedPosition = RecyclerView.NO_POSITION;
-    private ArrayList<ThingViewHolder> mThingViewHolders;
     private OnClickListener mOnClickListener;
-    private ScrollListener mScrollListener;
 
     /**
      * @param modelClass      Firebase will marshall the data at a location into an instance of a class that you provide
@@ -34,52 +31,26 @@ public class ThingAdapter extends FirebaseRecyclerAdapter<Thing, ThingViewHolder
      */
     public ThingAdapter(Class<Thing> modelClass, int modelLayout, Class<ThingViewHolder> viewHolderClass, Query ref) {
         super(modelClass, modelLayout, viewHolderClass, ref);
-        mThingViewHolders = new ArrayList<>();
     }
 
     public void setOnClickListener(OnClickListener onClickListener) {
         mOnClickListener = onClickListener;
     }
 
-    public int getExpandedPosition() {
-        return mExpandedPosition;
-    }
-
-    public void setExpandedPosition(int expandedPosition) {
-        mExpandedPosition = expandedPosition;
-    }
-
-    public void scrollDescriptionPhotosList(int positionToScroll) {
-        mThingViewHolders.get(getExpandedPosition()).scrollToPositionPublic(positionToScroll);
-    }
-
-    public View getSharedView(int position) {
-        return mThingViewHolders.get(getExpandedPosition()).getSharedView(position);
-    }
-
     @Override
     public ThingViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(viewType, parent, false);
         ThingViewHolder viewHolder = new ThingViewHolder(view);
-        mThingViewHolders.add(viewHolder);
         return viewHolder;
     }
 
     @Override
     protected void populateViewHolder(ThingViewHolder viewHolder, Thing model, int position) {
-        viewHolder.setIsExpanded(position == mExpandedPosition);
         viewHolder.setOnClickListener(mOnClickListener);
-        viewHolder.populate(model, position);
-    }
-
-    public interface ScrollListener {
-        void scrollToPosition(int position);
+        viewHolder.populate(model);
     }
 
     public interface OnClickListener {
-        void onClickAddComment(Thing thing, String text);
-        void onClickDescription(int position);
-        void onClickDescriptionPhoto(View view, int position, String thingKey);
-        void onScrolledDescriptionList();
+        void onClickRootView(View view, String thingKey);
     }
 }

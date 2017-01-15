@@ -11,6 +11,8 @@ public class Thing {
     private int type;
     private int category;
     private String userUID;
+    private String userAvatar;
+    private String userName;
     private String title;
     private String description;
     private String photo;
@@ -21,11 +23,13 @@ public class Thing {
 
     public Thing() {}
 
-    public Thing(String key, int type, int category, String userUID, String title, String description, String photo, List<String> descriptionPhotos, int commentCount, String thingLocationKey, long timestamp) {
+    public Thing(String key, int type, int category, String userUID, String userAvatar, String userName, String title, String description, String photo, List<String> descriptionPhotos, int commentCount, String thingLocationKey, long timestamp) {
         this.key = key;
         this.type = type;
         this.category = category;
         this.userUID = userUID;
+        this.userAvatar = userAvatar;
+        this.userName = userName;
         this.title = title;
         this.description = description;
         this.photo = photo;
@@ -33,6 +37,22 @@ public class Thing {
         this.commentCount = commentCount;
         this.thingLocationKey = thingLocationKey;
         this.timestamp = timestamp;
+    }
+
+    public String getUserAvatar() {
+        return userAvatar;
+    }
+
+    public void setUserAvatar(String userAvatar) {
+        this.userAvatar = userAvatar;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     public String getKey() {
@@ -141,6 +161,8 @@ public class Thing {
         private String key;
         private int type;
         private String userUID;
+        private String userAvatar;
+        private String userName;
         private String title;
         private String description;
         private int category;
@@ -205,11 +227,23 @@ public class Thing {
             return this;
         }
 
+        public Builder setUserName(String userName) {
+            this.userName = userName;
+            return this;
+        }
+
+        public Builder setUserAvatar(String userAvatar) {
+            this.userAvatar = userAvatar;
+            return this;
+        }
+
         public Thing build() {
             return new Thing(key,
                     type,
                     category,
                     userUID,
+                    userAvatar,
+                    userName,
                     title,
                     description,
                     photo,

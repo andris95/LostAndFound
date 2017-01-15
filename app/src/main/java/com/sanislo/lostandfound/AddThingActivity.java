@@ -10,6 +10,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -23,9 +24,15 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.location.places.ui.PlacePicker;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
+import com.sanislo.lostandfound.model.User;
 import com.sanislo.lostandfound.presenter.AddThingPresenter;
 import com.sanislo.lostandfound.presenter.AddThingPresenterImpl;
 import com.sanislo.lostandfound.view.AddThingView;
+
+import org.w3c.dom.Text;
 
 import java.util.List;
 
@@ -58,9 +65,12 @@ public class AddThingActivity extends AppCompatActivity implements AddThingView 
     @BindView(R.id.iv_vector)
     ImageView ivVector;
 
+    private boolean DEBUG = true;
     private AddThingPresenter mPresenter;
     private ArrayAdapter<String> mCategoriesAdapter;
     private MaterialDialog mProgressDialog;
+
+    /** TEST */
     private AnimatedVectorDrawable mChevronVectorDrawable;
     private boolean mIsExpanded;
 
@@ -86,6 +96,18 @@ public class AddThingActivity extends AppCompatActivity implements AddThingView 
         initCategories();
         displayNotificationText();
         setVector();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mPresenter.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mPresenter.onPause();
     }
 
     private void displayNotificationText() {
@@ -121,8 +143,16 @@ public class AddThingActivity extends AppCompatActivity implements AddThingView 
 
     private void addThing() {
         String title = edtTitle.getText().toString();
+        if (DEBUG && TextUtils.isEmpty(title)) {
+            title = getString(R.string.lorem_ipsum_title);
+        } else {
+            Toast.makeText(AddThingActivity.this, "Title can't be blank!", Toast.LENGTH_SHORT).show();
+        }
         String description = edtDescription.getText().toString();
-        mPresenter.addThing(getString(R.string.lorem_ipsum_title), getString(R.string.description));
+        if (DEBUG && TextUtils.isEmpty(description)) {
+            description = getString(R.string.description);
+        }
+        mPresenter.addThing(title, description);
     }
 
     @OnClick(R.id.btn_select_thing_cover_photo)

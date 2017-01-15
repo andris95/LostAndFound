@@ -31,8 +31,8 @@ import butterknife.ButterKnife;
 
 public class DescriptionPhotosActivity extends BaseActivity {
     private final String TAG = DescriptionPhotosActivity.class.getSimpleName();
-    private final String KEY_THING_KEY = "THING_KEY";
-    private final String KEY_POSITION = "KEY_POSITION";
+    public static final String KEY_THING_KEY = "THING_KEY";
+    public static final String KEY_POSITION = "KEY_POSITION";
     private final String KEY_CURRENT_POSITION = "KEY_CURRENT_POSITION";
 
     private String mThingKey;
