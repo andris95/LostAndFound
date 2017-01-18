@@ -81,7 +81,7 @@ public class DescriptionPhotosAdapter extends RecyclerView.Adapter<DescriptionPh
         void onClickPhoto(View view, int position);
     }
 
-    class DescriptionPhotoViewHolder extends RecyclerView.ViewHolder {
+    public class DescriptionPhotoViewHolder extends RecyclerView.ViewHolder {
         private View mRootView;
         private DescriptionPhotosAdapter.OnClickListener mOnClickListener;
         private int mPosition;
@@ -101,8 +101,16 @@ public class DescriptionPhotosAdapter extends RecyclerView.Adapter<DescriptionPh
 
         public void bind(String photoPath, int position) {
             mPosition = position;
-            ivDescriptionPhoto.setTransitionName(itemView.getContext()
-                    .getString(R.string.transition_description_photo) + "_" + mPosition);
+            setTransitionName();
+            setDescriptionPhoto(photoPath);
+        }
+
+        private void setTransitionName() {
+            String transName = itemView.getContext().getString(R.string.transition_description_photo) + "_" + mPosition;
+            ivDescriptionPhoto.setTransitionName(transName);
+        }
+
+        private void setDescriptionPhoto(String photoPath) {
             StorageReference reference = mStorageReference.child(photoPath);
             Glide.with(mRootView.getContext())
                     .using(new FirebaseImageLoader())

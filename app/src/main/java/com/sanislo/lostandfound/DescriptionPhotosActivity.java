@@ -32,8 +32,6 @@ import butterknife.ButterKnife;
 public class DescriptionPhotosActivity extends BaseActivity {
     private final String TAG = DescriptionPhotosActivity.class.getSimpleName();
     public static final String KEY_THING_KEY = "THING_KEY";
-    public static final String KEY_POSITION = "KEY_POSITION";
-    private final String KEY_CURRENT_POSITION = "KEY_CURRENT_POSITION";
 
     private String mThingKey;
     private int mStartPosition;
@@ -102,11 +100,11 @@ public class DescriptionPhotosActivity extends BaseActivity {
 
     private void fetchIntent(Bundle savedInstanceState) {
         mThingKey = getIntent().getStringExtra(KEY_THING_KEY);
-        mStartPosition = getIntent().getIntExtra(KEY_POSITION, 0);
+        mStartPosition = getIntent().getIntExtra(ThingDetailsActivity.EXTRA_START_POSITION, 0);
         if (savedInstanceState == null) {
             mCurrentPosition = mStartPosition;
         } else {
-            mStartPosition = savedInstanceState.getInt(KEY_CURRENT_POSITION);
+            mCurrentPosition = savedInstanceState.getInt(ThingDetailsActivity.EXTRA_UPDATED_POSITION);
         }
     }
 
@@ -145,15 +143,15 @@ public class DescriptionPhotosActivity extends BaseActivity {
     @Override
     public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
         super.onSaveInstanceState(outState, outPersistentState);
-        outState.putInt(KEY_POSITION, mCurrentPosition);
+        outState.putInt(ThingDetailsActivity.EXTRA_UPDATED_POSITION, mCurrentPosition);
     }
 
     @Override
     public void finishAfterTransition() {
         mIsReturning = true;
         Intent intent = new Intent();
-        intent.putExtra(KEY_POSITION, mStartPosition);
-        intent.putExtra(KEY_CURRENT_POSITION, mCurrentPosition);
+        intent.putExtra(ThingDetailsActivity.EXTRA_START_POSITION, mStartPosition);
+        intent.putExtra(ThingDetailsActivity.EXTRA_UPDATED_POSITION, mCurrentPosition);
         setResult(RESULT_OK, intent);
         super.finishAfterTransition();
     }

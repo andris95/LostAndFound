@@ -1,6 +1,7 @@
 package com.sanislo.lostandfound;
 
 import android.app.FragmentTransaction;
+import android.app.SharedElementCallback;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
@@ -9,6 +10,10 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
+import android.transition.Slide;
+import android.transition.Transition;
+import android.transition.TransitionInflater;
+import android.transition.TransitionManager;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewTreeObserver;
@@ -50,6 +55,7 @@ import com.sanislo.lostandfound.view.CommentViewHolder;
 import com.sanislo.lostandfound.view.ThingDetailsView;
 
 import java.util.List;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -90,6 +96,8 @@ public class ThingDetailsActivity extends BaseActivity implements ThingDetailsVi
     EditText edtComment;
 
     public static final String EXTRA_THING_PATH = "EXTRA_THING_PATH";
+    public static final String EXTRA_START_POSITION = "EXTRA_START_POSITION";
+    public static final String EXTRA_UPDATED_POSITION = "EXTRA_UPDATED_POSITION";
 
     private String mUID;
     private String mThingPath;
@@ -104,10 +112,53 @@ public class ThingDetailsActivity extends BaseActivity implements ThingDetailsVi
 
     private ThingDetailsPresenter mThingDetailsPresenter;
 
+    private Bundle mTmpReenterState;
+
+    private final SharedElementCallback mCallback = new SharedElementCallback() {
+        @Override
+        public void onMapSharedElements(List<String> names, Map<String, View> sharedElements) {
+            if (mTmpReenterState != null) {
+                int startingPosition = mTmpReenterState.getInt(EXTRA_START_POSITION);
+                int currentPosition = mTmpReenterState.getInt(EXTRA_UPDATED_POSITION);
+                if (startingPosition != currentPosition) {
+                    // If startingPosition != currentPosition the user must have swiped to a
+                    // different page in the DetailsActivity. We must update the shared element
+                    // so that the correct one falls into place.
+                    String newTransitionName = getString(R.string.transition_description_photo) + "_" + currentPosition;
+                    DescriptionPhotosAdapter.DescriptionPhotoViewHolder viewHolder = (DescriptionPhotosAdapter.DescriptionPhotoViewHolder) rvDescriptionPhotos.findViewHolderForAdapterPosition(currentPosition);
+                    View newSharedElement = viewHolder.getSharedView();
+                    Log.d(TAG, "onMapSharedElements: null?: " + (newSharedElement == null));
+                    if (newSharedElement != null) {
+                        names.clear();
+                        names.add(newTransitionName);
+                        sharedElements.clear();
+                        sharedElements.put(newTransitionName, newSharedElement);
+                    }
+                }
+
+                mTmpReenterState = null;
+            } else {
+                // If mTmpReenterState is null, then the activity is exiting.
+                View navigationBar = findViewById(android.R.id.navigationBarBackground);
+                View statusBar = findViewById(android.R.id.statusBarBackground);
+                if (navigationBar != null) {
+                    names.add(navigationBar.getTransitionName());
+                    sharedElements.put(navigationBar.getTransitionName(), navigationBar);
+                }
+                if (statusBar != null) {
+                    names.add(statusBar.getTransitionName());
+                    sharedElements.put(statusBar.getTransitionName(), statusBar);
+                }
+            }
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getWindow().requestFeature(Window.FEATURE_CONTENT_TRANSITIONS);
+        setExitSharedElementCallback(mCallback);
+        setEnterTransition();
         setContentView(R.layout.activity_thing_details);
         postponeEnterTransition();
         ButterKnife.bind(this);
@@ -115,6 +166,13 @@ public class ThingDetailsActivity extends BaseActivity implements ThingDetailsVi
         initFirebase();
         ivThingPhoto.setTransitionName(getString(R.string.transition_description_photo));
         mThingDetailsPresenter = new ThingDetailsPresenterImpl(this, mThingPath);
+    }
+
+    private void setEnterTransition() {
+        Transition transition = new Slide();
+        transition.excludeTarget(android.R.id.statusBarBackground, true);
+        transition.excludeTarget(android.R.id.navigationBarBackground, true);
+        getWindow().setEnterTransition(transition);
     }
 
     private void fetchIntentExtras() {
@@ -137,6 +195,29 @@ public class ThingDetailsActivity extends BaseActivity implements ThingDetailsVi
     protected void onPause() {
         super.onPause();
         mThingDetailsPresenter.onPause();
+    }
+
+    @Override
+    public void onActivityReenter(int requestCode, Intent data) {
+        super.onActivityReenter(requestCode, data);
+        mTmpReenterState = new Bundle(data.getExtras());
+        int startingPosition = mTmpReenterState.getInt(EXTRA_START_POSITION);
+        int currentPosition = mTmpReenterState.getInt(EXTRA_UPDATED_POSITION);
+        Log.d(TAG, "onActivityReenter: " + currentPosition);
+        if (startingPosition != currentPosition) {
+            rvDescriptionPhotos.scrollToPosition(currentPosition);
+        }
+        postponeEnterTransition();
+        rvDescriptionPhotos.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+            @Override
+            public boolean onPreDraw() {
+                rvDescriptionPhotos.getViewTreeObserver().removeOnPreDrawListener(this);
+                // TODO: figure out why it is necessary to request layout here in order to get a smooth transition.
+                rvDescriptionPhotos.requestLayout();
+                startPostponedEnterTransition();
+                return true;
+            }
+        });
     }
 
     @Override
@@ -241,6 +322,7 @@ public class ThingDetailsActivity extends BaseActivity implements ThingDetailsVi
 
     private void setThingPhoto() {
         String thingPhotoPath = mThing.getPhoto();
+        if (TextUtils.isEmpty(thingPhotoPath)) return;
         StorageReference thingPhotoRef = mStorageReference.child(thingPhotoPath);
         Log.d(TAG, "setThingPhoto: " + thingPhotoRef.getPath());
         Glide.with(ThingDetailsActivity.this)
@@ -298,6 +380,7 @@ public class ThingDetailsActivity extends BaseActivity implements ThingDetailsVi
 
     private void setDescriptionPhotos() {
         if (mThing.getDescriptionPhotos() != null) {
+            if (mDescriptionPhotosAdapter != null) return;
             List<String> descriptionPhotos = mThing.getDescriptionPhotos();
             mDescriptionPhotosAdapter = new DescriptionPhotosAdapter(descriptionPhotos);
             mDescriptionPhotosAdapter.setOnClickListener(new DescriptionPhotosAdapter.OnClickListener() {
@@ -313,13 +396,15 @@ public class ThingDetailsActivity extends BaseActivity implements ThingDetailsVi
             rvDescriptionPhotos.setAdapter(mDescriptionPhotosAdapter);
         } else {
             rvDescriptionPhotos.setVisibility(View.GONE);
+            mDescriptionPhotosAdapter = null;
+            rvDescriptionPhotos.setAdapter(null);
         }
     }
 
     private void launchDescriptionPhotosActivity(View view, int position) {
         Intent intent = new Intent(ThingDetailsActivity.this, DescriptionPhotosActivity.class);
         intent.putExtra(DescriptionPhotosActivity.KEY_THING_KEY, mThingPath);
-        intent.putExtra(DescriptionPhotosActivity.KEY_POSITION, position);
+        intent.putExtra(EXTRA_START_POSITION, position);
 
         ActivityOptionsCompat options = ActivityOptionsCompat.
                 makeSceneTransitionAnimation(ThingDetailsActivity.this,
