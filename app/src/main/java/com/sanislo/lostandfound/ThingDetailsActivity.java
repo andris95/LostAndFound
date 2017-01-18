@@ -26,6 +26,7 @@ import android.widget.Toast;
 
 import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
@@ -99,11 +100,11 @@ public class ThingDetailsActivity extends BaseActivity implements ThingDetailsVi
     public static final String EXTRA_START_POSITION = "EXTRA_START_POSITION";
     public static final String EXTRA_UPDATED_POSITION = "EXTRA_UPDATED_POSITION";
 
-    private String mUID;
     private String mThingPath;
     private Thing mThing;
     private ThingLocation mThingLocation;
     private GoogleMap mGoogleMap;
+    private MapFragment mMapFragment;
 
     private DescriptionPhotosAdapter mDescriptionPhotosAdapter;
     private CommentsAdapter mCommentsAdapter;
@@ -124,16 +125,7 @@ public class ThingDetailsActivity extends BaseActivity implements ThingDetailsVi
                     // If startingPosition != currentPosition the user must have swiped to a
                     // different page in the DetailsActivity. We must update the shared element
                     // so that the correct one falls into place.
-                    String newTransitionName = getString(R.string.transition_description_photo) + "_" + currentPosition;
-                    DescriptionPhotosAdapter.DescriptionPhotoViewHolder viewHolder = (DescriptionPhotosAdapter.DescriptionPhotoViewHolder) rvDescriptionPhotos.findViewHolderForAdapterPosition(currentPosition);
-                    View newSharedElement = viewHolder.getSharedView();
-                    Log.d(TAG, "onMapSharedElements: null?: " + (newSharedElement == null));
-                    if (newSharedElement != null) {
-                        names.clear();
-                        names.add(newTransitionName);
-                        sharedElements.clear();
-                        sharedElements.put(newTransitionName, newSharedElement);
-                    }
+                    updateSharedView(names, sharedElements, currentPosition);
                 }
 
                 mTmpReenterState = null;
@@ -152,6 +144,18 @@ public class ThingDetailsActivity extends BaseActivity implements ThingDetailsVi
             }
         }
     };
+
+    private void updateSharedView(List<String> names, Map<String, View> sharedElements, int currentPosition) {
+        String newTransitionName = getString(R.string.transition_description_photo) + "_" + currentPosition;
+        DescriptionPhotosAdapter.DescriptionPhotoViewHolder viewHolder = (DescriptionPhotosAdapter.DescriptionPhotoViewHolder) rvDescriptionPhotos.findViewHolderForAdapterPosition(currentPosition);
+        View newSharedElement = viewHolder.getSharedView();
+        if (newSharedElement != null) {
+            names.clear();
+            names.add(newTransitionName);
+            sharedElements.clear();
+            sharedElements.put(newTransitionName, newSharedElement);
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -182,19 +186,22 @@ public class ThingDetailsActivity extends BaseActivity implements ThingDetailsVi
 
     private void initFirebase() {
         mStorageReference = FirebaseUtils.getStorageRef();
-        mUID = getAuthenticatedUserUID();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         mThingDetailsPresenter.onResume();
+        if (mMapFragment != null) {
+            mMapFragment.onResume();
+        }
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         mThingDetailsPresenter.onPause();
+        if (mMapFragment != null) mMapFragment.onPause();
     }
 
     @Override
@@ -266,19 +273,16 @@ public class ThingDetailsActivity extends BaseActivity implements ThingDetailsVi
     }
 
     private void initMapView() {
-        MapFragment mapFragment =
-                (MapFragment) getFragmentManager().findFragmentById(R.id.map_thing_location);
-        Log.d(TAG, "initMapView: " + (mapFragment == null));
-        if (mapFragment != null) {
-            mapFragment.getMapAsync(mOnMapReadyCallback);
+        mMapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map_thing_location);
+        Log.d(TAG, "initMapView: " + (mMapFragment == null));
+        if (mMapFragment != null) {
+            mMapFragment.getMapAsync(mOnMapReadyCallback);
         }
     }
 
     private void hideMapView() {
-        MapFragment mapFragment =
-                (MapFragment) getFragmentManager().findFragmentById(R.id.map_thing_location);
         FragmentTransaction ft = getFragmentManager().beginTransaction();
-        ft.hide(mapFragment);
+        ft.hide(mMapFragment);
         ft.commit();
     }
 
@@ -315,6 +319,7 @@ public class ThingDetailsActivity extends BaseActivity implements ThingDetailsVi
         Glide.with(ThingDetailsActivity.this)
                 .using(new FirebaseImageLoader())
                 .load(authorPhotoRef)
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .error(R.drawable.error_placeholder)
                 .into(ivAuthorAvatar);
         Log.d(TAG, "setAuthorPhoto: authorPhotoRef: " + authorPhotoRef);
@@ -328,6 +333,7 @@ public class ThingDetailsActivity extends BaseActivity implements ThingDetailsVi
         Glide.with(ThingDetailsActivity.this)
                 .using(new FirebaseImageLoader())
                 .load(thingPhotoRef)
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .listener(new RequestListener<StorageReference, GlideDrawable>() {
                     @Override
                     public boolean onException(Exception e, StorageReference model, Target<GlideDrawable> target, boolean isFirstResource) {
@@ -380,25 +386,40 @@ public class ThingDetailsActivity extends BaseActivity implements ThingDetailsVi
 
     private void setDescriptionPhotos() {
         if (mThing.getDescriptionPhotos() != null) {
-            if (mDescriptionPhotosAdapter != null) return;
-            List<String> descriptionPhotos = mThing.getDescriptionPhotos();
-            mDescriptionPhotosAdapter = new DescriptionPhotosAdapter(descriptionPhotos);
-            mDescriptionPhotosAdapter.setOnClickListener(new DescriptionPhotosAdapter.OnClickListener() {
-                @Override
-                public void onClickPhoto(View view, int position) {
-                    launchDescriptionPhotosActivity(view, position);
-                }
-            });
-            LinearLayoutManager layoutManager = new LinearLayoutManager(ThingDetailsActivity.this,
-                    LinearLayoutManager.HORIZONTAL,
-                    false);
-            rvDescriptionPhotos.setLayoutManager(layoutManager);
-            rvDescriptionPhotos.setAdapter(mDescriptionPhotosAdapter);
+            if (mDescriptionPhotosAdapter != null) {
+                updateDescriptionPhotosAdapter(mThing.getDescriptionPhotos());
+            } else {
+                createNewDescriptionPhotosAdapter();
+            }
         } else {
-            rvDescriptionPhotos.setVisibility(View.GONE);
-            mDescriptionPhotosAdapter = null;
-            rvDescriptionPhotos.setAdapter(null);
+            hideDescriptionPhotos();
         }
+    }
+
+    private void updateDescriptionPhotosAdapter(List<String> descriptionPhotos) {
+        mDescriptionPhotosAdapter.setDescriptionPhotos(descriptionPhotos);
+    }
+
+    private void createNewDescriptionPhotosAdapter() {
+        List<String> descriptionPhotos = mThing.getDescriptionPhotos();
+        mDescriptionPhotosAdapter = new DescriptionPhotosAdapter(descriptionPhotos);
+        mDescriptionPhotosAdapter.setOnClickListener(new DescriptionPhotosAdapter.OnClickListener() {
+            @Override
+            public void onClickPhoto(View view, int position) {
+                launchDescriptionPhotosActivity(view, position);
+            }
+        });
+        LinearLayoutManager layoutManager = new LinearLayoutManager(ThingDetailsActivity.this,
+                LinearLayoutManager.HORIZONTAL,
+                false);
+        rvDescriptionPhotos.setLayoutManager(layoutManager);
+        rvDescriptionPhotos.setAdapter(mDescriptionPhotosAdapter);
+    }
+
+    private void hideDescriptionPhotos() {
+        rvDescriptionPhotos.setVisibility(View.GONE);
+        mDescriptionPhotosAdapter = null;
+        rvDescriptionPhotos.setAdapter(null);
     }
 
     private void launchDescriptionPhotosActivity(View view, int position) {

@@ -31,14 +31,12 @@ import butterknife.OnClick;
 
 public class DescriptionPhotosAdapter extends RecyclerView.Adapter<DescriptionPhotosAdapter.DescriptionPhotoViewHolder> {
     public final String TAG = DescriptionPhotoViewHolder.class.getSimpleName();
-    private ArrayList<DescriptionPhotosAdapter.DescriptionPhotoViewHolder> mDescriptionPhotoViewHolders;
     private List<String> mDescriptionPhotos;
     private StorageReference mStorageReference;
     private OnClickListener mOnClickListener;
 
     public DescriptionPhotosAdapter(List<String> descriptionPhotos) {
         mDescriptionPhotos = descriptionPhotos;
-        mDescriptionPhotoViewHolders = new ArrayList<>();
         initFirebaseStorage();
     }
 
@@ -47,13 +45,17 @@ public class DescriptionPhotosAdapter extends RecyclerView.Adapter<DescriptionPh
         mStorageReference = FirebaseStorage.getInstance().getReferenceFromUrl(storageBucket);
     }
 
+    public void setDescriptionPhotos(List<String> descriptionPhotos) {
+        mDescriptionPhotos = descriptionPhotos;
+        notifyDataSetChanged();
+    }
+
     @Override
     public DescriptionPhotoViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         Context context = parent.getContext();
         LayoutInflater inflater = LayoutInflater.from(context);
         View contactView = inflater.inflate(R.layout.item_description_photo, parent, false);
         DescriptionPhotoViewHolder viewHolder = new DescriptionPhotoViewHolder(contactView);
-        mDescriptionPhotoViewHolders.add(viewHolder);
         return viewHolder;
     }
 
@@ -67,10 +69,6 @@ public class DescriptionPhotosAdapter extends RecyclerView.Adapter<DescriptionPh
     @Override
     public int getItemCount() {
         return mDescriptionPhotos.size();
-    }
-
-    public View getSharedView(int position) {
-        return mDescriptionPhotoViewHolders.get(position).getSharedView();
     }
 
     public void setOnClickListener(OnClickListener onClickListener) {
