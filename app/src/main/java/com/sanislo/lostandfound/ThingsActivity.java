@@ -6,6 +6,7 @@ import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -20,6 +21,7 @@ import com.sanislo.lostandfound.model.Thing;
 import com.sanislo.lostandfound.presenter.ThingsPresenter;
 import com.sanislo.lostandfound.utils.FirebaseConstants;
 import com.sanislo.lostandfound.utils.FirebaseUtils;
+import com.sanislo.lostandfound.utils.Utils;
 import com.sanislo.lostandfound.view.ThingViewHolder;
 
 import butterknife.BindView;
@@ -65,6 +67,13 @@ public class ThingsActivity extends BaseActivity implements ThingsView {
         initFirebase();
         initToolbar();
         initThings();
+
+        String originalUrl = "https://wallpaperscraft.com/image/joy_jennifer_lawrence_2015_105464_1920x1080.jpg";
+        String croppedUrl = Utils.getCropedImageUrl(originalUrl);
+        Log.d(TAG, "onCreate: croppedUrl: " + croppedUrl);
+        Log.d(TAG, "onCreate: ~~~~~~");
+        croppedUrl = Utils.getCroppedImageUrlShort(originalUrl);
+        Log.d(TAG, "onCreate: croppedUrl: " + croppedUrl);
     }
 
     private void initFirebase() {
@@ -100,6 +109,13 @@ public class ThingsActivity extends BaseActivity implements ThingsView {
         switch (item.getItemId()) {
             case R.id.menu_add_thing:
                 startAddThingActivity();
+                return true;
+            case R.id.menu_find_thing:
+                mThingQuery = FirebaseUtils.getDatabase().getReference()
+                        .child(FirebaseConstants.THINGS)
+                        .orderByChild("type")
+                        .equalTo(1);
+                mThingAdapter.notifyDataSetChanged();
                 return true;
             case R.id.menu_sign_out:
                 mFirebaseAuth.signOut();
