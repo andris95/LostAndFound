@@ -1,6 +1,8 @@
 package com.sanislo.lostandfound.model;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by root on 24.12.16.
@@ -18,12 +20,12 @@ public class Thing {
     private String photo;
     private List<String> descriptionPhotos;
     private int commentCount;
-    private String thingLocationKey;
+    private Map<String, Double> location;
     private long timestamp;
 
     public Thing() {}
 
-    public Thing(String key, int type, int category, String userUID, String userAvatar, String userName, String title, String description, String photo, List<String> descriptionPhotos, int commentCount, String thingLocationKey, long timestamp) {
+    public Thing(String key, int type, int category, String userUID, String userAvatar, String userName, String title, String description, String photo, List<String> descriptionPhotos, int commentCount, Map<String, Double> location, long timestamp) {
         this.key = key;
         this.type = type;
         this.category = category;
@@ -35,8 +37,16 @@ public class Thing {
         this.photo = photo;
         this.descriptionPhotos = descriptionPhotos;
         this.commentCount = commentCount;
-        this.thingLocationKey = thingLocationKey;
+        this.location = location;
         this.timestamp = timestamp;
+    }
+
+    public Map<String, Double> getLocation() {
+        return location;
+    }
+
+    public void setLocation(Map<String, Double> location) {
+        this.location = location;
     }
 
     public String getUserAvatar() {
@@ -135,14 +145,6 @@ public class Thing {
         this.commentCount = commentCount;
     }
 
-    public String getThingLocationKey() {
-        return thingLocationKey;
-    }
-
-    public void setThingLocationKey(String thingLocationKey) {
-        this.thingLocationKey = thingLocationKey;
-    }
-
     @Override
     public String toString() {
         return "Thing{" +
@@ -169,7 +171,7 @@ public class Thing {
         private String photo;
         private List<String> descriptionPhotos;
         private int commentCount;
-        private String thingLocationKey;
+        private Map<String, Double> location;
         private long timestamp;
 
         public Builder setKey(String key) {
@@ -222,8 +224,10 @@ public class Thing {
             return this;
         }
 
-        public Builder setThingLocationKey(String thingLocationKey) {
-            this.thingLocationKey = thingLocationKey;
+        public Builder setLocation(double lat, double lng) {
+            this.location = new HashMap<>();
+            this.location.put("lat", lat);
+            this.location.put("lng", lng);
             return this;
         }
 
@@ -249,7 +253,7 @@ public class Thing {
                     photo,
                     descriptionPhotos,
                     commentCount,
-                    thingLocationKey,
+                    location,
                     timestamp);
         }
     }

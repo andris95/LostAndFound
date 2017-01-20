@@ -67,13 +67,6 @@ public class ThingsActivity extends BaseActivity implements ThingsView {
         initFirebase();
         initToolbar();
         initThings();
-
-        String originalUrl = "https://wallpaperscraft.com/image/joy_jennifer_lawrence_2015_105464_1920x1080.jpg";
-        String croppedUrl = Utils.getCropedImageUrl(originalUrl);
-        Log.d(TAG, "onCreate: croppedUrl: " + croppedUrl);
-        Log.d(TAG, "onCreate: ~~~~~~");
-        croppedUrl = Utils.getCroppedImageUrlShort(originalUrl);
-        Log.d(TAG, "onCreate: croppedUrl: " + croppedUrl);
     }
 
     private void initFirebase() {
@@ -111,11 +104,6 @@ public class ThingsActivity extends BaseActivity implements ThingsView {
                 startAddThingActivity();
                 return true;
             case R.id.menu_find_thing:
-                mThingQuery = FirebaseUtils.getDatabase().getReference()
-                        .child(FirebaseConstants.THINGS)
-                        .orderByChild("type")
-                        .equalTo(1);
-                mThingAdapter.notifyDataSetChanged();
                 return true;
             case R.id.menu_sign_out:
                 mFirebaseAuth.signOut();

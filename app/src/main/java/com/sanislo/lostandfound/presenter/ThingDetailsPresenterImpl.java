@@ -38,9 +38,6 @@ public class ThingDetailsPresenterImpl implements ThingDetailsPresenter {
             mThing = dataSnapshot.getValue(Thing.class);
             Log.d(TAG, "onDataChange: " + mThing);
             mView.onThingLoaded(mThing);
-            if (hasLocation()) {
-                getThingPlace();
-            }
         }
 
         @Override
@@ -78,29 +75,6 @@ public class ThingDetailsPresenterImpl implements ThingDetailsPresenter {
         mDatabaseReference.child(FirebaseConstants.THINGS)
                 .child(mThingKey)
                 .addValueEventListener(mThingListener);
-    }
-
-    private boolean hasLocation() {
-        return !TextUtils.isEmpty(mThing.getThingLocationKey());
-    }
-
-    private void getThingPlace() {
-        FirebaseUtils.getDatabase().getReference()
-                .child(FirebaseConstants.THINGS_PLACE)
-                .child(mThingKey)
-                .child(mThing.getThingLocationKey())
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        ThingLocation thingLocation = dataSnapshot.getValue(ThingLocation.class);
-                        mView.onThingLocationLoaded(thingLocation);
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-
-                    }
-                });
     }
 
     @Override

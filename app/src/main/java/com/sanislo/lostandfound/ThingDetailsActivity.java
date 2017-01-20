@@ -4,7 +4,6 @@ import android.app.FragmentTransaction;
 import android.app.SharedElementCallback;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -12,19 +11,17 @@ import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.transition.Slide;
 import android.transition.Transition;
-import android.transition.TransitionInflater;
-import android.transition.TransitionManager;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
@@ -34,11 +31,9 @@ import com.firebase.ui.storage.images.FirebaseImageLoader;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.MapFragment;
-import com.google.android.gms.maps.MapView;
-import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.database.Query;
@@ -96,13 +91,15 @@ public class ThingDetailsActivity extends BaseActivity implements ThingDetailsVi
     @BindView(R.id.edt_thing_comment)
     EditText edtComment;
 
+    @BindView(R.id.fl_map_container)
+    FrameLayout flMapContainer;
+
     public static final String EXTRA_THING_PATH = "EXTRA_THING_PATH";
     public static final String EXTRA_START_POSITION = "EXTRA_START_POSITION";
     public static final String EXTRA_UPDATED_POSITION = "EXTRA_UPDATED_POSITION";
 
     private String mThingPath;
     private Thing mThing;
-    private ThingLocation mThingLocation;
     private GoogleMap mGoogleMap;
     private MapFragment mMapFragment;
 
@@ -243,26 +240,14 @@ public class ThingDetailsActivity extends BaseActivity implements ThingDetailsVi
 
     /** check if thing has location */
     private boolean hasLocation() {
-        return !TextUtils.isEmpty(mThing.getThingLocationKey());
+        return mThing.getLocation() != null;
     }
 
     private void setMap() {
-        Log.d(TAG, "onThingLoaded: " + hasLocation());
-        if (hasLocation() && mGoogleMap == null) {
+        if (hasLocation()) {
             initMapView();
         } else {
             hideMapView();
-        }
-    }
-
-    @Override
-    public void onThingLocationLoaded(ThingLocation thingLocation) {
-        mThingLocation = thingLocation;
-        Log.d(TAG, "onThingLocationLoaded: " + mThingLocation);
-        if (mGoogleMap != null) {
-            displayThingMarker();
-        } else {
-            initMapView();
         }
     }
 
@@ -273,14 +258,23 @@ public class ThingDetailsActivity extends BaseActivity implements ThingDetailsVi
     }
 
     private void initMapView() {
-        mMapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map_thing_location);
-        Log.d(TAG, "initMapView: " + (mMapFragment == null));
-        if (mMapFragment != null) {
+        //mMapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map_thing_location);
+        if (mMapFragment == null) {
+            GoogleMapOptions googleMapOptions = new GoogleMapOptions();
+            googleMapOptions.liteMode(true);
+            mMapFragment = MapFragment.newInstance(googleMapOptions);
+            FragmentTransaction ft = getFragmentManager().beginTransaction();
+            ft.replace(R.id.fl_map_container, mMapFragment);
+            ft.commit();
             mMapFragment.getMapAsync(mOnMapReadyCallback);
+        } else {
+            displayThingMarker();
         }
     }
 
     private void hideMapView() {
+        flMapContainer.setVisibility(View.GONE);
+        if (mGoogleMap == null) return;
         FragmentTransaction ft = getFragmentManager().beginTransaction();
         ft.hide(mMapFragment);
         ft.commit();
@@ -293,20 +287,18 @@ public class ThingDetailsActivity extends BaseActivity implements ThingDetailsVi
             if (mGoogleMap == null) {
                 mGoogleMap = googleMap;
             }
-            if (hasLocation() && mThingLocation != null) {
-                displayThingMarker();
-            }
+            displayThingMarker();
         }
     };
 
-
     private void displayThingMarker() {
         mGoogleMap.clear();
-        LatLng latLng = new LatLng(mThingLocation.getCenterLat(), mThingLocation.getCenterLng());
         MarkerOptions markerOptions = new MarkerOptions();
+        Map<String, Double> latLngMap = mThing.getLocation();
+        LatLng latLng = new LatLng(latLngMap.get("lat"),
+                latLngMap.get("lng"));
         markerOptions.position(latLng);
         mGoogleMap.addMarker(markerOptions);
-        Log.d(TAG, "displayThingMarker: " + latLng);
         CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 10f);
         mGoogleMap.moveCamera(cameraUpdate);
     }

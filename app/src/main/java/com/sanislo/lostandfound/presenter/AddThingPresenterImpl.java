@@ -10,6 +10,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlacePicker;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -48,7 +49,6 @@ public class AddThingPresenterImpl implements AddThingPresenter {
     private final int PICK_THING_COVER_PHOTO = 111;
     private final int PICK_THING_DESCRIPTION_PHOTOS = 222;
     private final int PICK_THING_PLACE = 333;
-    private final int RP_READ_EXTERNAL = 444;
 
     private Context mContext;
     private AddThingView mView;
@@ -157,21 +157,13 @@ public class AddThingPresenterImpl implements AddThingPresenter {
                 .setTimestamp(timestamp);
     }
 
-    private void configureThingPlace() {
-        if (mThingPlace != null) {
-            mThingLocation = new ThingLocation(
-                    mThingKey,
-                    mThingPlace);
-        }
-    }
-
     private void startThingDataUpload() {
         if (mCoverPhotoUri != null) {
             uploadCoverPhoto();
         } else if (mDescriptionPhotoUris != null && !mDescriptionPhotoUris.isEmpty()) {
             uploadDescriptionPhotos();
         } else {
-            setValues();
+            setNewThingValue();
         }
     }
 
@@ -188,7 +180,7 @@ public class AddThingPresenterImpl implements AddThingPresenter {
                 if (mDescriptionPhotoUris != null && !mDescriptionPhotoUris.isEmpty()) {
                     uploadDescriptionPhotos();
                 } else {
-                    setValues();
+                    setNewThingValue();
                 }
             }
         }).addOnProgressListener(mProgressListener);
@@ -211,7 +203,7 @@ public class AddThingPresenterImpl implements AddThingPresenter {
                     uploadDescriptionPhotos();
                 } else {
                     mThingBuilder.setDescriptionPhotos(mDescriptionPhotoPaths);
-                    setValues();
+                    setNewThingValue();
                 }
             }
         }).addOnProgressListener(mProgressListener);
@@ -230,17 +222,10 @@ public class AddThingPresenterImpl implements AddThingPresenter {
         mThingBuilder.setPhoto(path);
     }
 
-    private void setValues() {
-        if (mThingPlace != null) {
-            setThingPlaceValue();
-        } else {
-            setNewThingValue();
-        }
-    }
-
     private void setNewThingValue() {
         mThingBuilder.setUserName(mUser.getFullName());
         mThingBuilder.setUserAvatar(mUser.getAvatarURL());
+        setLocation();
         Log.d(TAG, "setNewThingValue: " + mUser.getAvatarURL() + " / " + mUser.getFullName());
         Thing thing = mThingBuilder.build();
         DatabaseReference newThingReference = mDatabaseReference
@@ -261,39 +246,16 @@ public class AddThingPresenterImpl implements AddThingPresenter {
                 });
     }
 
-    private void setThingPlaceValue() {
-        configureThingPlace();
-        final String thingPlaceKey = generateThingPlaceKey();
-        DatabaseReference thingPlaceReference = mDatabaseReference.child(FirebaseConstants.THINGS_PLACE)
-                .child(mThingKey)
-                .child(thingPlaceKey);
-        thingPlaceReference.setValue(mThingLocation)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        mThingBuilder.setThingLocationKey(thingPlaceKey);
-                        setNewThingValue();
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        e.printStackTrace();
-                        setNewThingValue();
-                    }
-                });
+    private void setLocation() {
+        if (mThingPlace != null) {
+            LatLng latLng = mThingPlace.getLatLng();
+            mThingBuilder.setLocation(latLng.latitude, latLng.longitude);
+        }
     }
 
     private String generateNewThingKey() {
         return mDatabaseReference
                 .child(FirebaseConstants.THINGS)
-                .push()
-                .getKey();
-    }
-
-    private String generateThingPlaceKey() {
-        return mDatabaseReference.child(FirebaseConstants.THINGS_PLACE)
-                .child(mThingKey)
                 .push()
                 .getKey();
     }
