@@ -31,7 +31,6 @@ public abstract class BaseActivity extends MvpAppCompatActivity implements
     protected FirebaseAuth.AuthStateListener mAuthStateListener;
     private FirebaseAuth mAuth;
     private String mUID;
-    private String mProvider;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,7 +51,6 @@ public abstract class BaseActivity extends MvpAppCompatActivity implements
                 @Override
                 public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                     if (firebaseAuth.getCurrentUser() == null) {
-                        logout();
                         takeUserToLoginScreenOnUnAuth();
                     } else {
                         mUID = firebaseAuth.getCurrentUser().getUid();
@@ -81,16 +79,6 @@ public abstract class BaseActivity extends MvpAppCompatActivity implements
                 .build();
     }
 
-/*    private void initSharedPref() {
-        *//**
-         * Getting mProvider and mEncodedEmail from SharedPreferences
-         *//*
-        final SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(BaseActivity.this);
-        *//* Get mEncodedEmail and mProvider from SharedPreferences, use null as default value *//*
-        mEncodedEmail = sp.getString(Constants.KEY_ENCODED_EMAIL, null);
-        mProvider = sp.getString(Constants.KEY_PROVIDER, null);
-    }*/
-
     @Override
     protected void onStart() {
         super.onStart();
@@ -116,26 +104,6 @@ public abstract class BaseActivity extends MvpAppCompatActivity implements
         }
     }
 
-    /**
-     * Logs out the user from their current session and starts LoginActivity.
-     * Also disconnects the mGoogleApiClient if connected and provider is Google
-     */
-    protected void logout() {
-        /* Logout if mProvider is not null */
-        if (mProvider != null) {
-            if (mProvider.equals(Constants.GOOGLE_PROVIDER)) {
-                /* Logout from Google+ */
-                Auth.GoogleSignInApi.signOut(mGoogleApiClient).setResultCallback(
-                        new ResultCallback<Status>() {
-                            @Override
-                            public void onResult(Status status) {
-                                //nothing
-                            }
-                        });
-            }
-        }
-    }
-
     private void takeUserToLoginScreenOnUnAuth() {
         /* Move user to LoginActivity, and remove the backstack */
         Intent intent = new Intent(BaseActivity.this, LoginActivity.class);
@@ -151,11 +119,6 @@ public abstract class BaseActivity extends MvpAppCompatActivity implements
 
     protected void makeToast(String text) {
         Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
-    }
-
-    protected void startChoosenActivity(Class<?> activtyClass) {
-        Intent intent = new Intent(getApplicationContext(), activtyClass);
-        startActivity(intent);
     }
 
     protected String getAuthenticatedUserUID() {
