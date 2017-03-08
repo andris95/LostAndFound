@@ -321,7 +321,6 @@ public class ThingDetailsActivity extends BaseActivity implements ThingDetailsVi
         String thingPhotoPath = mThing.getPhoto();
         if (TextUtils.isEmpty(thingPhotoPath)) return;
         StorageReference thingPhotoRef = mStorageReference.child(thingPhotoPath);
-        Log.d(TAG, "setThingPhoto: " + thingPhotoRef.getPath());
         Glide.with(ThingDetailsActivity.this)
                 .using(new FirebaseImageLoader())
                 .load(thingPhotoRef)

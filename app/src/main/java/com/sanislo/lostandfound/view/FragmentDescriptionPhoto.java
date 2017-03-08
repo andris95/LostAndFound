@@ -135,7 +135,7 @@ public class FragmentDescriptionPhoto extends Fragment {
                     @Override
                     public boolean onPreDraw() {
                         sharedElement.getViewTreeObserver().removeOnPreDrawListener(this);
-                        startPostponedEnterTransition();
+                        getActivity().startPostponedEnterTransition();
                         return true;
                     }
                 });
