@@ -1,12 +1,20 @@
 package com.sanislo.lostandfound.model.api;
 
+import java.util.List;
+
+import retrofit2.Call;
+
 /**
  * Created by root on 16.03.17.
  */
 
 public class ApiModelImpl implements ApiModel {
-    private  ApiInterface mApiInterface = ApiModule.getApiInterface();
+    private ApiInterface mApiInterface = ApiModule.getApiInterface();
 
+    @Override
+    public Call<List<Thing>> getThings() {
+        return mApiInterface.getThings();
+    }
 
     /*@Override
     public Call<ImgRecognitionResponse> uploadImage(String token, String type, RequestBody file) {

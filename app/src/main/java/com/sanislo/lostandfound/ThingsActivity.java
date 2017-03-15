@@ -16,10 +16,13 @@ import com.google.firebase.database.Query;
 import com.sanislo.lostandfound.adapter.ThingAdapter;
 import com.sanislo.lostandfound.interfaces.ThingsView;
 import com.sanislo.lostandfound.model.Thing;
+import com.sanislo.lostandfound.presenter.ThingsPresenter;
 import com.sanislo.lostandfound.presenter.ThingsPresenterImpl;
 import com.sanislo.lostandfound.utils.FirebaseConstants;
 import com.sanislo.lostandfound.utils.FirebaseUtils;
 import com.sanislo.lostandfound.view.ThingViewHolder;
+
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -37,7 +40,7 @@ public class ThingsActivity extends BaseActivity implements ThingsView {
     private Query mThingQuery;
     private ThingAdapter mThingAdapter;
 
-    ThingsPresenterImpl mThingsPresenter;
+    private ThingsPresenter mThingsPresenter;
 
     private ThingAdapter.OnClickListener mThingClickListener = new ThingAdapter.OnClickListener() {
 
@@ -59,10 +62,16 @@ public class ThingsActivity extends BaseActivity implements ThingsView {
         getWindow().requestFeature(Window.FEATURE_CONTENT_TRANSITIONS);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-        mThingsPresenter = new ThingsPresenterImpl();
+        mThingsPresenter = new ThingsPresenterImpl(this);
         initFirebase();
         initToolbar();
         initThings();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mThingsPresenter.getThings();
     }
 
     private void initFirebase() {
@@ -117,5 +126,10 @@ public class ThingsActivity extends BaseActivity implements ThingsView {
     private void startAddThingActivity() {
         Intent intent = new Intent(ThingsActivity.this, AddThingActivity.class);
         startActivity(intent);
+    }
+
+    @Override
+    public void onThingsLoaded(List<com.sanislo.lostandfound.model.api.Thing> thingList) {
+
     }
 }

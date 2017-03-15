@@ -1,5 +1,10 @@
 package com.sanislo.lostandfound.model.api;
 
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.http.GET;
+
 /**
  * Created by root on 16.03.17.
  */
@@ -31,4 +36,7 @@ public interface ApiInterface {
 
     @GET(ApiConstants.API_SPONSORED)
     Call<SponsorModel> getSponsors();*/
+
+    @GET(ApiConstants.GET_THINGS)
+    Call<List<Thing>> getThings();
 }

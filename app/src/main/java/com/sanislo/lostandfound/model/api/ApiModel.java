@@ -2,6 +2,10 @@ package com.sanislo.lostandfound.model.api;
 
 import com.sanislo.lostandfound.BuildConfig;
 
+import java.util.List;
+
+import retrofit2.Call;
+
 /**
  * Created by root on 16.03.17.
  */
@@ -22,4 +26,6 @@ public interface ApiModel {
     Call<UserProfile> getProfile();
 
     Call<SponsorModel> getSponsors();*/
+
+    Call<List<Thing>> getThings();
 }
