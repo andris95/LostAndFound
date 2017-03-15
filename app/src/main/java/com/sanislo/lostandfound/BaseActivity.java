@@ -6,7 +6,6 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
-import com.arellomobile.mvp.MvpAppCompatActivity;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.ConnectionResult;
@@ -23,8 +22,8 @@ import com.sanislo.lostandfound.utils.Constants;
  * It implements GoogleApiClient callbacks to enable "Logout" in all activities
  * and defines variables that are being shared across all activities
  */
-public abstract class BaseActivity extends MvpAppCompatActivity implements
-        GoogleApiClient.OnConnectionFailedListener {
+public abstract class BaseActivity extends AppCompatActivity
+        implements GoogleApiClient.OnConnectionFailedListener {
     private static final String TAG = BaseActivity.class.getSimpleName();
     protected GoogleApiClient mGoogleApiClient;
     protected GoogleSignInOptions gso;

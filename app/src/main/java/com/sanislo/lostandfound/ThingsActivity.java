@@ -6,22 +6,19 @@ import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 
-import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.Query;
 import com.sanislo.lostandfound.adapter.ThingAdapter;
 import com.sanislo.lostandfound.interfaces.ThingsView;
 import com.sanislo.lostandfound.model.Thing;
-import com.sanislo.lostandfound.presenter.ThingsPresenter;
+import com.sanislo.lostandfound.presenter.ThingsPresenterImpl;
 import com.sanislo.lostandfound.utils.FirebaseConstants;
 import com.sanislo.lostandfound.utils.FirebaseUtils;
-import com.sanislo.lostandfound.utils.Utils;
 import com.sanislo.lostandfound.view.ThingViewHolder;
 
 import butterknife.BindView;
@@ -40,8 +37,7 @@ public class ThingsActivity extends BaseActivity implements ThingsView {
     private Query mThingQuery;
     private ThingAdapter mThingAdapter;
 
-    @InjectPresenter
-    ThingsPresenter mThingsPresenter;
+    ThingsPresenterImpl mThingsPresenter;
 
     private ThingAdapter.OnClickListener mThingClickListener = new ThingAdapter.OnClickListener() {
 
@@ -63,7 +59,7 @@ public class ThingsActivity extends BaseActivity implements ThingsView {
         getWindow().requestFeature(Window.FEATURE_CONTENT_TRANSITIONS);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-        mThingsPresenter = new ThingsPresenter();
+        mThingsPresenter = new ThingsPresenterImpl();
         initFirebase();
         initToolbar();
         initThings();
