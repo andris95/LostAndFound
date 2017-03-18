@@ -24,4 +24,5 @@ public class ApiConstants {
 
     public static final String GET_THINGS                       = "things";
     public static final String GET_THING                        = "thing/";
+    public static final String USERS                            = "users";
 }

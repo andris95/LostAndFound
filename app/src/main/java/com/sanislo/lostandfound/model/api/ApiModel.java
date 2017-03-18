@@ -1,6 +1,7 @@
 package com.sanislo.lostandfound.model.api;
 
 import com.sanislo.lostandfound.model.Thing;
+import com.sanislo.lostandfound.model.User;
 
 import java.util.List;
 
@@ -28,4 +29,5 @@ public interface ApiModel {
     Call<SponsorModel> getSponsors();*/
 
     Call<List<Thing>> getThings();
+    Call<Void> saveUser(User user);
 }

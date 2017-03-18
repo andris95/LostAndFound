@@ -1,6 +1,7 @@
 package com.sanislo.lostandfound.model.api;
 
 import com.sanislo.lostandfound.model.Thing;
+import com.sanislo.lostandfound.model.User;
 
 import java.util.List;
 
@@ -16,6 +17,11 @@ public class ApiModelImpl implements ApiModel {
     @Override
     public Call<List<Thing>> getThings() {
         return mApiInterface.getThings();
+    }
+
+    @Override
+    public Call<Void> saveUser(User user) {
+        return mApiInterface.saveUser(user);
     }
 
     /*@Override
