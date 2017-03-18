@@ -22,7 +22,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-import com.sanislo.lostandfound.AddThingActivity;
+import com.sanislo.lostandfound.view.addThing.AddThingActivity;
 import com.sanislo.lostandfound.model.firebaseModel.Thing;
 import com.sanislo.lostandfound.model.firebaseModel.ThingLocation;
 import com.sanislo.lostandfound.model.firebaseModel.User;

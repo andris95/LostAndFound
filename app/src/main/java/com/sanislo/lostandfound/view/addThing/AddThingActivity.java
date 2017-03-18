@@ -1,4 +1,4 @@
-package com.sanislo.lostandfound;
+package com.sanislo.lostandfound.view.addThing;
 
 import android.Manifest;
 import android.content.Intent;
@@ -24,6 +24,7 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.location.places.ui.PlacePicker;
+import com.sanislo.lostandfound.R;
 import com.sanislo.lostandfound.presenter.AddThingPresenter;
 import com.sanislo.lostandfound.presenter.AddThingPresenterImpl;
 import com.sanislo.lostandfound.interfaces.AddThingView;

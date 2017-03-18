@@ -24,10 +24,10 @@
             </intent-filter>
         </activity>
         <activity android:name=".authentication.SignupActivity" />
-        <activity android:name=".ThingsActivity" />
-        <activity android:name=".ThingDetailsActivity" />
-        <activity android:name=".AddThingActivity" />
-        <activity android:name=".DescriptionPhotosActivity" />
+        <activity android:name=".view.things.ThingsActivity" />
+        <activity android:name=".view.thingDetails.ThingDetailsActivity" />
+        <activity android:name=".view.addThing.AddThingActivity" />
+        <activity android:name=".view.thingDetails.DescriptionPhotosActivity" />
 
         <service
             android:name=".notifications.LostAndFoundMessagingService">

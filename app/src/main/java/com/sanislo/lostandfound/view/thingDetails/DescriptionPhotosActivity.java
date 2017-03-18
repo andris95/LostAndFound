@@ -1,4 +1,4 @@
-package com.sanislo.lostandfound;
+package com.sanislo.lostandfound.view.thingDetails;
 
 import android.app.SharedElementCallback;
 import android.content.Intent;
@@ -13,11 +13,12 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
+import com.sanislo.lostandfound.R;
 import com.sanislo.lostandfound.adapter.DescriptionPhotoPagerAdapter;
 import com.sanislo.lostandfound.model.firebaseModel.Thing;
 import com.sanislo.lostandfound.utils.FirebaseConstants;
 import com.sanislo.lostandfound.utils.FirebaseUtils;
-import com.sanislo.lostandfound.view.FragmentDescriptionPhoto;
+import com.sanislo.lostandfound.view.BaseActivity;
 
 import java.util.List;
 import java.util.Map;

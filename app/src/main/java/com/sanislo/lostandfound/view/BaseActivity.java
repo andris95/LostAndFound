@@ -1,4 +1,4 @@
-package com.sanislo.lostandfound;
+package com.sanislo.lostandfound.view;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,12 +10,9 @@ import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.ResultCallback;
-import com.google.android.gms.common.api.Status;
 import com.google.firebase.auth.FirebaseAuth;
 import com.sanislo.lostandfound.authentication.LoginActivity;
 import com.sanislo.lostandfound.authentication.SignupActivity;
-import com.sanislo.lostandfound.utils.Constants;
 
 /**
  * BaseActivity class is used as a base class for all activities in the app

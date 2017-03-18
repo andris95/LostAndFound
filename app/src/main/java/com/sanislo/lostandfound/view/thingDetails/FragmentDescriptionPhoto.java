@@ -1,4 +1,4 @@
-package com.sanislo.lostandfound.view;
+package com.sanislo.lostandfound.view.thingDetails;
 
 import android.graphics.Rect;
 import android.os.Bundle;

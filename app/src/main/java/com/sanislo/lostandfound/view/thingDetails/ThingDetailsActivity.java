@@ -1,4 +1,4 @@
-package com.sanislo.lostandfound;
+package com.sanislo.lostandfound.view.thingDetails;
 
 import android.app.FragmentTransaction;
 import android.app.SharedElementCallback;
@@ -38,6 +38,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.database.Query;
 import com.google.firebase.storage.StorageReference;
+import com.sanislo.lostandfound.R;
 import com.sanislo.lostandfound.adapter.CommentsAdapter;
 import com.sanislo.lostandfound.adapter.DescriptionPhotosAdapter;
 import com.sanislo.lostandfound.model.firebaseModel.Comment;
@@ -46,6 +47,7 @@ import com.sanislo.lostandfound.presenter.ThingDetailsPresenter;
 import com.sanislo.lostandfound.presenter.ThingDetailsPresenterImpl;
 import com.sanislo.lostandfound.utils.FirebaseConstants;
 import com.sanislo.lostandfound.utils.FirebaseUtils;
+import com.sanislo.lostandfound.view.BaseActivity;
 import com.sanislo.lostandfound.view.CommentViewHolder;
 import com.sanislo.lostandfound.view.ThingDetailsView;
 

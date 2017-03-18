@@ -1,4 +1,4 @@
-package com.sanislo.lostandfound;
+package com.sanislo.lostandfound.view.things;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -12,6 +12,10 @@ import android.view.View;
 import android.view.Window;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.sanislo.lostandfound.view.addThing.AddThingActivity;
+import com.sanislo.lostandfound.view.BaseActivity;
+import com.sanislo.lostandfound.R;
+import com.sanislo.lostandfound.view.thingDetails.ThingDetailsActivity;
 import com.sanislo.lostandfound.adapter.ThingAdapter;
 import com.sanislo.lostandfound.interfaces.ThingsView;
 import com.sanislo.lostandfound.model.Thing;

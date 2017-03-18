@@ -2,11 +2,10 @@ package com.sanislo.lostandfound.adapter;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.view.ViewGroup;
 
-import com.sanislo.lostandfound.view.FragmentDescriptionPhoto;
+import com.sanislo.lostandfound.view.thingDetails.FragmentDescriptionPhoto;
 
 import java.util.ArrayList;
 import java.util.List;
