@@ -14,8 +14,6 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.sanislo.lostandfound.BaseActivity;
 import com.sanislo.lostandfound.model.User;
 import com.sanislo.lostandfound.presenter.SignupPresenter;
@@ -24,7 +22,7 @@ import com.sanislo.lostandfound.utils.FirebaseUtils;
 import com.sanislo.lostandfound.ThingsActivity;
 import com.sanislo.lostandfound.R;
 import com.sanislo.lostandfound.utils.PreferencesManager;
-import com.sanislo.lostandfound.view.SignupView;
+import com.sanislo.lostandfound.interfaces.SignupView;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;

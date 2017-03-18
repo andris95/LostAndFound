@@ -26,7 +26,7 @@ import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.location.places.ui.PlacePicker;
 import com.sanislo.lostandfound.presenter.AddThingPresenter;
 import com.sanislo.lostandfound.presenter.AddThingPresenterImpl;
-import com.sanislo.lostandfound.view.AddThingView;
+import com.sanislo.lostandfound.interfaces.AddThingView;
 
 import java.util.List;
 

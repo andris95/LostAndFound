@@ -1,4 +1,4 @@
-package com.sanislo.lostandfound.view;
+package com.sanislo.lostandfound.interfaces;
 
 import java.util.List;
 

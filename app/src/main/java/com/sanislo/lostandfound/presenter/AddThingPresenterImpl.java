@@ -29,7 +29,7 @@ import com.sanislo.lostandfound.model.firebaseModel.User;
 import com.sanislo.lostandfound.utils.FileUtils;
 import com.sanislo.lostandfound.utils.FirebaseConstants;
 import com.sanislo.lostandfound.utils.FirebaseUtils;
-import com.sanislo.lostandfound.view.AddThingView;
+import com.sanislo.lostandfound.interfaces.AddThingView;
 
 import java.io.File;
 import java.util.ArrayList;
