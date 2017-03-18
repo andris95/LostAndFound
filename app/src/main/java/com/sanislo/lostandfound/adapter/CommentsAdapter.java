@@ -2,7 +2,7 @@ package com.sanislo.lostandfound.adapter;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.database.Query;
-import com.sanislo.lostandfound.model.Comment;
+import com.sanislo.lostandfound.model.firebaseModel.Comment;
 import com.sanislo.lostandfound.view.CommentViewHolder;
 
 /**

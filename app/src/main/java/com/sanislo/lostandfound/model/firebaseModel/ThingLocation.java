@@ -1,4 +1,4 @@
-package com.sanislo.lostandfound.model;
+package com.sanislo.lostandfound.model.firebaseModel;
 
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.maps.model.LatLng;

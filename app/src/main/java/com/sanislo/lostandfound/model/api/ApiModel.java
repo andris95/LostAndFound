@@ -1,6 +1,6 @@
 package com.sanislo.lostandfound.model.api;
 
-import com.sanislo.lostandfound.BuildConfig;
+import com.sanislo.lostandfound.model.Thing;
 
 import java.util.List;
 

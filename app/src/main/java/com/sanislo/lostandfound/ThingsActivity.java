@@ -12,15 +12,11 @@ import android.view.View;
 import android.view.Window;
 
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.Query;
 import com.sanislo.lostandfound.adapter.ThingAdapter;
 import com.sanislo.lostandfound.interfaces.ThingsView;
 import com.sanislo.lostandfound.model.Thing;
 import com.sanislo.lostandfound.presenter.ThingsPresenter;
 import com.sanislo.lostandfound.presenter.ThingsPresenterImpl;
-import com.sanislo.lostandfound.utils.FirebaseConstants;
-import com.sanislo.lostandfound.utils.FirebaseUtils;
-import com.sanislo.lostandfound.view.ThingViewHolder;
 
 import java.util.List;
 
@@ -37,7 +33,6 @@ public class ThingsActivity extends BaseActivity implements ThingsView {
     Toolbar toolbar;
 
     private FirebaseAuth mFirebaseAuth;
-    private Query mThingQuery;
     private ThingAdapter mThingAdapter;
 
     private ThingsPresenter mThingsPresenter;
@@ -65,13 +60,14 @@ public class ThingsActivity extends BaseActivity implements ThingsView {
         mThingsPresenter = new ThingsPresenterImpl(this);
         initFirebase();
         initToolbar();
-        initThings();
+        initThingsAdapter();
+        mThingsPresenter.getThings();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        mThingsPresenter.getThings();
+
     }
 
     private void initFirebase() {
@@ -83,13 +79,8 @@ public class ThingsActivity extends BaseActivity implements ThingsView {
         getSupportActionBar().setTitle(TAG);
     }
 
-    private void initThings() {
-        mThingQuery = FirebaseUtils.getDatabase().getReference()
-                .child(FirebaseConstants.THINGS);
-        mThingAdapter = new ThingAdapter(Thing.class,
-                R.layout.item_thing_simple,
-                ThingViewHolder.class,
-                mThingQuery);
+    private void initThingsAdapter() {
+        mThingAdapter = new ThingAdapter(ThingsActivity.this, null, null);
         mThingAdapter.setOnClickListener(mThingClickListener);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         rvThings.setLayoutManager(layoutManager);
@@ -117,19 +108,14 @@ public class ThingsActivity extends BaseActivity implements ThingsView {
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        mThingAdapter.cleanup();
-    }
-
     private void startAddThingActivity() {
         Intent intent = new Intent(ThingsActivity.this, AddThingActivity.class);
         startActivity(intent);
     }
 
     @Override
-    public void onThingsLoaded(List<com.sanislo.lostandfound.model.api.Thing> thingList) {
-
+    public void onThingsLoaded(List<Thing> thingList) {
+        mThingAdapter.setThingList(thingList);
+        mThingAdapter.notifyDataSetChanged();
     }
 }

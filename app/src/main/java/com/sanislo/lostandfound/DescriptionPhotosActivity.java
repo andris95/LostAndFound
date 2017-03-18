@@ -14,7 +14,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 import com.sanislo.lostandfound.adapter.DescriptionPhotoPagerAdapter;
-import com.sanislo.lostandfound.model.Thing;
+import com.sanislo.lostandfound.model.firebaseModel.Thing;
 import com.sanislo.lostandfound.utils.FirebaseConstants;
 import com.sanislo.lostandfound.utils.FirebaseUtils;
 import com.sanislo.lostandfound.view.FragmentDescriptionPhoto;

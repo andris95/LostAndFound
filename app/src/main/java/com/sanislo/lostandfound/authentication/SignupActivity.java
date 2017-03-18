@@ -19,7 +19,7 @@ import com.sanislo.lostandfound.utils.FirebaseConstants;
 import com.sanislo.lostandfound.utils.FirebaseUtils;
 import com.sanislo.lostandfound.ThingsActivity;
 import com.sanislo.lostandfound.R;
-import com.sanislo.lostandfound.model.User;
+import com.sanislo.lostandfound.model.firebaseModel.User;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;

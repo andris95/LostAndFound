@@ -7,7 +7,7 @@ import com.sanislo.lostandfound.BuildConfig;
  */
 
 public class ApiConstants {
-    public static final String BASE_API                         = "http://localhost:3000/";
+    public static final String BASE_API                         = "http://192.168.1.110:3000/";
     public static final String API_KEY_VALUE                    = "04ACEBmyUVXUpvD7JLkASRtNtAFqzOlf";
 
     public static final String API_UPLOAD_IMAGE                 = "documentRecognition";
@@ -23,4 +23,5 @@ public class ApiConstants {
     public static final String QUERY_KEY_PATH                   = "query";
 
     public static final String GET_THINGS                       = "things";
+    public static final String GET_THING                        = "thing/";
 }

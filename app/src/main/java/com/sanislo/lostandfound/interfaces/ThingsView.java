@@ -1,7 +1,7 @@
 package com.sanislo.lostandfound.interfaces;
 
 
-import com.sanislo.lostandfound.model.api.Thing;
+import com.sanislo.lostandfound.model.Thing;
 
 import java.util.List;
 

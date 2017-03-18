@@ -6,14 +6,11 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.sanislo.lostandfound.interfaces.ThingsView;
-import com.sanislo.lostandfound.model.Comment;
 import com.sanislo.lostandfound.model.api.ApiModel;
 import com.sanislo.lostandfound.model.api.ApiModelImpl;
-import com.sanislo.lostandfound.model.api.Thing;
-import com.sanislo.lostandfound.utils.FirebaseConstants;
+import com.sanislo.lostandfound.model.Thing;
 import com.sanislo.lostandfound.utils.FirebaseUtils;
 
-import java.util.Date;
 import java.util.List;
 
 import retrofit2.Call;

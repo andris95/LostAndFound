@@ -1,260 +1,187 @@
 package com.sanislo.lostandfound.model;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import com.google.gson.annotations.Expose;
+import javax.annotation.Generated;
+import com.google.gson.annotations.SerializedName;
 
-/**
- * Created by root on 24.12.16.
- */
-
+@Generated("com.robohorse.robopojogenerator")
 public class Thing {
-    private String key;
-    private int type;
-    private int category;
-    private String userUID;
-    private String userAvatar;
-    private String userName;
-    private String title;
-    private String description;
-    private String photo;
-    private List<String> descriptionPhotos;
-    private int commentCount;
-    private Map<String, Double> location;
-    private long timestamp;
+	public static final String TYPE_LOST = "lost";
+	public static final String TYPE_FOUND = "found";
 
-    public Thing() {}
+	@SerializedName("descriptionPhotos")
+	@Expose
+	private DescriptionPhotos descriptionPhotos;
 
-    public Thing(String key, int type, int category, String userUID, String userAvatar, String userName, String title, String description, String photo, List<String> descriptionPhotos, int commentCount, Map<String, Double> location, long timestamp) {
-        this.key = key;
-        this.type = type;
-        this.category = category;
-        this.userUID = userUID;
-        this.userAvatar = userAvatar;
-        this.userName = userName;
-        this.title = title;
-        this.description = description;
-        this.photo = photo;
-        this.descriptionPhotos = descriptionPhotos;
-        this.commentCount = commentCount;
-        this.location = location;
-        this.timestamp = timestamp;
-    }
+	@SerializedName("userAvatar")
+	@Expose
+	private String userAvatar;
 
-    public Map<String, Double> getLocation() {
-        return location;
-    }
+	@SerializedName("description")
+	@Expose
+	private String description;
 
-    public void setLocation(Map<String, Double> location) {
-        this.location = location;
-    }
+	@SerializedName("photo")
+	@Expose
+	private String photo;
 
-    public String getUserAvatar() {
-        return userAvatar;
-    }
+	@SerializedName("type")
+	@Expose
+	private String type;
 
-    public void setUserAvatar(String userAvatar) {
-        this.userAvatar = userAvatar;
-    }
+	@SerializedName("userName")
+	@Expose
+	private String userName;
 
-    public String getUserName() {
-        return userName;
-    }
+	@SerializedName("title")
+	@Expose
+	private String title;
 
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
+	@SerializedName("commentCount")
+	@Expose
+	private int commentCount;
 
-    public String getKey() {
-        return key;
-    }
+	@SerializedName("location")
+	@Expose
+	private Location location;
 
-    public void setKey(String key) {
-        this.key = key;
-    }
+	@SerializedName("id")
+	@Expose
+	private int id;
 
-    public int getType() {
-        return type;
-    }
+	@SerializedName("category")
+	@Expose
+	private String category;
 
-    public void setType(int type) {
-        this.type = type;
-    }
+	@SerializedName("userUID")
+	@Expose
+	private String userUID;
 
-    public int getCategory() {
-        return category;
-    }
+	@SerializedName("timestamp")
+	@Expose
+	private int timestamp;
 
-    public void setCategory(int category) {
-        this.category = category;
-    }
+	public void setDescriptionPhotos(DescriptionPhotos descriptionPhotos){
+		this.descriptionPhotos = descriptionPhotos;
+	}
 
-    public String getUserUID() {
-        return userUID;
-    }
+	public DescriptionPhotos getDescriptionPhotos(){
+		return descriptionPhotos;
+	}
 
-    public void setUserUID(String userUID) {
-        this.userUID = userUID;
-    }
+	public void setUserAvatar(String userAvatar){
+		this.userAvatar = userAvatar;
+	}
 
-    public String getTitle() {
-        return title;
-    }
+	public String getUserAvatar(){
+		return userAvatar;
+	}
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
+	public void setDescription(String description){
+		this.description = description;
+	}
 
-    public String getDescription() {
-        return description;
-    }
+	public String getDescription(){
+		return description;
+	}
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
+	public void setPhoto(String photo){
+		this.photo = photo;
+	}
 
-    public String getPhoto() {
-        return photo;
-    }
+	public String getPhoto(){
+		return photo;
+	}
 
-    public void setPhoto(String photo) {
-        this.photo = photo;
-    }
+	public void setType(String type){
+		this.type = type;
+	}
 
-    public long getTimestamp() {
-        return timestamp;
-    }
+	public String getType(){
+		return type;
+	}
 
-    public void setTimestamp(long timestamp) {
-        this.timestamp = timestamp;
-    }
+	public void setUserName(String userName){
+		this.userName = userName;
+	}
 
-    public List<String> getDescriptionPhotos() {
-        return descriptionPhotos;
-    }
+	public String getUserName(){
+		return userName;
+	}
 
-    public void setDescriptionPhotos(List<String> descriptionPhotos) {
-        this.descriptionPhotos = descriptionPhotos;
-    }
+	public void setTitle(String title){
+		this.title = title;
+	}
 
-    public int getCommentCount() {
-        return commentCount;
-    }
+	public String getTitle(){
+		return title;
+	}
 
-    public void setCommentCount(int commentCount) {
-        this.commentCount = commentCount;
-    }
+	public void setCommentCount(int commentCount){
+		this.commentCount = commentCount;
+	}
 
-    @Override
-    public String toString() {
-        return "Thing{" +
-                "key='" + key + '\'' +
-                ", type=" + type +
-                ", category='" + category + '\'' +
-                ", userUID='" + userUID + '\'' +
-                ", title='" + title + '\'' +
-                ", description='" + description + '\'' +
-                ", photo='" + photo + '\'' +
-                ", timestamp=" + timestamp +
-                '}';
-    }
+	public int getCommentCount(){
+		return commentCount;
+	}
 
-    public static class Builder {
-        private String key;
-        private int type;
-        private String userUID;
-        private String userAvatar;
-        private String userName;
-        private String title;
-        private String description;
-        private int category;
-        private String photo;
-        private List<String> descriptionPhotos;
-        private int commentCount;
-        private Map<String, Double> location;
-        private long timestamp;
+	public void setLocation(Location location){
+		this.location = location;
+	}
 
-        public Builder setKey(String key) {
-            this.key = key;
-            return this;
-        }
+	public Location getLocation(){
+		return location;
+	}
 
-        public Builder setType(int type) {
-            this.type = type;
-            return this;
-        }
+	public void setId(int id){
+		this.id = id;
+	}
 
-        public Builder setUserUID(String userUID) {
-            this.userUID = userUID;
-            return this;
-        }
+	public int getId(){
+		return id;
+	}
 
-        public Builder setTitle(String title) {
-            this.title = title;
-            return this;
-        }
+	public void setCategory(String category){
+		this.category = category;
+	}
 
-        public Builder setDescription(String description) {
-            this.description = description;
-            return this;
-        }
+	public String getCategory(){
+		return category;
+	}
 
-        public Builder setCategory(int category) {
-            this.category = category;
-            return this;
-        }
+	public void setUserUID(String userUID){
+		this.userUID = userUID;
+	}
 
-        public Builder setPhoto(String photo) {
-            this.photo = photo;
-            return this;
-        }
+	public String getUserUID(){
+		return userUID;
+	}
 
-        public Builder setTimestamp(long timestamp) {
-            this.timestamp = timestamp;
-            return this;
-        }
+	public void setTimestamp(int timestamp){
+		this.timestamp = timestamp;
+	}
 
-        public Builder setDescriptionPhotos(List<String> descriptionPhotos) {
-            this.descriptionPhotos = descriptionPhotos;
-            return this;
-        }
+	public int getTimestamp(){
+		return timestamp;
+	}
 
-        public Builder setCommentCount(int commentCount) {
-            this.commentCount = commentCount;
-            return this;
-        }
-
-        public Builder setLocation(double lat, double lng) {
-            this.location = new HashMap<>();
-            this.location.put("lat", lat);
-            this.location.put("lng", lng);
-            return this;
-        }
-
-        public Builder setUserName(String userName) {
-            this.userName = userName;
-            return this;
-        }
-
-        public Builder setUserAvatar(String userAvatar) {
-            this.userAvatar = userAvatar;
-            return this;
-        }
-
-        public Thing build() {
-            return new Thing(key,
-                    type,
-                    category,
-                    userUID,
-                    userAvatar,
-                    userName,
-                    title,
-                    description,
-                    photo,
-                    descriptionPhotos,
-                    commentCount,
-                    location,
-                    timestamp);
-        }
-    }
+	@Override
+ 	public String toString(){
+		return 
+			"Thing{" + 
+			"descriptionPhotos = '" + descriptionPhotos + '\'' + 
+			",userAvatar = '" + userAvatar + '\'' + 
+			",description = '" + description + '\'' + 
+			",photo = '" + photo + '\'' + 
+			",type = '" + type + '\'' + 
+			",userName = '" + userName + '\'' + 
+			",title = '" + title + '\'' + 
+			",commentCount = '" + commentCount + '\'' + 
+			",location = '" + location + '\'' + 
+			",id = '" + id + '\'' + 
+			",category = '" + category + '\'' + 
+			",userUID = '" + userUID + '\'' + 
+			",timestamp = '" + timestamp + '\'' + 
+			"}";
+		}
 }

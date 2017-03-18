@@ -5,7 +5,6 @@ import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.View;
-import android.view.Window;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -20,8 +19,8 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.StorageReference;
 import com.sanislo.lostandfound.R;
 import com.sanislo.lostandfound.adapter.ThingAdapter;
-import com.sanislo.lostandfound.model.Thing;
-import com.sanislo.lostandfound.model.User;
+import com.sanislo.lostandfound.model.firebaseModel.Thing;
+import com.sanislo.lostandfound.model.firebaseModel.User;
 import com.sanislo.lostandfound.utils.FirebaseConstants;
 import com.sanislo.lostandfound.utils.FirebaseUtils;
 

@@ -24,15 +24,9 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.location.places.ui.PlacePicker;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.ValueEventListener;
-import com.sanislo.lostandfound.model.User;
 import com.sanislo.lostandfound.presenter.AddThingPresenter;
 import com.sanislo.lostandfound.presenter.AddThingPresenterImpl;
 import com.sanislo.lostandfound.view.AddThingView;
-
-import org.w3c.dom.Text;
 
 import java.util.List;
 

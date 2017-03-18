@@ -1,4 +1,4 @@
-package com.sanislo.lostandfound.model;
+package com.sanislo.lostandfound.model.firebaseModel;
 
 import java.util.HashMap;
 

@@ -1,8 +1,13 @@
 <resources>
     <string name="app_name">LostAndFound</string>
 
+    <!-- Main screen - things list screen -->
+    <!-- toolbar options -->
     <string name="add_thing">Add Thing</string>
     <string name="find_thing">Find Thing</string>
+
+    <string name="thing_posted_in">Posted in %1$s</string>
+    <string name="thing_posted_in_at">Posted in %1$s at %2$s</string>
 
     <string name="hint_email">email address</string>
     <string name="hint_password">password</string>
@@ -18,6 +23,7 @@
     <string name="hint_thing_title">Title</string>
     <string name="hint_thing_description">Description</string>
 
+    <!-- Add thing screen -->
     <string name="select_thing_cover_photo">Add a photo about your stuff!</string>
     <string name="select_thing_description_photos">Add more photos about your thing!</string>
     <string name="thing_last_known_location">Last known location:</string>

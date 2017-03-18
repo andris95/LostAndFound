@@ -12,12 +12,10 @@ import com.firebase.ui.storage.images.FirebaseImageLoader;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.sanislo.lostandfound.R;
-import com.sanislo.lostandfound.model.Comment;
-import com.sanislo.lostandfound.model.Thing;
-import com.sanislo.lostandfound.model.User;
+import com.sanislo.lostandfound.model.firebaseModel.Comment;
+import com.sanislo.lostandfound.model.firebaseModel.User;
 import com.sanislo.lostandfound.utils.FirebaseConstants;
 import com.sanislo.lostandfound.utils.FirebaseUtils;
 

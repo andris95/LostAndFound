@@ -1,4 +1,4 @@
-package com.sanislo.lostandfound.model;
+package com.sanislo.lostandfound.model.firebaseModel;
 
 /**
  * Created by root on 28.12.16.

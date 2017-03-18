@@ -1,4 +1,4 @@
-package com.sanislo.lostandfound.model.api;
+package com.sanislo.lostandfound.model;
 
 import com.google.gson.annotations.Expose;
 import javax.annotation.Generated;

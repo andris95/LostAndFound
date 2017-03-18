@@ -1,5 +1,7 @@
 package com.sanislo.lostandfound.model.api;
 
+import com.sanislo.lostandfound.model.Thing;
+
 import java.util.List;
 
 import retrofit2.Call;
