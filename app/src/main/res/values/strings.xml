@@ -5,10 +5,14 @@
     <!-- toolbar options -->
     <string name="add_thing">Add Thing</string>
     <string name="find_thing">Find Thing</string>
-
     <string name="thing_posted_in">Posted in %1$s</string>
     <string name="thing_posted_in_at">Posted in %1$s at %2$s</string>
 
+    <!-- Main Screen -->
+    <string name="drawer_things">Things</string>
+    <string name="drawer_settings">Settings</string>
+
+    <!-- Authentication -->
     <string name="hint_email">email address</string>
     <string name="hint_password">password</string>
     <string name="hint_first_name">first name</string>
@@ -20,10 +24,9 @@
     <string name="forgot_password">Forgot Your Password? Click here!</string>
     <string name="share">share</string>
 
+    <!-- Add thing screen -->
     <string name="hint_thing_title">Title</string>
     <string name="hint_thing_description">Description</string>
-
-    <!-- Add thing screen -->
     <string name="select_thing_cover_photo">Add a photo about your stuff!</string>
     <string name="select_thing_description_photos">Add more photos about your thing!</string>
     <string name="thing_last_known_location">Last known location:</string>
@@ -31,6 +34,7 @@
     <string name="publishing_progress">Publishing Your Thing</string>
     <string name="publishing_progress_description">Your thing is getting uploaded. Wait a few seconds...</string>
 
+    <!-- Thing description screen -->
     <string name="add_a_comment">Add a comment</string>
 
     <string name="found_keys">Keys found on Aigburth Road, Liverpool, between the Maccies and the garage. It’s got two keyrings on as well but I’ve covered them up for the owner to identify.</string>

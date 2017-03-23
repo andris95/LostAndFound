@@ -15,7 +15,9 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.mikepenz.materialdrawer.AccountHeaderBuilder;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
+import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
+import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.sanislo.lostandfound.R;
 import com.sanislo.lostandfound.adapter.ThingAdapter;
 import com.sanislo.lostandfound.interfaces.ThingsView;
@@ -26,6 +28,7 @@ import com.sanislo.lostandfound.view.BaseActivity;
 import com.sanislo.lostandfound.view.addThing.AddThingActivity;
 import com.sanislo.lostandfound.view.thingDetails.ThingDetailsActivity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -90,8 +93,20 @@ public class ThingsActivity extends BaseActivity implements ThingsView {
                 .withOnlyMainProfileImageVisible(true);
         DrawerBuilder drawerBuilder = new DrawerBuilder()
                 .withActivity(ThingsActivity.this)
-                .withAccountHeader(accountHeaderBuilder.build());
+                .withAccountHeader(accountHeaderBuilder.build())
+                .withDrawerItems(getDrawerItems());
         mDrawer = drawerBuilder.build();
+    }
+
+    private List<IDrawerItem> getDrawerItems() {
+        List<IDrawerItem> drawerItems = new ArrayList<>();
+        PrimaryDrawerItem things = new PrimaryDrawerItem()
+                .withName(R.string.drawer_things);
+        PrimaryDrawerItem settings = new PrimaryDrawerItem()
+                .withName(R.string.drawer_settings);
+        drawerItems.add(things);
+        drawerItems.add(settings);
+        return drawerItems;
     }
 
     private void initFirebase() {
