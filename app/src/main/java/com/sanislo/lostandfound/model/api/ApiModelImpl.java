@@ -20,6 +20,11 @@ public class ApiModelImpl implements ApiModel {
     }
 
     @Override
+    public Call<Void> postThing(Thing thing) {
+        return mApiInterface.postThing(thing);
+    }
+
+    @Override
     public Call<Void> saveUser(User user) {
         return mApiInterface.saveUser(user);
     }

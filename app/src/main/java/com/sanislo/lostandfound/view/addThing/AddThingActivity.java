@@ -3,7 +3,6 @@ package com.sanislo.lostandfound.view.addThing;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.drawable.AnimatedVectorDrawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -16,7 +15,6 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -25,9 +23,9 @@ import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.location.places.ui.PlacePicker;
 import com.sanislo.lostandfound.R;
+import com.sanislo.lostandfound.interfaces.AddThingView;
 import com.sanislo.lostandfound.presenter.AddThingPresenter;
 import com.sanislo.lostandfound.presenter.AddThingPresenterImpl;
-import com.sanislo.lostandfound.interfaces.AddThingView;
 
 import java.util.List;
 
@@ -57,17 +55,10 @@ public class AddThingActivity extends AppCompatActivity implements AddThingView 
     @BindView(R.id.edt_thing_description)
     EditText edtDescription;
 
-    @BindView(R.id.iv_vector)
-    ImageView ivVector;
-
     private boolean DEBUG = true;
     private AddThingPresenter mPresenter;
     private ArrayAdapter<String> mCategoriesAdapter;
     private MaterialDialog mProgressDialog;
-
-    /** TEST */
-    private AnimatedVectorDrawable mChevronVectorDrawable;
-    private boolean mIsExpanded;
 
     private AdapterView.OnItemSelectedListener mCategorySelectedListener = new AdapterView.OnItemSelectedListener() {
         @Override
@@ -89,8 +80,6 @@ public class AddThingActivity extends AppCompatActivity implements AddThingView 
 
         mPresenter = new AddThingPresenterImpl(this);
         initCategories();
-        displayNotificationText();
-        setVector();
     }
 
     @Override
@@ -103,14 +92,6 @@ public class AddThingActivity extends AppCompatActivity implements AddThingView 
     protected void onPause() {
         super.onPause();
         mPresenter.onPause();
-    }
-
-    private void displayNotificationText() {
-        Bundle extras = getIntent().getExtras();
-        if (extras != null && extras.containsKey("NOTIFICATION_TEXT")) {
-            String notificationText = getIntent().getStringExtra("NOTIFICATION_TEXT");
-            Toast.makeText(this, notificationText, Toast.LENGTH_LONG).show();
-        }
     }
 
     private void initCategories() {
@@ -256,25 +237,5 @@ public class AddThingActivity extends AppCompatActivity implements AddThingView 
         } catch (GooglePlayServicesRepairableException e2) {
             e2.printStackTrace();
         }
-    }
-
-    private void setVector() {
-        mChevronVectorDrawable = (AnimatedVectorDrawable) getResources()
-                .getDrawable(R.drawable.animated_vector_chevron_up);
-        ivVector.setImageDrawable(mChevronVectorDrawable);
-    }
-
-    @OnClick(R.id.iv_vector)
-    public void onClickVector() {
-        mChevronVectorDrawable = !mIsExpanded ?
-                (AnimatedVectorDrawable) getResources()
-                .getDrawable(R.drawable.animated_vector_chevron_up)
-                :
-                (AnimatedVectorDrawable) getResources()
-                        .getDrawable(R.drawable.animated_vector_chevron_down);
-        ivVector.setImageDrawable(mChevronVectorDrawable);
-        mChevronVectorDrawable.start();
-        mIsExpanded = !mIsExpanded;
-        Log.d(TAG, "onClickVector: " + mIsExpanded);
     }
 }

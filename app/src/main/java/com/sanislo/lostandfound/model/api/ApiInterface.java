@@ -42,8 +42,11 @@ public interface ApiInterface {
     @GET(ApiConstants.API_SPONSORED)
     Call<SponsorModel> getSponsors();*/
 
-    @GET(ApiConstants.GET_THINGS)
+    @GET(ApiConstants.THINGS)
     Call<List<Thing>> getThings();
+
+    @POST(ApiConstants.THINGS)
+    Call<Void> postThing(@Body Thing thing);
 
     @POST(ApiConstants.USERS)
     Call<Void> saveUser(@Body User user);

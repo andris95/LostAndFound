@@ -29,5 +29,6 @@ public interface ApiModel {
     Call<SponsorModel> getSponsors();*/
 
     Call<List<Thing>> getThings();
+    Call<Void> postThing(Thing thing);
     Call<Void> saveUser(User user);
 }

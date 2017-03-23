@@ -1,7 +1,5 @@
 package com.sanislo.lostandfound.model.api;
 
-import com.sanislo.lostandfound.BuildConfig;
-
 /**
  * Created by root on 16.03.17.
  */
@@ -22,7 +20,7 @@ public class ApiConstants {
     public static final String API_KEY_PARAM                    = "apikey";
     public static final String QUERY_KEY_PATH                   = "query";
 
-    public static final String GET_THINGS                       = "things";
+    public static final String THINGS                           = "things";
     public static final String GET_THING                        = "thing/";
     public static final String USERS                            = "users";
 }
