@@ -61,6 +61,10 @@ dependencies {
     compile 'javax.annotation:javax.annotation-api:1.2'
 
     compile 'com.squareup.okhttp3:okhttp:3.6.0'
+
+    compile('com.mikepenz:materialdrawer:5.8.2@aar') {
+        transitive = true
+    }
 }
 
 apply plugin: 'com.google.gms.google-services'

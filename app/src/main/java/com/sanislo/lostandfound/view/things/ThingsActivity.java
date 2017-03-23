@@ -12,15 +12,19 @@ import android.view.View;
 import android.view.Window;
 
 import com.google.firebase.auth.FirebaseAuth;
-import com.sanislo.lostandfound.view.addThing.AddThingActivity;
-import com.sanislo.lostandfound.view.BaseActivity;
+import com.mikepenz.materialdrawer.AccountHeaderBuilder;
+import com.mikepenz.materialdrawer.Drawer;
+import com.mikepenz.materialdrawer.DrawerBuilder;
+import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
 import com.sanislo.lostandfound.R;
-import com.sanislo.lostandfound.view.thingDetails.ThingDetailsActivity;
 import com.sanislo.lostandfound.adapter.ThingAdapter;
 import com.sanislo.lostandfound.interfaces.ThingsView;
 import com.sanislo.lostandfound.model.Thing;
 import com.sanislo.lostandfound.presenter.ThingsPresenter;
 import com.sanislo.lostandfound.presenter.ThingsPresenterImpl;
+import com.sanislo.lostandfound.view.BaseActivity;
+import com.sanislo.lostandfound.view.addThing.AddThingActivity;
+import com.sanislo.lostandfound.view.thingDetails.ThingDetailsActivity;
 
 import java.util.List;
 
@@ -40,6 +44,7 @@ public class ThingsActivity extends BaseActivity implements ThingsView {
     private ThingAdapter mThingAdapter;
 
     private ThingsPresenter mThingsPresenter;
+    private Drawer mDrawer;
 
     private ThingAdapter.OnClickListener mThingClickListener = new ThingAdapter.OnClickListener() {
 
@@ -63,6 +68,7 @@ public class ThingsActivity extends BaseActivity implements ThingsView {
         ButterKnife.bind(this);
         mThingsPresenter = new ThingsPresenterImpl(this);
         initFirebase();
+        setupDrawer();
         initToolbar();
         initThingsAdapter();
         mThingsPresenter.getThings();
@@ -72,6 +78,20 @@ public class ThingsActivity extends BaseActivity implements ThingsView {
     protected void onResume() {
         super.onResume();
 
+    }
+
+    private void setupDrawer() {
+        ProfileDrawerItem profileDrawerItem = new ProfileDrawerItem()
+                .withName("Andras")
+                .withEmail("sanisloandras@gmail.com");
+        AccountHeaderBuilder accountHeaderBuilder = new AccountHeaderBuilder()
+                .withActivity(ThingsActivity.this)
+                .addProfiles(profileDrawerItem)
+                .withOnlyMainProfileImageVisible(true);
+        DrawerBuilder drawerBuilder = new DrawerBuilder()
+                .withActivity(ThingsActivity.this)
+                .withAccountHeader(accountHeaderBuilder.build());
+        mDrawer = drawerBuilder.build();
     }
 
     private void initFirebase() {
