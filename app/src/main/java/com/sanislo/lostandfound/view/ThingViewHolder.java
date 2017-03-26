@@ -19,7 +19,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.StorageReference;
 import com.sanislo.lostandfound.R;
 import com.sanislo.lostandfound.adapter.ThingAdapter;
-import com.sanislo.lostandfound.model.firebaseModel.Thing;
+import com.sanislo.lostandfound.model.Thing;
 import com.sanislo.lostandfound.model.firebaseModel.User;
 import com.sanislo.lostandfound.utils.FirebaseConstants;
 import com.sanislo.lostandfound.utils.FirebaseUtils;
@@ -105,7 +105,7 @@ public class ThingViewHolder extends RecyclerView.ViewHolder {
     }
 
     private void setTypeAndDate() {
-        String type = (mThing.getType() == 0) ? "lost" : "found";
+        String type = mThing.getType();
         String time = DateUtils.formatDateTime(mRootView.getContext(),
                 mThing.getTimestamp(),
                 DateUtils.FORMAT_SHOW_DATE);
@@ -166,6 +166,6 @@ public class ThingViewHolder extends RecyclerView.ViewHolder {
 
     @OnClick(R.id.rl_thing_root_view)
     public void onClickRootView() {
-        mOnClickListener.onClickRootView(mRootView, mThing.getKey());
+        //mOnClickListener.onClickRootView(mRootView, mThing.getKey());
     }
 }

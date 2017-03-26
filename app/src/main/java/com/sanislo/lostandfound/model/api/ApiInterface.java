@@ -9,38 +9,14 @@ import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
+import retrofit2.http.Path;
+import retrofit2.http.Query;
 
 /**
  * Created by root on 16.03.17.
  */
 
 public interface ApiInterface {
-    /*@POST(ApiConstants.API_ACTIVATE)
-    Call<ImgRecognitionResponse> uploadImage(@Header(ApiConstants.API_KEY_PARAM) String token,
-                                             @Header(ApiConstants.DOC_TYPE) String type,
-                                             @Body RequestBody file);
-
-    @POST(ApiConstants.API_REGISTER_ID)
-    Call<RegistrationResponse> registerId(@Header(ApiConstants.API_KEY_PARAM) String token,
-                                          @Body User user);
-
-    @POST(ApiConstants.API_ACTIVATE)
-    Call<Void> sendCode(@Header(ApiConstants.API_KEY_PARAM) String token,
-                        @Body ActivationCodeRequest request);
-
-    @POST(ApiConstants.API_USER_CREDENTIALS)
-    Call<RegistrationResponse> sendCredentials(@Header(ApiConstants.API_KEY_PARAM) String token,
-                                               @Body Credentials credentials);
-
-    @POST(ApiConstants.API_LOGIN)
-    Call<Void> login(@Header(ApiConstants.API_KEY_PARAM) String token,
-                     @Body LoginModel loginModel);
-
-    @GET(ApiConstants.API_PROFILE)
-    Call<UserProfile> getProfile();
-
-    @GET(ApiConstants.API_SPONSORED)
-    Call<SponsorModel> getSponsors();*/
 
     @GET(ApiConstants.THINGS)
     Call<List<Thing>> getThings();
@@ -50,4 +26,13 @@ public interface ApiInterface {
 
     @POST(ApiConstants.USERS)
     Call<Void> saveUser(@Body User user);
+
+    @GET(ApiConstants.USERS + "/{id}")
+    Call<User> getUser(@Path("id") int id);
+
+    @GET(ApiConstants.USERS)
+    Call<User> getUserByUID(@Query("uid") String uid);
+
+    @GET(ApiConstants.USERS)
+    Call<List<User>> getUserByUIDList(@Query("uid") String uid);
 }

@@ -28,27 +28,19 @@ import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.firebase.ui.storage.images.FirebaseImageLoader;
-import com.google.android.gms.maps.CameraUpdate;
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.firebase.database.Query;
 import com.google.firebase.storage.StorageReference;
 import com.sanislo.lostandfound.R;
 import com.sanislo.lostandfound.adapter.CommentsAdapter;
 import com.sanislo.lostandfound.adapter.DescriptionPhotosAdapter;
-import com.sanislo.lostandfound.model.firebaseModel.Comment;
-import com.sanislo.lostandfound.model.firebaseModel.Thing;
+import com.sanislo.lostandfound.model.Thing;
 import com.sanislo.lostandfound.presenter.ThingDetailsPresenter;
 import com.sanislo.lostandfound.presenter.ThingDetailsPresenterImpl;
-import com.sanislo.lostandfound.utils.FirebaseConstants;
 import com.sanislo.lostandfound.utils.FirebaseUtils;
 import com.sanislo.lostandfound.view.BaseActivity;
-import com.sanislo.lostandfound.view.CommentViewHolder;
 import com.sanislo.lostandfound.view.ThingDetailsView;
 
 import java.util.List;
@@ -293,7 +285,7 @@ public class ThingDetailsActivity extends BaseActivity implements ThingDetailsVi
     };
 
     private void displayThingMarker() {
-        mGoogleMap.clear();
+        /*mGoogleMap.clear();
         MarkerOptions markerOptions = new MarkerOptions();
         Map<String, Double> latLngMap = mThing.getLocation();
         LatLng latLng = new LatLng(latLngMap.get("lat"),
@@ -301,7 +293,7 @@ public class ThingDetailsActivity extends BaseActivity implements ThingDetailsVi
         markerOptions.position(latLng);
         mGoogleMap.addMarker(markerOptions);
         CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 10f);
-        mGoogleMap.moveCamera(cameraUpdate);
+        mGoogleMap.moveCamera(cameraUpdate);*/
     }
 
     private void setAuthorPhoto() {
@@ -350,7 +342,7 @@ public class ThingDetailsActivity extends BaseActivity implements ThingDetailsVi
     }
 
     private void setTypeAndDate() {
-        String type = (mThing.getType() == 0) ? "lost" : "found";
+        String type = mThing.getType();
         String time = DateUtils.formatDateTime(ThingDetailsActivity.this,
                 mThing.getTimestamp(),
                 DateUtils.FORMAT_SHOW_DATE);
@@ -363,7 +355,7 @@ public class ThingDetailsActivity extends BaseActivity implements ThingDetailsVi
     }
 
     private void setComments() {
-        if (mCommentsAdapter != null) return;
+       /* if (mCommentsAdapter != null) return;
         Query commentQuery = FirebaseUtils.getDatabase()
                 .getReference()
                 .child(FirebaseConstants.THINGS_COMMENTS)
@@ -373,7 +365,7 @@ public class ThingDetailsActivity extends BaseActivity implements ThingDetailsVi
                 CommentViewHolder.class,
                 commentQuery);
         rvComments.setLayoutManager(new LinearLayoutManager(ThingDetailsActivity.this));
-        rvComments.setAdapter(mCommentsAdapter);
+        rvComments.setAdapter(mCommentsAdapter);*/
     }
 
     private void setDescriptionPhotos() {

@@ -13,6 +13,7 @@ public abstract class PreferencesManager {
     public static final String PREF_NAME = "PREFERENCES";
     public static final String KEY_PUSH_TOKEN = "KEY_PUSH_TOKEN";
     public static final String KEY_USER_ID = "KEY_USER_ID";
+    public static final String KEY_UID = "KEY_UID";
     public static final String KEY_USER_TOKEN = "KEY_USER_TOKEN";
 
     private static SharedPreferences mSharedPreferences;
@@ -49,11 +50,19 @@ public abstract class PreferencesManager {
     }
 
     //============= SETTERS ============
-    public static void setUserId(Context context, String userId) {
+    public static void setUserUID(Context context, String userId) {
         if (context == null) return;
         mSharedPreferences = getSharedPreferences(context);
         SharedPreferences.Editor editor = mSharedPreferences.edit();
-        editor.putString(KEY_USER_ID, userId);
+        editor.putString(KEY_UID, userId);
+        editor.apply();
+    }
+
+    public static void setUserID(Context context, int userID) {
+        if (context == null) return;
+        mSharedPreferences = getSharedPreferences(context);
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        editor.putInt(KEY_USER_ID, userID);
         editor.apply();
     }
 
@@ -66,10 +75,16 @@ public abstract class PreferencesManager {
     }
 
     //============= GETTERS ============
-    public static String getUserId(Context context) {
+    public static String getUserUID(Context context) {
         mSharedPreferences = getSharedPreferences(context);
-        return mSharedPreferences.getString(KEY_USER_ID, "");
+        return mSharedPreferences.getString(KEY_UID, "");
     }
+
+    public static int getUserID(Context context) {
+        mSharedPreferences = getSharedPreferences(context);
+        return mSharedPreferences.getInt(KEY_USER_ID, -1);
+    }
+
 
     public static String getUserToken(Context context) {
         mSharedPreferences = getSharedPreferences(context);

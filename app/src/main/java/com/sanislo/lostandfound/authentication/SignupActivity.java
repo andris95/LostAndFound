@@ -3,6 +3,7 @@ package com.sanislo.lostandfound.authentication;
 /**
  * Created by root on 04.09.16.
  */
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -14,15 +15,15 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.sanislo.lostandfound.view.BaseActivity;
+import com.sanislo.lostandfound.R;
+import com.sanislo.lostandfound.interfaces.SignupView;
 import com.sanislo.lostandfound.model.User;
 import com.sanislo.lostandfound.presenter.SignupPresenter;
 import com.sanislo.lostandfound.presenter.SignupPresenterImpl;
 import com.sanislo.lostandfound.utils.FirebaseUtils;
-import com.sanislo.lostandfound.view.things.ThingsActivity;
-import com.sanislo.lostandfound.R;
 import com.sanislo.lostandfound.utils.PreferencesManager;
-import com.sanislo.lostandfound.interfaces.SignupView;
+import com.sanislo.lostandfound.view.BaseActivity;
+import com.sanislo.lostandfound.view.things.ThingsActivity;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -131,7 +132,7 @@ public class SignupActivity extends BaseActivity implements SignupView {
         public void onComplete(@NonNull Task task) {
             FirebaseUser firebaseUser = mFirebaseAuth.getCurrentUser();
             if (firebaseUser != null) {
-                PreferencesManager.setUserId(getApplicationContext(), firebaseUser.getUid());
+                PreferencesManager.setUserUID(getApplicationContext(), firebaseUser.getUid());
                 launchMainActivity();
             }
         }

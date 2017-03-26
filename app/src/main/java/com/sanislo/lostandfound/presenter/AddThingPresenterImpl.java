@@ -4,7 +4,6 @@ import android.content.ClipData;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.support.annotation.NonNull;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -19,7 +18,6 @@ import com.amazonaws.services.s3.AmazonS3Client;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlacePicker;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -31,13 +29,16 @@ import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.sanislo.lostandfound.interfaces.AddThingView;
-import com.sanislo.lostandfound.model.firebaseModel.Thing;
-import com.sanislo.lostandfound.model.firebaseModel.ThingLocation;
-import com.sanislo.lostandfound.model.firebaseModel.User;
+import com.sanislo.lostandfound.model.Location;
+import com.sanislo.lostandfound.model.Thing;
+import com.sanislo.lostandfound.model.User;
+import com.sanislo.lostandfound.model.api.ApiModel;
+import com.sanislo.lostandfound.model.api.ApiModelImpl;
 import com.sanislo.lostandfound.utils.Constants;
 import com.sanislo.lostandfound.utils.FileUtils;
 import com.sanislo.lostandfound.utils.FirebaseConstants;
 import com.sanislo.lostandfound.utils.FirebaseUtils;
+import com.sanislo.lostandfound.utils.PreferencesManager;
 import com.sanislo.lostandfound.view.addThing.AddThingActivity;
 
 import java.io.File;
@@ -45,6 +46,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -66,12 +71,11 @@ public class AddThingPresenterImpl implements AddThingPresenter {
     private FirebaseUser mFirebaseUser;
     private DatabaseReference mDatabaseReference;
     private StorageReference mStorageReference;
-    private Thing.Builder mThingBuilder;
-    private String mThingKey;
     private int mCategory;
 
     private Place mThingPlace;
-    private ThingLocation mThingLocation;
+    private Thing mThing;
+    private Location mThingLocation;
 
     private Uri mCoverPhotoUri;
     private long mTotalBytesToTransfer = 0;
@@ -80,24 +84,36 @@ public class AddThingPresenterImpl implements AddThingPresenter {
     private List<String> mDescriptionPhotoPaths = new ArrayList<>();
 
     private TransferUtility mTransferUtility;
+    private ApiModel mApiModel = new ApiModelImpl();
 
-    private ValueEventListener mUserListener = new ValueEventListener() {
-        @Override
-        public void onDataChange(DataSnapshot dataSnapshot) {
-            mUser = dataSnapshot.getValue(User.class);
-            Log.d(TAG, "onDataChange: " + mUser);
-        }
+    private void getUser() {
+        String userUID = PreferencesManager.getUserUID(mContext);
+        Log.d(TAG, "getUser: userUID: " + userUID);
+        //Call<User> userCall = mApiModel.getUser(userUID);
+        Call<List<User>> userCall = mApiModel.getUserListByUID(userUID);
+        userCall.enqueue(new Callback<List<User>>() {
+            @Override
+            public void onResponse(Call<List<User>> call, Response<List<User>> response) {
+                if (response.isSuccessful()) {
+                    mUser = response.body().get(0);
+                    Log.d(TAG, "onResponse: " + mUser);
+                } else {
+                    Log.d(TAG, "onResponse: error");
+                    Log.d(TAG, "onResponse: " + response.message());
+                }
+            }
 
-        @Override
-        public void onCancelled(DatabaseError databaseError) {
+            @Override
+            public void onFailure(Call<List<User>> call, Throwable t) {
 
-        }
-    };
+            }
+        });
+    }
 
     public AddThingPresenterImpl(AddThingActivity context) {
         mContext = context;
         mView = context;
-        mThingBuilder = new Thing.Builder();
+        getUser();
         initFirebase();
         initAmazonTransferUtility();
         getCategories();
@@ -151,16 +167,12 @@ public class AddThingPresenterImpl implements AddThingPresenter {
 
     @Override
     public void onResume() {
-        mDatabaseReference.child(FirebaseConstants.USERS)
-                .child(mFirebaseUser.getUid())
-                .addValueEventListener(mUserListener);
+
     }
 
     @Override
     public void onPause() {
-        mDatabaseReference.child(FirebaseConstants.USERS)
-                .child(mFirebaseUser.getUid())
-                .removeEventListener(mUserListener);
+
     }
 
     @Override
@@ -169,15 +181,22 @@ public class AddThingPresenterImpl implements AddThingPresenter {
         startThingDataUpload();
     }
 
+    private long mTimetstamp;
     private void configureThing(String title, String description) {
-        mThingKey = generateNewThingKey();
-        long timestamp = new Date().getTime();
-        mThingBuilder.setKey(mThingKey)
-                .setUserUID(mFirebaseUser.getUid())
-                .setTitle(title)
-                .setDescription(description)
-                .setCategory(mCategory)
-                .setTimestamp(timestamp);
+        mThing = new Thing();
+        mTimetstamp = new Date().getTime();
+
+        if (mUser != null) {
+            mThing.setUserUID(mUser.getUid());
+            mThing.setUserName(mUser.getFullName());
+            mThing.setUserAvatar(mUser.getAvatarURL());
+            mThing.setTitle(title);
+            mThing.setDescription(description);
+            mThing.setTimestamp(mTimetstamp);
+            mThing.setCategory(String.valueOf(mCategory));
+        } else {
+            throw new RuntimeException("User is not yet downloaded");
+        }
     }
 
     private void startThingDataUpload() {
@@ -186,90 +205,53 @@ public class AddThingPresenterImpl implements AddThingPresenter {
         } else if (mDescriptionPhotoUris != null && !mDescriptionPhotoUris.isEmpty()) {
             uploadDescriptionPhotos();
         } else {
-            setNewThingValue();
+            postThing();
         }
     }
 
     private void uploadCoverPhoto() {
-        /*UploadTask uploadCoverPhotoTask = mStorageReference.child(FirebaseConstants.THINGS)
-                .child(mThingKey)
+        UploadTask uploadCoverPhotoTask = mStorageReference
+                .child(mUser.getUid())
+                .child(FirebaseConstants.THINGS)
+                .child(String.valueOf(mTimetstamp))
                 .child(FirebaseConstants.THING_COVER_PHOTO)
                 .child(FileUtils.getFileName(mContext, mCoverPhotoUri))
                 .putFile(mCoverPhotoUri);
         uploadCoverPhotoTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                setPhotoPath(taskSnapshot.getStorage().getPath());
+                String coverPhotoDownloadURL = taskSnapshot.getDownloadUrl().toString();
+                Log.d(TAG, "onSuccess: coverPhotoDownloadURL: " + coverPhotoDownloadURL);
+                mThing.setPhoto(coverPhotoDownloadURL);
                 if (mDescriptionPhotoUris != null && !mDescriptionPhotoUris.isEmpty()) {
                     uploadDescriptionPhotos();
                 } else {
-                    setNewThingValue();
+                    postThing();
                 }
             }
-        }).addOnProgressListener(mProgressListener);*/
-        File file = new File(FileUtils.getPath(mContext, mCoverPhotoUri));
-        Log.d(TAG, "uploadCoverPhoto: " + mCoverPhotoUri.getPath());
-        Log.d(TAG, "uploadCoverPhoto: " + FileUtils.getPath(mContext, mCoverPhotoUri));
-        Log.d(TAG, "uploadCoverPhoto: " + mCoverPhotoUri.toString());
-        Log.d(TAG, "uploadCoverPhoto: " + (file == null));
-        Log.d(TAG, "uploadCoverPhoto: " + file.isFile());
-        Log.d(TAG, "uploadCoverPhoto: " + file.getPath());
-        Log.d(TAG, "uploadCoverPhoto: " + file.getAbsolutePath());
-        TransferObserver observer = mTransferUtility.upload(
-                Constants.S3_BUCKET,     /* The bucket to upload to */
-                FileUtils.getFileName(mContext, mCoverPhotoUri),    /* The key for the uploaded object */
-                file   /* The file where the data to upload exists */
-        );
-        observer.setTransferListener(new TransferListener() {
-            @Override
-            public void onStateChanged(int id, TransferState state) {
-                switch (state) {
-                    case COMPLETED:
-                        setPhotoPath("some_path");
-                        if (mDescriptionPhotoUris != null && !mDescriptionPhotoUris.isEmpty()) {
-                            uploadDescriptionPhotos();
-                        } else {
-                            setNewThingValue();
-                        }
-                        break;
-                    case FAILED:
-                        Log.d(TAG, "onStateChanged: FAILED TO UPLOAD TO AMAZON S3");
-                        break;
-                    default:
-                        Log.d(TAG, "onStateChanged: " + state);
-                }
-            }
-
-            @Override
-            public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
-                Log.d(TAG, "onProgressChanged: " + bytesCurrent + " / " + bytesTotal);
-            }
-
-            @Override
-            public void onError(int id, Exception ex) {
-
-            }
-        });
+        }).addOnProgressListener(mProgressListener);
     }
 
     private void uploadDescriptionPhotos() {
         Uri uri = mDescriptionPhotoUris.remove();
-        UploadTask descriptionPhotoUploadTask = mStorageReference.child(FirebaseConstants.THINGS)
-                .child(mThingKey)
+        UploadTask descriptionPhotoUploadTask = mStorageReference
+                .child(mUser.getUid())
+                .child(FirebaseConstants.THINGS)
+                .child(String.valueOf(mTimetstamp))
                 .child(FirebaseConstants.THING_DESCRIPTION_PHOTOS)
                 .child(FileUtils.getFileName(mContext, uri))
                 .putFile(uri);
         descriptionPhotoUploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                String path = taskSnapshot.getStorage().getPath();
-                Log.d(TAG, "onSuccess: " + path);
-                mDescriptionPhotoPaths.add(path);
+                String descriptionPhotoURL = taskSnapshot.getDownloadUrl().toString();
+                Log.d(TAG, "onSuccess: descriptionPhotoURL: " + descriptionPhotoURL);
+                mDescriptionPhotoPaths.add(descriptionPhotoURL);
                 if (!mDescriptionPhotoUris.isEmpty()) {
                     uploadDescriptionPhotos();
                 } else {
-                    mThingBuilder.setDescriptionPhotos(mDescriptionPhotoPaths);
-                    setNewThingValue();
+                    mThing.setDescriptionPhotos(mDescriptionPhotoPaths);
+                    postThing();
                 }
             }
         }).addOnProgressListener(mProgressListener);
@@ -284,46 +266,39 @@ public class AddThingPresenterImpl implements AddThingPresenter {
         }
     };
 
-    private void setPhotoPath(String path) {
-        mThingBuilder.setPhoto(path);
+    private void postThing() {
+        setLocation();
+        postThingData();
     }
 
-    private void setNewThingValue() {
-        mThingBuilder.setUserName(mUser.getFullName());
-        mThingBuilder.setUserAvatar(mUser.getAvatarURL());
-        setLocation();
-        Log.d(TAG, "setNewThingValue: " + mUser.getAvatarURL() + " / " + mUser.getFullName());
-        Thing thing = mThingBuilder.build();
-        DatabaseReference newThingReference = mDatabaseReference
-                .child(FirebaseConstants.THINGS)
-                .child(thing.getKey());
-        newThingReference.setValue(thing)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        mView.onThingAdded();
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        e.printStackTrace();
-                    }
-                });
+    private void postThingData() {
+        Call<Void> postThingCall = mApiModel.postThing(mThing);
+        postThingCall.enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if (response.isSuccessful()) {
+                    mView.onThingAdded();
+                } else {
+                    Log.d(TAG, "onResponse: FAILED POSTING THING");
+                    Log.d(TAG, "onResponse: " + response.message());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                t.printStackTrace();
+            }
+        });
     }
 
     private void setLocation() {
         if (mThingPlace != null) {
             LatLng latLng = mThingPlace.getLatLng();
-            mThingBuilder.setLocation(latLng.latitude, latLng.longitude);
+            Location location = new Location();
+            location.setLat(latLng.latitude);
+            location.setLng(latLng.longitude);
+            mThing.setLocation(location);
         }
-    }
-
-    private String generateNewThingKey() {
-        return mDatabaseReference
-                .child(FirebaseConstants.THINGS)
-                .push()
-                .getKey();
     }
 
     @Override
@@ -372,5 +347,50 @@ public class AddThingPresenterImpl implements AddThingPresenter {
             mTotalBytesToTransfer += file.length();
             Log.d(TAG, "incrementTotalByteCount: " + mTotalBytesToTransfer);
         }
+    }
+
+    private void testAmazonS3Upload() {
+        File file = new File(FileUtils.getPath(mContext, mCoverPhotoUri));
+        Log.d(TAG, "uploadCoverPhoto: " + mCoverPhotoUri.getPath());
+        Log.d(TAG, "uploadCoverPhoto: " + FileUtils.getPath(mContext, mCoverPhotoUri));
+        Log.d(TAG, "uploadCoverPhoto: " + mCoverPhotoUri.toString());
+        Log.d(TAG, "uploadCoverPhoto: " + (file == null));
+        Log.d(TAG, "uploadCoverPhoto: " + file.isFile());
+        Log.d(TAG, "uploadCoverPhoto: " + file.getPath());
+        Log.d(TAG, "uploadCoverPhoto: " + file.getAbsolutePath());
+        TransferObserver observer = mTransferUtility.upload(
+                Constants.S3_BUCKET,     /* The bucket to upload to */
+                FileUtils.getFileName(mContext, mCoverPhotoUri),    /* The key for the uploaded object */
+                file   /* The file where the data to upload exists */
+        );
+        observer.setTransferListener(new TransferListener() {
+            @Override
+            public void onStateChanged(int id, TransferState state) {
+                switch (state) {
+                    case COMPLETED:
+                        if (mDescriptionPhotoUris != null && !mDescriptionPhotoUris.isEmpty()) {
+                            uploadDescriptionPhotos();
+                        } else {
+                            postThing();
+                        }
+                        break;
+                    case FAILED:
+                        Log.d(TAG, "onStateChanged: FAILED TO UPLOAD TO AMAZON S3");
+                        break;
+                    default:
+                        Log.d(TAG, "onStateChanged: " + state);
+                }
+            }
+
+            @Override
+            public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
+                Log.d(TAG, "onProgressChanged: " + bytesCurrent + " / " + bytesTotal);
+            }
+
+            @Override
+            public void onError(int id, Exception ex) {
+
+            }
+        });
     }
 }

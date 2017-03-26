@@ -1,17 +1,11 @@
 package com.sanislo.lostandfound.model;
 
 import com.google.gson.annotations.Expose;
-import javax.annotation.Generated;
-import com.google.gson.annotations.SerializedName;
 
-@Generated("com.robohorse.robopojogenerator")
-public class Location{
-
-	@SerializedName("lng")
+public class Location {
 	@Expose
 	private double lng;
 
-	@SerializedName("lat")
 	@Expose
 	private double lat;
 

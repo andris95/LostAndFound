@@ -1,71 +1,54 @@
 package com.sanislo.lostandfound.model;
 
 import com.google.gson.annotations.Expose;
-import javax.annotation.Generated;
-import com.google.gson.annotations.SerializedName;
 
-@Generated("com.robohorse.robopojogenerator")
+import java.util.List;
+
 public class Thing {
-	public static final String TYPE_LOST = "lost";
-	public static final String TYPE_FOUND = "found";
-
-	@SerializedName("descriptionPhotos")
 	@Expose
-	private DescriptionPhotos descriptionPhotos;
+	private List<String> descriptionPhotos;
 
-	@SerializedName("userAvatar")
 	@Expose
 	private String userAvatar;
 
-	@SerializedName("description")
 	@Expose
 	private String description;
 
-	@SerializedName("photo")
 	@Expose
 	private String photo;
 
-	@SerializedName("type")
 	@Expose
 	private String type;
 
-	@SerializedName("userName")
 	@Expose
 	private String userName;
 
-	@SerializedName("title")
 	@Expose
 	private String title;
 
-	@SerializedName("commentCount")
 	@Expose
 	private int commentCount;
 
-	@SerializedName("location")
 	@Expose
 	private Location location;
 
-	@SerializedName("id")
 	@Expose
 	private int id;
 
-	@SerializedName("category")
 	@Expose
 	private String category;
 
-	@SerializedName("userUID")
 	@Expose
 	private String userUID;
 
-	@SerializedName("timestamp")
 	@Expose
-	private int timestamp;
+	private long timestamp;
 
-	public void setDescriptionPhotos(DescriptionPhotos descriptionPhotos){
+	public void setDescriptionPhotos(List<String> descriptionPhotos){
 		this.descriptionPhotos = descriptionPhotos;
 	}
 
-	public DescriptionPhotos getDescriptionPhotos(){
+	public List<String> getDescriptionPhotos(){
 		return descriptionPhotos;
 	}
 
@@ -157,11 +140,11 @@ public class Thing {
 		return userUID;
 	}
 
-	public void setTimestamp(int timestamp){
+	public void setTimestamp(long timestamp){
 		this.timestamp = timestamp;
 	}
 
-	public int getTimestamp(){
+	public long getTimestamp(){
 		return timestamp;
 	}
 

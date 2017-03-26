@@ -1,6 +1,6 @@
 package com.sanislo.lostandfound.presenter;
 
-import com.sanislo.lostandfound.model.firebaseModel.Thing;
+import com.sanislo.lostandfound.model.Thing;
 
 /**
  * Created by root on 15.01.17.

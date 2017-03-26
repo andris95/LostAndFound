@@ -1,6 +1,5 @@
 package com.sanislo.lostandfound.presenter;
 
-import android.text.TextUtils;
 import android.util.Log;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -8,13 +7,10 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
-import com.sanislo.lostandfound.model.firebaseModel.Comment;
-import com.sanislo.lostandfound.model.firebaseModel.Thing;
+import com.sanislo.lostandfound.model.Thing;
 import com.sanislo.lostandfound.utils.FirebaseConstants;
 import com.sanislo.lostandfound.utils.FirebaseUtils;
 import com.sanislo.lostandfound.view.ThingDetailsView;
-
-import java.util.Date;
 
 /**
  * Created by root on 15.01.17.
@@ -36,7 +32,7 @@ public class ThingDetailsPresenterImpl implements ThingDetailsPresenter {
         public void onDataChange(DataSnapshot dataSnapshot) {
             mThing = dataSnapshot.getValue(Thing.class);
             Log.d(TAG, "onDataChange: " + mThing);
-            mView.onThingLoaded(mThing);
+            //mView.onThingLoaded(mThing);
         }
 
         @Override
@@ -78,7 +74,7 @@ public class ThingDetailsPresenterImpl implements ThingDetailsPresenter {
 
     @Override
     public void addComment(Thing thing, String text) {
-        if (TextUtils.isEmpty(text)) {
+        /*if (TextUtils.isEmpty(text)) {
             text = "Keys found on Aigburth Road, Liverpool, " +
                     "between the Maccies and the garage. " +
                     "It’s got two keyrings on as well but I’ve covered them up for the owner to identify.";
@@ -96,6 +92,6 @@ public class ThingDetailsPresenterImpl implements ThingDetailsPresenter {
                 mUID,
                 text,
                 timestamp);
-        commentRef.setValue(comment, 0 - timestamp);
+        commentRef.setValue(comment, 0 - timestamp);*/
     }
 }

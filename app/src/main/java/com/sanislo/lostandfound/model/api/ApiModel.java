@@ -12,23 +12,10 @@ import retrofit2.Call;
  */
 
 public interface ApiModel {
-    /*Call<ImgRecognitionResponse> uploadImage(String token,
-                                             String type,
-                                             RequestBody file);
-
-    Call<RegistrationResponse> registerId(String token, User user);
-
-    Call<Void> sendCode(String token, ActivationCodeRequest request);
-
-    Call<RegistrationResponse> sendCredentials(String token, Credentials credentials);
-
-    Call<Void> login(String token, LoginModel loginModel);
-
-    Call<UserProfile> getProfile();
-
-    Call<SponsorModel> getSponsors();*/
-
     Call<List<Thing>> getThings();
     Call<Void> postThing(Thing thing);
     Call<Void> saveUser(User user);
+    Call<User> getUser(int id);
+    Call<User> getUserByUID(String uid);
+    Call<List<User>> getUserListByUID(String uid);
 }
