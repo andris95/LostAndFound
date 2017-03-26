@@ -8,6 +8,14 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.amazonaws.auth.CognitoCachingCredentialsProvider;
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener;
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferObserver;
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferState;
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility;
+import com.amazonaws.regions.Regions;
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.AmazonS3Client;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlacePicker;
 import com.google.android.gms.maps.model.LatLng;
@@ -22,14 +30,15 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-import com.sanislo.lostandfound.view.addThing.AddThingActivity;
+import com.sanislo.lostandfound.interfaces.AddThingView;
 import com.sanislo.lostandfound.model.firebaseModel.Thing;
 import com.sanislo.lostandfound.model.firebaseModel.ThingLocation;
 import com.sanislo.lostandfound.model.firebaseModel.User;
+import com.sanislo.lostandfound.utils.Constants;
 import com.sanislo.lostandfound.utils.FileUtils;
 import com.sanislo.lostandfound.utils.FirebaseConstants;
 import com.sanislo.lostandfound.utils.FirebaseUtils;
-import com.sanislo.lostandfound.interfaces.AddThingView;
+import com.sanislo.lostandfound.view.addThing.AddThingActivity;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -70,6 +79,8 @@ public class AddThingPresenterImpl implements AddThingPresenter {
     private LinkedList<Uri> mDescriptionPhotoUris;
     private List<String> mDescriptionPhotoPaths = new ArrayList<>();
 
+    private TransferUtility mTransferUtility;
+
     private ValueEventListener mUserListener = new ValueEventListener() {
         @Override
         public void onDataChange(DataSnapshot dataSnapshot) {
@@ -88,7 +99,19 @@ public class AddThingPresenterImpl implements AddThingPresenter {
         mView = context;
         mThingBuilder = new Thing.Builder();
         initFirebase();
+        initAmazonTransferUtility();
         getCategories();
+    }
+
+    private void initAmazonTransferUtility() {
+        // Initialize the Amazon Cognito credentials provider
+        CognitoCachingCredentialsProvider credentialsProvider = new CognitoCachingCredentialsProvider(
+                mContext,
+                "us-east-1:3e93fac9-410e-4c97-976c-ff404ab24b67", // Identity Pool ID
+                Regions.US_EAST_1 // Region
+        );
+        AmazonS3 s3 = new AmazonS3Client(credentialsProvider);
+        mTransferUtility = new TransferUtility(s3, mContext);
     }
 
     private void initFirebase() {
@@ -168,7 +191,7 @@ public class AddThingPresenterImpl implements AddThingPresenter {
     }
 
     private void uploadCoverPhoto() {
-        UploadTask uploadCoverPhotoTask = mStorageReference.child(FirebaseConstants.THINGS)
+        /*UploadTask uploadCoverPhotoTask = mStorageReference.child(FirebaseConstants.THINGS)
                 .child(mThingKey)
                 .child(FirebaseConstants.THING_COVER_PHOTO)
                 .child(FileUtils.getFileName(mContext, mCoverPhotoUri))
@@ -183,7 +206,50 @@ public class AddThingPresenterImpl implements AddThingPresenter {
                     setNewThingValue();
                 }
             }
-        }).addOnProgressListener(mProgressListener);
+        }).addOnProgressListener(mProgressListener);*/
+        File file = new File(FileUtils.getPath(mContext, mCoverPhotoUri));
+        Log.d(TAG, "uploadCoverPhoto: " + mCoverPhotoUri.getPath());
+        Log.d(TAG, "uploadCoverPhoto: " + FileUtils.getPath(mContext, mCoverPhotoUri));
+        Log.d(TAG, "uploadCoverPhoto: " + mCoverPhotoUri.toString());
+        Log.d(TAG, "uploadCoverPhoto: " + (file == null));
+        Log.d(TAG, "uploadCoverPhoto: " + file.isFile());
+        Log.d(TAG, "uploadCoverPhoto: " + file.getPath());
+        Log.d(TAG, "uploadCoverPhoto: " + file.getAbsolutePath());
+        TransferObserver observer = mTransferUtility.upload(
+                Constants.S3_BUCKET,     /* The bucket to upload to */
+                FileUtils.getFileName(mContext, mCoverPhotoUri),    /* The key for the uploaded object */
+                file   /* The file where the data to upload exists */
+        );
+        observer.setTransferListener(new TransferListener() {
+            @Override
+            public void onStateChanged(int id, TransferState state) {
+                switch (state) {
+                    case COMPLETED:
+                        setPhotoPath("some_path");
+                        if (mDescriptionPhotoUris != null && !mDescriptionPhotoUris.isEmpty()) {
+                            uploadDescriptionPhotos();
+                        } else {
+                            setNewThingValue();
+                        }
+                        break;
+                    case FAILED:
+                        Log.d(TAG, "onStateChanged: FAILED TO UPLOAD TO AMAZON S3");
+                        break;
+                    default:
+                        Log.d(TAG, "onStateChanged: " + state);
+                }
+            }
+
+            @Override
+            public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
+                Log.d(TAG, "onProgressChanged: " + bytesCurrent + " / " + bytesTotal);
+            }
+
+            @Override
+            public void onError(int id, Exception ex) {
+
+            }
+        });
     }
 
     private void uploadDescriptionPhotos() {

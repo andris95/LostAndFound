@@ -65,6 +65,10 @@ dependencies {
     compile('com.mikepenz:materialdrawer:5.8.2@aar') {
         transitive = true
     }
+
+    compile 'com.amazonaws:aws-android-sdk-core:2.2.9'
+    compile 'com.amazonaws:aws-android-sdk-s3:2.2.9'
+    compile 'com.amazonaws:aws-android-sdk-ddb:2.2.9'
 }
 
 apply plugin: 'com.google.gms.google-services'
