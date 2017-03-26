@@ -1,48 +1,66 @@
 package com.sanislo.lostandfound.model;
 
 import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-public class Thing {
+import javax.annotation.Generated;
+
+@Generated("com.robohorse.robopojogenerator")
+public class Thing{
+
+	@SerializedName("descriptionPhotos")
 	@Expose
 	private List<String> descriptionPhotos;
 
-	@Expose
-	private String userAvatar;
-
+	@SerializedName("description")
 	@Expose
 	private String description;
 
+	@SerializedName("photo")
 	@Expose
 	private String photo;
 
-	@Expose
-	private String type;
-
-	@Expose
-	private String userName;
-
-	@Expose
-	private String title;
-
-	@Expose
-	private int commentCount;
-
+	@SerializedName("location")
 	@Expose
 	private Location location;
 
+	@SerializedName("id")
 	@Expose
 	private int id;
 
+	@SerializedName("category")
 	@Expose
 	private String category;
 
+	@SerializedName("title")
 	@Expose
-	private String userUID;
+	private String title;
 
+	@SerializedName("userName")
+	@Expose
+	private String userName;
+
+	@SerializedName("userAvatar")
+	@Expose
+	private String userAvatar;
+
+	@SerializedName("type")
+	@Expose
+	private String type;
+
+	@SerializedName("commentCount")
+	@Expose
+	private int commentCount;
+
+	@SerializedName("timestamp")
 	@Expose
 	private long timestamp;
+
+	@SerializedName("userUID")
+	@Expose
+	private String userUID;
 
 	public void setDescriptionPhotos(List<String> descriptionPhotos){
 		this.descriptionPhotos = descriptionPhotos;
@@ -50,14 +68,6 @@ public class Thing {
 
 	public List<String> getDescriptionPhotos(){
 		return descriptionPhotos;
-	}
-
-	public void setUserAvatar(String userAvatar){
-		this.userAvatar = userAvatar;
-	}
-
-	public String getUserAvatar(){
-		return userAvatar;
 	}
 
 	public void setDescription(String description){
@@ -74,38 +84,6 @@ public class Thing {
 
 	public String getPhoto(){
 		return photo;
-	}
-
-	public void setType(String type){
-		this.type = type;
-	}
-
-	public String getType(){
-		return type;
-	}
-
-	public void setUserName(String userName){
-		this.userName = userName;
-	}
-
-	public String getUserName(){
-		return userName;
-	}
-
-	public void setTitle(String title){
-		this.title = title;
-	}
-
-	public String getTitle(){
-		return title;
-	}
-
-	public void setCommentCount(int commentCount){
-		this.commentCount = commentCount;
-	}
-
-	public int getCommentCount(){
-		return commentCount;
 	}
 
 	public void setLocation(Location location){
@@ -132,12 +110,28 @@ public class Thing {
 		return category;
 	}
 
-	public void setUserUID(String userUID){
-		this.userUID = userUID;
+	public void setTitle(String title){
+		this.title = title;
 	}
 
-	public String getUserUID(){
-		return userUID;
+	public String getTitle(){
+		return title;
+	}
+
+	public void setUserName(String userName){
+		this.userName = userName;
+	}
+
+	public String getUserName(){
+		return userName;
+	}
+
+	public void setCommentCount(int commentCount){
+		this.commentCount = commentCount;
+	}
+
+	public int getCommentCount(){
+		return commentCount;
 	}
 
 	public void setTimestamp(long timestamp){
@@ -148,23 +142,46 @@ public class Thing {
 		return timestamp;
 	}
 
+	public void setUserUID(String userUID){
+		this.userUID = userUID;
+	}
+
+	public String getUserUID(){
+		return userUID;
+	}
+
+	public String getUserAvatar() {
+		return userAvatar;
+	}
+
+	public void setUserAvatar(String userAvatar) {
+		this.userAvatar = userAvatar;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
 	@Override
- 	public String toString(){
-		return 
-			"Thing{" + 
-			"descriptionPhotos = '" + descriptionPhotos + '\'' + 
-			",userAvatar = '" + userAvatar + '\'' + 
-			",description = '" + description + '\'' + 
-			",photo = '" + photo + '\'' + 
-			",type = '" + type + '\'' + 
-			",userName = '" + userName + '\'' + 
-			",title = '" + title + '\'' + 
-			",commentCount = '" + commentCount + '\'' + 
-			",location = '" + location + '\'' + 
-			",id = '" + id + '\'' + 
-			",category = '" + category + '\'' + 
-			",userUID = '" + userUID + '\'' + 
-			",timestamp = '" + timestamp + '\'' + 
-			"}";
-		}
+	public String toString() {
+		return "Thing{" +
+				"descriptionPhotos=" + descriptionPhotos +
+				", description='" + description + '\'' +
+				", photo='" + photo + '\'' +
+				", location=" + location +
+				", id=" + id +
+				", category='" + category + '\'' +
+				", title='" + title + '\'' +
+				", userName='" + userName + '\'' +
+				", userAvatar='" + userAvatar + '\'' +
+				", type='" + type + '\'' +
+				", commentCount=" + commentCount +
+				", timestamp=" + timestamp +
+				", userUID='" + userUID + '\'' +
+				'}';
+	}
 }
