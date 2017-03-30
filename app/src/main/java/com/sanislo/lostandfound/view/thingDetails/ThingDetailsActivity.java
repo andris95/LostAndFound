@@ -90,6 +90,7 @@ public class ThingDetailsActivity extends BaseActivity implements ThingDetailsVi
     public static final String EXTRA_THING_PATH = "EXTRA_THING_PATH";
     public static final String EXTRA_START_POSITION = "EXTRA_START_POSITION";
     public static final String EXTRA_UPDATED_POSITION = "EXTRA_UPDATED_POSITION";
+    public static final String EXTRA_THING = "EXTRA_THING";
 
     private String mThingPath;
     private Thing mThing;
@@ -158,6 +159,8 @@ public class ThingDetailsActivity extends BaseActivity implements ThingDetailsVi
         ButterKnife.bind(this);
         fetchIntentExtras();
         initFirebase();
+        Thing thing = getIntent().getParcelableExtra(EXTRA_THING);
+        Log.d(TAG, "onCreate: thing: " + thing);
         ivThingPhoto.setTransitionName(getString(R.string.transition_description_photo));
         mThingDetailsPresenter = new ThingDetailsPresenterImpl(this, mThingPath);
     }

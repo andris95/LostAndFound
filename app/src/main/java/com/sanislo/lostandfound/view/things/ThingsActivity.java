@@ -1,11 +1,13 @@
 package com.sanislo.lostandfound.view.things;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -22,6 +24,7 @@ import com.sanislo.lostandfound.R;
 import com.sanislo.lostandfound.adapter.ThingAdapter;
 import com.sanislo.lostandfound.interfaces.ThingsView;
 import com.sanislo.lostandfound.model.Thing;
+import com.sanislo.lostandfound.model.User;
 import com.sanislo.lostandfound.presenter.ThingsPresenter;
 import com.sanislo.lostandfound.presenter.ThingsPresenterImpl;
 import com.sanislo.lostandfound.view.BaseActivity;
@@ -48,17 +51,24 @@ public class ThingsActivity extends BaseActivity implements ThingsView {
 
     private ThingsPresenter mThingsPresenter;
     private Drawer mDrawer;
+    private User mUser;
+    private List<Thing> mThingList;
 
     private ThingAdapter.OnClickListener mThingClickListener = new ThingAdapter.OnClickListener() {
 
         @Override
         public void onClickRootView(View view, String thingKey) {
+
+        }
+
+        @Override
+        public void onClickRootView(View view, Thing thing) {
             Intent intent = new Intent(ThingsActivity.this, ThingDetailsActivity.class);
             ActivityOptionsCompat options = ActivityOptionsCompat.
                     makeSceneTransitionAnimation(ThingsActivity.this,
                             view.findViewById(R.id.iv_thing_photo),
                             getString(R.string.transition_description_photo));
-            intent.putExtra(ThingDetailsActivity.EXTRA_THING_PATH, thingKey);
+            intent.putExtra(ThingDetailsActivity.EXTRA_THING, thing);
             startActivity(intent, options.toBundle());
         }
     };
@@ -71,10 +81,10 @@ public class ThingsActivity extends BaseActivity implements ThingsView {
         ButterKnife.bind(this);
         mThingsPresenter = new ThingsPresenterImpl(this);
         initFirebase();
-        setupDrawer();
         initToolbar();
         initThingsAdapter();
         mThingsPresenter.getThings();
+        mThingsPresenter.getProfile(ThingsActivity.this);
     }
 
     @Override
@@ -85,11 +95,15 @@ public class ThingsActivity extends BaseActivity implements ThingsView {
 
     private void setupDrawer() {
         ProfileDrawerItem profileDrawerItem = new ProfileDrawerItem()
-                .withName("Andras")
-                .withEmail("sanisloandras@gmail.com");
+                .withName(mUser.getFullName())
+                .withEmail(mUser.getEmailAddress())
+                .withTextColor(Color.BLACK);
+        if (!TextUtils.isEmpty(mUser.getAvatarURL())) profileDrawerItem.withIcon(mUser.getAvatarURL());
         AccountHeaderBuilder accountHeaderBuilder = new AccountHeaderBuilder()
                 .withActivity(ThingsActivity.this)
+                .withProfileImagesVisible(TextUtils.isEmpty(mUser.getAvatarURL()))
                 .addProfiles(profileDrawerItem)
+                .withTextColor(Color.BLACK)
                 .withOnlyMainProfileImageVisible(true);
         DrawerBuilder drawerBuilder = new DrawerBuilder()
                 .withActivity(ThingsActivity.this)
@@ -154,7 +168,14 @@ public class ThingsActivity extends BaseActivity implements ThingsView {
 
     @Override
     public void onThingsLoaded(List<Thing> thingList) {
+        mThingList = thingList;
         mThingAdapter.setThingList(thingList);
         mThingAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onProfileLoaded(User user) {
+        mUser = user;
+        setupDrawer();
     }
 }

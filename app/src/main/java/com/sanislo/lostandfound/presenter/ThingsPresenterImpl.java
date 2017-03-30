@@ -1,15 +1,15 @@
 package com.sanislo.lostandfound.presenter;
 
+import android.content.Context;
 import android.util.Log;
 
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DatabaseReference;
 import com.sanislo.lostandfound.interfaces.ThingsView;
 import com.sanislo.lostandfound.model.Thing;
+import com.sanislo.lostandfound.model.User;
 import com.sanislo.lostandfound.model.api.ApiModel;
 import com.sanislo.lostandfound.model.api.ApiModelImpl;
-import com.sanislo.lostandfound.utils.FirebaseUtils;
+import com.sanislo.lostandfound.utils.PreferencesManager;
 
 import java.util.List;
 
@@ -23,22 +23,12 @@ import retrofit2.Response;
 
 public class ThingsPresenterImpl implements ThingsPresenter {
     public final String TAG = ThingsPresenterImpl.class.getSimpleName();
-    private FirebaseAuth mFirebaseAuth;
-    private String mUID;
-    private DatabaseReference mDatabaseReference;
     private ApiModel mApiModel = new ApiModelImpl();
     private ThingsView mView;
 
     public ThingsPresenterImpl(ThingsView view) {
         super();
-        initFirebase();
         mView = view;
-    }
-
-    private void initFirebase() {
-        mFirebaseAuth = FirebaseAuth.getInstance();
-        mUID = mFirebaseAuth.getCurrentUser().getUid();
-        mDatabaseReference = FirebaseUtils.getDatabase().getReference();
     }
 
     @Override
@@ -55,6 +45,32 @@ public class ThingsPresenterImpl implements ThingsPresenter {
 
             @Override
             public void onFailure(Call<List<Thing>> call, Throwable t) {
+
+            }
+        });
+    }
+
+    @Override
+    public void getProfile(Context context) {
+        final String userUID = PreferencesManager.getUserUID(context);
+        Log.d(TAG, "getUser: userUID: " + userUID);
+        //Call<User> userCall = mApiModel.getUser(userUID);
+        Call<List<User>> userCall = mApiModel.getUserListByUID(userUID);
+        userCall.enqueue(new Callback<List<User>>() {
+            @Override
+            public void onResponse(Call<List<User>> call, Response<List<User>> response) {
+                if (response.isSuccessful()) {
+                    User user = response.body().get(0);
+                    Log.d(TAG, "onResponse: " + user);
+                    mView.onProfileLoaded(user);
+                } else {
+                    Log.d(TAG, "onResponse: error");
+                    Log.d(TAG, "onResponse: " + response.message());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<User>> call, Throwable t) {
 
             }
         });

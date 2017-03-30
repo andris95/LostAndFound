@@ -70,6 +70,7 @@ public class ThingAdapter extends RecyclerView.Adapter<ThingAdapter.ViewHolder> 
 
     public interface OnClickListener {
         void onClickRootView(View view, String thingKey);
+        void onClickRootView(View view, Thing thing);
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
@@ -164,7 +165,7 @@ public class ThingAdapter extends RecyclerView.Adapter<ThingAdapter.ViewHolder> 
 
         @OnClick(R.id.rl_thing_root_view)
         public void onClickRootView() {
-            //mOnClickListener.onClickRootView(mRootView, String.valueOf(mThing.getId()));
+            mOnClickListener.onClickRootView(mRootView, mThingList.get(getAdapterPosition()));
         }
     }
 }

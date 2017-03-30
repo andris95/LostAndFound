@@ -1,5 +1,8 @@
 package com.sanislo.lostandfound.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -8,7 +11,7 @@ import java.util.List;
 import javax.annotation.Generated;
 
 @Generated("com.robohorse.robopojogenerator")
-public class Thing{
+public class Thing implements Parcelable {
 
 	@SerializedName("descriptionPhotos")
 	@Expose
@@ -61,6 +64,10 @@ public class Thing{
 	@SerializedName("userUID")
 	@Expose
 	private String userUID;
+
+	public Thing() {
+
+	}
 
 	public void setDescriptionPhotos(List<String> descriptionPhotos){
 		this.descriptionPhotos = descriptionPhotos;
@@ -183,5 +190,54 @@ public class Thing{
 				", timestamp=" + timestamp +
 				", userUID='" + userUID + '\'' +
 				'}';
+	}
+
+	@Override
+	public int describeContents() {
+		return 0;
+	}
+
+	@Override
+	public void writeToParcel(Parcel dest, int flags) {
+		dest.writeList(descriptionPhotos);
+		dest.writeString(photo);
+		//write location
+		dest.writeParcelable(location, Parcelable.PARCELABLE_WRITE_RETURN_VALUE);
+		dest.writeInt(id);
+		dest.writeString(category);
+		dest.writeString(title);
+		dest.writeString(userName);
+		dest.writeString(userAvatar);
+		dest.writeString(type);
+		dest.writeInt(commentCount);
+		dest.writeString(userUID);
+		dest.writeLong(timestamp);
+	}
+
+	public static final Parcelable.Creator<Thing> CREATOR = new Parcelable.Creator<Thing>() {
+		// распаковываем объект из Parcel
+		public Thing createFromParcel(Parcel in) {
+			return new Thing(in);
+		}
+
+		public Thing[] newArray(int size) {
+			return new Thing[size];
+		}
+	};
+
+	// конструктор, считывающий данные из Parcel
+	private Thing(Parcel parcel) {
+		descriptionPhotos = parcel.readArrayList(null);
+		photo = parcel.readString();
+		location = parcel.readParcelable(Thing.class.getClassLoader());
+		id = parcel.readInt();
+		category = parcel.readString();
+		title = parcel.readString();
+		userName = parcel.readString();
+		userAvatar = parcel.readString();
+		type = parcel.readString();
+		commentCount = parcel.readInt();
+		userUID = parcel.readString();
+		timestamp = parcel.readLong();
 	}
 }
