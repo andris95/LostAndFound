@@ -20,6 +20,11 @@ public class ApiModelImpl implements ApiModel {
     }
 
     @Override
+    public Call<List<Thing>> getThings(String sort, String order) {
+        return mApiInterface.getThings(sort, order);
+    }
+
+    @Override
     public Call<Void> postThing(Thing thing) {
         return mApiInterface.postThing(thing);
     }

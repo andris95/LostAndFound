@@ -26,18 +26,22 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.sanislo.lostandfound.R;
 import com.sanislo.lostandfound.adapter.CommentsAdapter;
 import com.sanislo.lostandfound.adapter.DescriptionPhotosAdapter;
+import com.sanislo.lostandfound.model.Location;
 import com.sanislo.lostandfound.model.Thing;
 import com.sanislo.lostandfound.presenter.ThingDetailsPresenter;
 import com.sanislo.lostandfound.presenter.ThingDetailsPresenterImpl;
 import com.sanislo.lostandfound.view.BaseActivity;
-import com.sanislo.lostandfound.view.ThingDetailsView;
 
 import java.util.List;
 import java.util.Map;
@@ -235,11 +239,9 @@ public class ThingDetailsActivity extends BaseActivity implements ThingDetailsVi
     @Override
     public void onError(String errorMessage) {
         Toast.makeText(ThingDetailsActivity.this, errorMessage, Toast.LENGTH_LONG).show();
-        //Snackbar.make(null, errorMessage, Snackbar.LENGTH_SHORT);
     }
 
     private void initMapView() {
-        //mMapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map_thing_location);
         if (mMapFragment == null) {
             GoogleMapOptions googleMapOptions = new GoogleMapOptions();
             googleMapOptions.liteMode(true);
@@ -273,15 +275,15 @@ public class ThingDetailsActivity extends BaseActivity implements ThingDetailsVi
     };
 
     private void displayThingMarker() {
-        /*mGoogleMap.clear();
+        mGoogleMap.clear();
         MarkerOptions markerOptions = new MarkerOptions();
-        Map<String, Double> latLngMap = mThing.getLocation();
-        LatLng latLng = new LatLng(latLngMap.get("lat"),
-                latLngMap.get("lng"));
+        Location location = mThing.getLocation();
+        LatLng latLng = new LatLng(location.getLat(),
+                location.getLng());
         markerOptions.position(latLng);
         mGoogleMap.addMarker(markerOptions);
         CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 10f);
-        mGoogleMap.moveCamera(cameraUpdate);*/
+        mGoogleMap.moveCamera(cameraUpdate);
     }
 
     private void setAuthorPhoto() {
@@ -317,6 +319,7 @@ public class ThingDetailsActivity extends BaseActivity implements ThingDetailsVi
     }
 
     private void setDescription() {
+        Log.d(TAG, "setDescription: description: " + mThing.getDescription());
         tvDescription.setText(mThing.getDescription());
     }
 
@@ -349,11 +352,19 @@ public class ThingDetailsActivity extends BaseActivity implements ThingDetailsVi
 
     private void setDescriptionPhotos() {
         if (mThing.getDescriptionPhotos() != null) {
-            if (mDescriptionPhotosAdapter != null) {
-                updateDescriptionPhotosAdapter(mThing.getDescriptionPhotos());
-            } else {
-                createNewDescriptionPhotosAdapter();
-            }
+            List<String> descriptionPhotos = mThing.getDescriptionPhotos();
+            mDescriptionPhotosAdapter = new DescriptionPhotosAdapter(descriptionPhotos);
+            mDescriptionPhotosAdapter.setOnClickListener(new DescriptionPhotosAdapter.OnClickListener() {
+                @Override
+                public void onClickPhoto(View view, int position) {
+                    launchDescriptionPhotosActivity(view, position);
+                }
+            });
+            LinearLayoutManager layoutManager = new LinearLayoutManager(ThingDetailsActivity.this,
+                    LinearLayoutManager.HORIZONTAL,
+                    false);
+            rvDescriptionPhotos.setLayoutManager(layoutManager);
+            rvDescriptionPhotos.setAdapter(mDescriptionPhotosAdapter);
         } else {
             hideDescriptionPhotos();
         }
@@ -361,22 +372,6 @@ public class ThingDetailsActivity extends BaseActivity implements ThingDetailsVi
 
     private void updateDescriptionPhotosAdapter(List<String> descriptionPhotos) {
         mDescriptionPhotosAdapter.setDescriptionPhotos(descriptionPhotos);
-    }
-
-    private void createNewDescriptionPhotosAdapter() {
-        List<String> descriptionPhotos = mThing.getDescriptionPhotos();
-        mDescriptionPhotosAdapter = new DescriptionPhotosAdapter(descriptionPhotos);
-        mDescriptionPhotosAdapter.setOnClickListener(new DescriptionPhotosAdapter.OnClickListener() {
-            @Override
-            public void onClickPhoto(View view, int position) {
-                launchDescriptionPhotosActivity(view, position);
-            }
-        });
-        LinearLayoutManager layoutManager = new LinearLayoutManager(ThingDetailsActivity.this,
-                LinearLayoutManager.HORIZONTAL,
-                false);
-        rvDescriptionPhotos.setLayoutManager(layoutManager);
-        rvDescriptionPhotos.setAdapter(mDescriptionPhotosAdapter);
     }
 
     private void hideDescriptionPhotos() {

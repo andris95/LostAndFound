@@ -58,8 +58,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"
-                android:text="@string/lost_donkey"
-                tools:visibility="gone"/>
+                android:text="@string/lost_donkey"/>
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/rv_things_photos"
@@ -69,22 +68,12 @@
                 android:layout_below="@+id/tv_thing_description">
             </android.support.v7.widget.RecyclerView>
 
-            <!--<fragment xmlns:android="http://schemas.android.com/apk/res/android"
-                      xmlns:map="http://schemas.android.com/apk/res-auto"
-                      android:name="com.google.android.gms.maps.MapFragment"
-                      android:id="@+id/map_thing_location"
-                      android:layout_width="match_parent"
-                      android:layout_height="150dp"
-                      android:layout_below="@+id/rv_things_photos"
-                      map:cameraZoom="13"
-                      map:mapType="normal"
-                      map:liteMode="true"/>-->
-
             <FrameLayout
                 android:id="@+id/fl_map_container"
                 android:layout_width="match_parent"
                 android:layout_below="@+id/rv_things_photos"
-                android:layout_height="150dp"></FrameLayout>
+                android:layout_height="150dp">
+            </FrameLayout>
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/rv_things_comments"

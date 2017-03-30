@@ -33,7 +33,7 @@ public class ThingsPresenterImpl implements ThingsPresenter {
 
     @Override
     public void getThings() {
-        Call<List<Thing>> call = mApiModel.getThings();
+        Call<List<Thing>> call = mApiModel.getThings("_timestamp", "DESC");
         call.enqueue(new Callback<List<Thing>>() {
             @Override
             public void onResponse(Call<List<Thing>> call, Response<List<Thing>> response) {

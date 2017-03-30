@@ -9,9 +9,6 @@ import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.firebase.ui.storage.images.FirebaseImageLoader;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 import com.sanislo.lostandfound.R;
 
 import java.util.List;
@@ -27,17 +24,10 @@ import butterknife.OnClick;
 public class DescriptionPhotosAdapter extends RecyclerView.Adapter<DescriptionPhotosAdapter.DescriptionPhotoViewHolder> {
     public final String TAG = DescriptionPhotoViewHolder.class.getSimpleName();
     private List<String> mDescriptionPhotos;
-    private StorageReference mStorageReference;
     private OnClickListener mOnClickListener;
 
     public DescriptionPhotosAdapter(List<String> descriptionPhotos) {
         mDescriptionPhotos = descriptionPhotos;
-        initFirebaseStorage();
-    }
-
-    private void initFirebaseStorage() {
-        String storageBucket = "gs://lostandfound-326c3.appspot.com";
-        mStorageReference = FirebaseStorage.getInstance().getReferenceFromUrl(storageBucket);
     }
 
     public void setDescriptionPhotos(List<String> descriptionPhotos) {
@@ -104,10 +94,8 @@ public class DescriptionPhotosAdapter extends RecyclerView.Adapter<DescriptionPh
         }
 
         private void setDescriptionPhoto(String photoPath) {
-            StorageReference reference = mStorageReference.child(photoPath);
             Glide.with(mRootView.getContext())
-                    .using(new FirebaseImageLoader())
-                    .load(reference)
+                    .load(photoPath)
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .into(ivDescriptionPhoto);
         }

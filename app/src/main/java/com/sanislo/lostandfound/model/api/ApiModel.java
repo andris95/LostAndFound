@@ -13,6 +13,7 @@ import retrofit2.Call;
 
 public interface ApiModel {
     Call<List<Thing>> getThings();
+    Call<List<Thing>> getThings(String sort, String order);
     Call<Void> postThing(Thing thing);
     Call<Void> saveUser(User user);
     Call<User> getUser(int id);

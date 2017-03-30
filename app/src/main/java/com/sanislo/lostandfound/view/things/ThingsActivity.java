@@ -56,7 +56,6 @@ public class ThingsActivity extends BaseActivity implements ThingsView {
     private ThingsPresenter mThingsPresenter;
     private Drawer mDrawer;
     private User mUser;
-    private List<Thing> mThingList;
 
     private ThingAdapter.OnClickListener mThingClickListener = new ThingAdapter.OnClickListener() {
 
@@ -201,7 +200,6 @@ public class ThingsActivity extends BaseActivity implements ThingsView {
 
     @Override
     public void onThingsLoaded(List<Thing> thingList) {
-        mThingList = thingList;
         mThingAdapter.setThingList(thingList);
         mThingAdapter.notifyDataSetChanged();
     }

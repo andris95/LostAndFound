@@ -202,6 +202,7 @@ public class Thing implements Parcelable {
 	@Override
 	public void writeToParcel(Parcel dest, int flags) {
 		dest.writeList(descriptionPhotos);
+		dest.writeString(description);
 		dest.writeString(photo);
 		//write location
 		dest.writeParcelable(location, Parcelable.PARCELABLE_WRITE_RETURN_VALUE);
@@ -230,6 +231,7 @@ public class Thing implements Parcelable {
 	// конструктор, считывающий данные из Parcel
 	private Thing(Parcel parcel) {
 		descriptionPhotos = parcel.readArrayList(null);
+		description = parcel.readString();
 		photo = parcel.readString();
 		location = parcel.readParcelable(Thing.class.getClassLoader());
 		id = parcel.readInt();

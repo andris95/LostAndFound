@@ -21,6 +21,9 @@ public interface ApiInterface {
     @GET(ApiConstants.THINGS)
     Call<List<Thing>> getThings();
 
+    @GET(ApiConstants.THINGS)
+    Call<List<Thing>> getThings(@Query("_sort") String sort, @Query("_order") String order);
+
     @POST(ApiConstants.THINGS)
     Call<Void> postThing(@Body Thing thing);
 

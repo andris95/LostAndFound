@@ -9,7 +9,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 import com.sanislo.lostandfound.model.Thing;
 import com.sanislo.lostandfound.utils.FirebaseUtils;
-import com.sanislo.lostandfound.view.ThingDetailsView;
+import com.sanislo.lostandfound.view.thingDetails.ThingDetailsView;
 
 /**
  * Created by root on 15.01.17.
