@@ -3,11 +3,11 @@ package com.sanislo.lostandfound.view.thingDetails;
 import android.app.FragmentTransaction;
 import android.app.SharedElementCallback;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.transition.Slide;
 import android.transition.Transition;
@@ -24,22 +24,18 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
-import com.firebase.ui.storage.images.FirebaseImageLoader;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.firebase.storage.StorageReference;
 import com.sanislo.lostandfound.R;
 import com.sanislo.lostandfound.adapter.CommentsAdapter;
 import com.sanislo.lostandfound.adapter.DescriptionPhotosAdapter;
 import com.sanislo.lostandfound.model.Thing;
 import com.sanislo.lostandfound.presenter.ThingDetailsPresenter;
 import com.sanislo.lostandfound.presenter.ThingDetailsPresenterImpl;
-import com.sanislo.lostandfound.utils.FirebaseUtils;
 import com.sanislo.lostandfound.view.BaseActivity;
 import com.sanislo.lostandfound.view.ThingDetailsView;
 
@@ -99,11 +95,7 @@ public class ThingDetailsActivity extends BaseActivity implements ThingDetailsVi
 
     private DescriptionPhotosAdapter mDescriptionPhotosAdapter;
     private CommentsAdapter mCommentsAdapter;
-
-    private StorageReference mStorageReference;
-
     private ThingDetailsPresenter mThingDetailsPresenter;
-
     private Bundle mTmpReenterState;
 
     private final SharedElementCallback mCallback = new SharedElementCallback() {
@@ -158,11 +150,11 @@ public class ThingDetailsActivity extends BaseActivity implements ThingDetailsVi
         postponeEnterTransition();
         ButterKnife.bind(this);
         fetchIntentExtras();
-        initFirebase();
-        Thing thing = getIntent().getParcelableExtra(EXTRA_THING);
-        Log.d(TAG, "onCreate: thing: " + thing);
         ivThingPhoto.setTransitionName(getString(R.string.transition_description_photo));
         mThingDetailsPresenter = new ThingDetailsPresenterImpl(this, mThingPath);
+
+        mThing = getIntent().getParcelableExtra(EXTRA_THING);
+        displayThing();
     }
 
     private void setEnterTransition() {
@@ -175,10 +167,6 @@ public class ThingDetailsActivity extends BaseActivity implements ThingDetailsVi
     private void fetchIntentExtras() {
         Bundle extras = getIntent().getExtras();
         mThingPath = extras.getString(EXTRA_THING_PATH);
-    }
-
-    private void initFirebase() {
-        mStorageReference = FirebaseUtils.getStorageRef();
     }
 
     @Override
@@ -220,9 +208,7 @@ public class ThingDetailsActivity extends BaseActivity implements ThingDetailsVi
         });
     }
 
-    @Override
-    public void onThingLoaded(Thing thing) {
-        mThing = thing;
+    private void displayThing() {
         setTitle();
         setDescription();
         setTypeAndDate();
@@ -231,7 +217,6 @@ public class ThingDetailsActivity extends BaseActivity implements ThingDetailsVi
         setDescriptionPhotos();
         setComments();
         setMap();
-        Log.d(TAG, "onThingLoaded: " + thing);
     }
 
     /** check if thing has location */
@@ -301,38 +286,29 @@ public class ThingDetailsActivity extends BaseActivity implements ThingDetailsVi
 
     private void setAuthorPhoto() {
         String authorPhotoPath = mThing.getUserAvatar();
-        if (TextUtils.isEmpty(authorPhotoPath)) return;
-        StorageReference authorPhotoRef = mStorageReference
-                .child(authorPhotoPath);
         Glide.with(ThingDetailsActivity.this)
-                .using(new FirebaseImageLoader())
-                .load(authorPhotoRef)
+                .load(authorPhotoPath)
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .error(R.drawable.error_placeholder)
                 .into(ivAuthorAvatar);
-        Log.d(TAG, "setAuthorPhoto: authorPhotoRef: " + authorPhotoRef);
     }
 
     private void setThingPhoto() {
-        String thingPhotoPath = mThing.getPhoto();
-        if (TextUtils.isEmpty(thingPhotoPath)) return;
-        StorageReference thingPhotoRef = mStorageReference.child(thingPhotoPath);
         Glide.with(ThingDetailsActivity.this)
-                .using(new FirebaseImageLoader())
-                .load(thingPhotoRef)
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .listener(new RequestListener<StorageReference, GlideDrawable>() {
+                .load(mThing.getPhoto())
+                .asBitmap()
+                .listener(new RequestListener<String, Bitmap>() {
                     @Override
-                    public boolean onException(Exception e, StorageReference model, Target<GlideDrawable> target, boolean isFirstResource) {
+                    public boolean onException(Exception e, String model, Target<Bitmap> target, boolean isFirstResource) {
                         return false;
                     }
 
                     @Override
-                    public boolean onResourceReady(GlideDrawable resource, StorageReference model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                    public boolean onResourceReady(Bitmap resource, String model, Target<Bitmap> target, boolean isFromMemoryCache, boolean isFirstResource) {
                         scheduleStartPostponedTransition(ivThingPhoto);
                         return false;
                     }
                 })
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .into(ivThingPhoto);
     }
 

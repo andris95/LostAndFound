@@ -8,7 +8,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 import com.sanislo.lostandfound.model.Thing;
-import com.sanislo.lostandfound.utils.FirebaseConstants;
 import com.sanislo.lostandfound.utils.FirebaseUtils;
 import com.sanislo.lostandfound.view.ThingDetailsView;
 
@@ -56,20 +55,12 @@ public class ThingDetailsPresenterImpl implements ThingDetailsPresenter {
 
     @Override
     public void onResume() {
-        getThing();
+
     }
 
     @Override
     public void onPause() {
         mDatabaseReference.removeEventListener(mThingListener);
-    }
-
-    private void getThing() {
-        Log.d(TAG, "getThing: " + mThingKey);
-        Log.d(TAG, "getThing: " + mDatabaseReference.child(FirebaseConstants.THINGS).child(mThingKey).toString());
-        mDatabaseReference.child(FirebaseConstants.THINGS)
-                .child(mThingKey)
-                .addValueEventListener(mThingListener);
     }
 
     @Override

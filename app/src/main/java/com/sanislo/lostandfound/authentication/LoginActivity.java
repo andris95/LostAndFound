@@ -19,12 +19,13 @@ import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.GoogleAuthProvider;
-import com.sanislo.lostandfound.view.BaseActivity;
-import com.sanislo.lostandfound.view.things.ThingsActivity;
-import com.sanislo.lostandfound.utils.FirebaseConstants;
-import com.sanislo.lostandfound.utils.FirebaseUtils;
 import com.sanislo.lostandfound.R;
 import com.sanislo.lostandfound.model.firebaseModel.User;
+import com.sanislo.lostandfound.utils.FirebaseConstants;
+import com.sanislo.lostandfound.utils.FirebaseUtils;
+import com.sanislo.lostandfound.utils.PreferencesManager;
+import com.sanislo.lostandfound.view.BaseActivity;
+import com.sanislo.lostandfound.view.things.ThingsActivity;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -49,6 +50,7 @@ public class LoginActivity extends BaseActivity {
         @Override
         public void onComplete(@NonNull Task task) {
             if (task.isSuccessful()) {
+                PreferencesManager.setUserUID(LoginActivity.this, mFirebaseAuth.getCurrentUser().getUid());
                 Intent intent = new Intent(LoginActivity.this, ThingsActivity.class);
                 startActivity(intent);
                 finish();
