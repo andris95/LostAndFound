@@ -1,5 +1,7 @@
 package com.sanislo.lostandfound.view.profile;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.util.Log;
 
 import com.sanislo.lostandfound.model.User;
@@ -12,6 +14,8 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static android.app.Activity.RESULT_OK;
+
 /**
  * Created by root on 30.03.17.
  */
@@ -20,6 +24,7 @@ public class ProfilePresenterImpl implements ProfilePresenter {
     private String TAG = ProfilePresenter.class.getSimpleName();
     private ApiModel mApiModel = new ApiModelImpl();
     private ProfileView mView;
+    private Uri mProfileImageUri;
 
     public ProfilePresenterImpl(ProfileView view) {
         mView = view;
@@ -52,5 +57,14 @@ public class ProfilePresenterImpl implements ProfilePresenter {
     @Override
     public void updateProfile() {
 
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == RESULT_OK && requestCode == ProfileActivity.PICK_PROFILE_IMAGE) {
+            if (data != null) {
+                mProfileImageUri = data.getData();
+            }
+        }
     }
 }

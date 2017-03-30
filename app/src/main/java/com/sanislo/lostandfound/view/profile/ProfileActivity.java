@@ -1,17 +1,27 @@
 package com.sanislo.lostandfound.view.profile;
 
+import android.Manifest;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.graphics.Palette;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
+import android.widget.Toast;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestListener;
@@ -23,6 +33,7 @@ import com.sanislo.lostandfound.view.BaseActivity;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 /**
  * Created by root on 30.03.17.
@@ -30,6 +41,8 @@ import butterknife.ButterKnife;
 
 public class ProfileActivity extends BaseActivity implements ProfileView {
     private String TAG = ProfileActivity.class.getSimpleName();
+    private static final int RP_READ_EXTERNAL_FOR_COVER = 666;
+    public static final int PICK_PROFILE_IMAGE = 777;
 
     @BindView(R.id.toolbar)
     Toolbar mToolbar;
@@ -60,6 +73,11 @@ public class ProfileActivity extends BaseActivity implements ProfileView {
         mProfilePresenter = new ProfilePresenterImpl(this);
         String userUID = PreferencesManager.getUserUID(ProfileActivity.this);
         mProfilePresenter.getProfile(userUID);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
@@ -117,5 +135,67 @@ public class ProfileActivity extends BaseActivity implements ProfileView {
 
         fab.setRippleColor(lightVibrantColor);
         fab.setBackgroundTintList(ColorStateList.valueOf(vibrantColor));
+    }
+
+    @OnClick(R.id.iv_avatar)
+    public void onClickAvatar() {
+        new MaterialDialog.Builder(this)
+                .title(R.string.select_profile_image)
+                .items(R.array.select_profile_image_list)
+                .itemsCallback(new MaterialDialog.ListCallback() {
+                    @Override
+                    public void onSelection(MaterialDialog dialog, View itemView, int position, CharSequence text) {
+                        Log.d(TAG, "onSelection: position: " + position);
+                        switch (position) {
+                            case 0:
+                                checkGalleryPermission();
+                                break;
+                            case 1:
+                                //TODO implement this
+                                takeProfileImage();
+                                break;
+                        }
+                    }
+                })
+                .show();
+    }
+
+    private void checkGalleryPermission() {
+        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_EXTERNAL_STORAGE)
+                == PackageManager.PERMISSION_GRANTED) {
+            pickProfileImageFromGallery();
+        } else {
+            ActivityCompat.requestPermissions(this,
+                    new String[] {Manifest.permission.READ_EXTERNAL_STORAGE},
+                    RP_READ_EXTERNAL_FOR_COVER);
+        }
+    }
+
+    private void pickProfileImageFromGallery() {
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.setType("image/*");
+        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, false);
+        Intent сhooserIntent = Intent.createChooser(intent, getString(R.string.select_profile_image));
+        startActivityForResult(сhooserIntent, PICK_PROFILE_IMAGE);
+    }
+
+    private void takeProfileImage() {
+        Toast.makeText(this, "To be continued", Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == RP_READ_EXTERNAL_FOR_COVER) {
+            if (permissions.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                pickProfileImageFromGallery();
+            }
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        mProfilePresenter.onActivityResult(requestCode, resultCode, data);
     }
 }
