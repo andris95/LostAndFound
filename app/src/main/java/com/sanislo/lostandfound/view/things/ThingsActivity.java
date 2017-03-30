@@ -8,18 +8,21 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.mikepenz.materialdrawer.AccountHeader;
 import com.mikepenz.materialdrawer.AccountHeaderBuilder;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
+import com.mikepenz.materialdrawer.model.interfaces.IProfile;
 import com.sanislo.lostandfound.R;
 import com.sanislo.lostandfound.adapter.ThingAdapter;
 import com.sanislo.lostandfound.interfaces.ThingsView;
@@ -29,6 +32,7 @@ import com.sanislo.lostandfound.presenter.ThingsPresenter;
 import com.sanislo.lostandfound.presenter.ThingsPresenterImpl;
 import com.sanislo.lostandfound.view.BaseActivity;
 import com.sanislo.lostandfound.view.addThing.AddThingActivity;
+import com.sanislo.lostandfound.view.profile.ProfileActivity;
 import com.sanislo.lostandfound.view.thingDetails.ThingDetailsActivity;
 
 import java.util.ArrayList;
@@ -93,21 +97,50 @@ public class ThingsActivity extends BaseActivity implements ThingsView {
 
     }
 
+    private Drawer.OnDrawerItemClickListener mOnDrawerItemClickListener = new Drawer.OnDrawerItemClickListener() {
+        @Override
+        public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
+            Log.d(TAG, "onItemClick: position: " + position);
+            return true;
+        }
+    };
+
+    private void openProfileActivity() {
+        Intent intent = new Intent(ThingsActivity.this, ProfileActivity.class);
+        startActivity(intent);
+    }
+
     private void setupDrawer() {
         ProfileDrawerItem profileDrawerItem = new ProfileDrawerItem()
                 .withName(mUser.getFullName())
                 .withEmail(mUser.getEmailAddress())
                 .withTextColor(Color.BLACK);
         if (!TextUtils.isEmpty(mUser.getAvatarURL())) profileDrawerItem.withIcon(mUser.getAvatarURL());
+
         AccountHeaderBuilder accountHeaderBuilder = new AccountHeaderBuilder()
                 .withActivity(ThingsActivity.this)
                 .withProfileImagesVisible(TextUtils.isEmpty(mUser.getAvatarURL()))
                 .addProfiles(profileDrawerItem)
                 .withTextColor(Color.BLACK)
+                .withOnAccountHeaderProfileImageListener(new AccountHeader.OnAccountHeaderProfileImageListener() {
+                    @Override
+                    public boolean onProfileImageClick(View view, IProfile profile, boolean current) {
+                        openProfileActivity();
+                        return true;
+                    }
+
+                    @Override
+                    public boolean onProfileImageLongClick(View view, IProfile profile, boolean current) {
+                        return false;
+                    }
+                })
+                .withSelectionListEnabledForSingleProfile(false)
                 .withOnlyMainProfileImageVisible(true);
+
         DrawerBuilder drawerBuilder = new DrawerBuilder()
                 .withActivity(ThingsActivity.this)
                 .withAccountHeader(accountHeaderBuilder.build())
+                .withOnDrawerItemClickListener(mOnDrawerItemClickListener)
                 .withDrawerItems(getDrawerItems());
         mDrawer = drawerBuilder.build();
     }

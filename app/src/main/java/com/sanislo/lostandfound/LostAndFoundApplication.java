@@ -28,6 +28,7 @@ public class LostAndFoundApplication extends Application {
                 Glide.with(imageView.getContext())
                         .load(uri)
                         .placeholder(placeholder)
+                        .centerCrop()
                         .into(imageView);
             }
 
