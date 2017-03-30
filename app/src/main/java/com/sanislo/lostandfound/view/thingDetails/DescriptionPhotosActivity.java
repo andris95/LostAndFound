@@ -9,15 +9,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.ValueEventListener;
 import com.sanislo.lostandfound.R;
 import com.sanislo.lostandfound.adapter.DescriptionPhotoPagerAdapter;
-import com.sanislo.lostandfound.model.Thing;
-import com.sanislo.lostandfound.utils.FirebaseConstants;
-import com.sanislo.lostandfound.utils.FirebaseUtils;
 import com.sanislo.lostandfound.view.BaseActivity;
 
 import java.util.List;
@@ -32,14 +25,12 @@ import butterknife.ButterKnife;
 
 public class DescriptionPhotosActivity extends BaseActivity {
     private final String TAG = DescriptionPhotosActivity.class.getSimpleName();
-    public static final String KEY_THING_KEY = "THING_KEY";
+    public static final String EXTRA_DESCRIPTION_PHOTOS = "THING_KEY";
 
-    private String mThingKey;
     private int mStartPosition;
     private int mCurrentPosition;
     private FragmentDescriptionPhoto mFragmentDescriptionPhoto;
     private boolean mIsReturning;
-    private DatabaseReference mThingReference;
     private DescriptionPhotoPagerAdapter mDescriptionPhotoPagerAdapter;
     private List<String> mDescriptionPhotosList;
 
@@ -68,21 +59,6 @@ public class DescriptionPhotosActivity extends BaseActivity {
         }
     };
 
-    private ValueEventListener mThingListener = new ValueEventListener() {
-        @Override
-        public void onDataChange(DataSnapshot dataSnapshot) {
-            Thing thing = dataSnapshot.getValue(Thing.class);
-            Log.d(TAG, "onDataChange: " + thing);
-            mDescriptionPhotosList = thing.getDescriptionPhotos();
-            displayDescriptionPhotosPager();
-        }
-
-        @Override
-        public void onCancelled(DatabaseError databaseError) {
-
-        }
-    };
-
     @BindView(R.id.vp_description_photos)
     ViewPager vpDescriptionPhotos;
 
@@ -94,13 +70,11 @@ public class DescriptionPhotosActivity extends BaseActivity {
         postponeEnterTransition();
         setEnterSharedElementCallback(mCallback);
         fetchIntent(savedInstanceState);
-        mThingReference = FirebaseUtils.getDatabase().getReference()
-                .child(FirebaseConstants.THINGS)
-                .child(mThingKey);
+        mDescriptionPhotosList = getIntent().getStringArrayListExtra(EXTRA_DESCRIPTION_PHOTOS);
+        displayDescriptionPhotosPager();
     }
 
     private void fetchIntent(Bundle savedInstanceState) {
-        mThingKey = getIntent().getStringExtra(KEY_THING_KEY);
         mStartPosition = getIntent().getIntExtra(ThingDetailsActivity.EXTRA_START_POSITION, 0);
         if (savedInstanceState == null) {
             mCurrentPosition = mStartPosition;
@@ -127,18 +101,6 @@ public class DescriptionPhotosActivity extends BaseActivity {
             }
         });
         vpDescriptionPhotos.setCurrentItem(mStartPosition);
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        mThingReference.addValueEventListener(mThingListener);
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        mThingReference.removeEventListener(mThingListener);
     }
 
     @Override

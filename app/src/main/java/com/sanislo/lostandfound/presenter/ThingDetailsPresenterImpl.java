@@ -1,14 +1,6 @@
 package com.sanislo.lostandfound.presenter;
 
-import android.util.Log;
-
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.ValueEventListener;
 import com.sanislo.lostandfound.model.Thing;
-import com.sanislo.lostandfound.utils.FirebaseUtils;
 import com.sanislo.lostandfound.view.thingDetails.ThingDetailsView;
 
 /**
@@ -19,38 +11,10 @@ public class ThingDetailsPresenterImpl implements ThingDetailsPresenter {
     public final String TAG = ThingDetailsPresenterImpl.class.getSimpleName();
 
     private ThingDetailsView mView;
-    private FirebaseAuth mFirebaseAuth;
-    private String mUID;
 
-    private String mThingKey;
-    private Thing mThing;
-    private DatabaseReference mDatabaseReference;
-
-    private ValueEventListener mThingListener = new ValueEventListener() {
-        @Override
-        public void onDataChange(DataSnapshot dataSnapshot) {
-            mThing = dataSnapshot.getValue(Thing.class);
-            Log.d(TAG, "onDataChange: " + mThing);
-            //mView.onThingLoaded(mThing);
-        }
-
-        @Override
-        public void onCancelled(DatabaseError databaseError) {
-
-        }
-    };
-
-    public ThingDetailsPresenterImpl(ThingDetailsView view, String thingKey) {
+    public ThingDetailsPresenterImpl(ThingDetailsView view) {
         super();
         mView = view;
-        mThingKey = thingKey;
-        initFirebase();
-    }
-
-    private void initFirebase() {
-        mFirebaseAuth = FirebaseAuth.getInstance();
-        mUID = mFirebaseAuth.getCurrentUser().getUid();
-        mDatabaseReference = FirebaseUtils.getDatabase().getReference();
     }
 
     @Override
@@ -60,7 +24,7 @@ public class ThingDetailsPresenterImpl implements ThingDetailsPresenter {
 
     @Override
     public void onPause() {
-        mDatabaseReference.removeEventListener(mThingListener);
+
     }
 
     @Override

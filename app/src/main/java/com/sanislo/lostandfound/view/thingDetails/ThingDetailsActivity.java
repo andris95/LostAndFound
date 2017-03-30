@@ -43,6 +43,7 @@ import com.sanislo.lostandfound.presenter.ThingDetailsPresenter;
 import com.sanislo.lostandfound.presenter.ThingDetailsPresenterImpl;
 import com.sanislo.lostandfound.view.BaseActivity;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -87,12 +88,10 @@ public class ThingDetailsActivity extends BaseActivity implements ThingDetailsVi
     @BindView(R.id.fl_map_container)
     FrameLayout flMapContainer;
 
-    public static final String EXTRA_THING_PATH = "EXTRA_THING_PATH";
     public static final String EXTRA_START_POSITION = "EXTRA_START_POSITION";
     public static final String EXTRA_UPDATED_POSITION = "EXTRA_UPDATED_POSITION";
     public static final String EXTRA_THING = "EXTRA_THING";
 
-    private String mThingPath;
     private Thing mThing;
     private GoogleMap mGoogleMap;
     private MapFragment mMapFragment;
@@ -153,9 +152,8 @@ public class ThingDetailsActivity extends BaseActivity implements ThingDetailsVi
         setContentView(R.layout.activity_thing_details);
         postponeEnterTransition();
         ButterKnife.bind(this);
-        fetchIntentExtras();
         ivThingPhoto.setTransitionName(getString(R.string.transition_description_photo));
-        mThingDetailsPresenter = new ThingDetailsPresenterImpl(this, mThingPath);
+        mThingDetailsPresenter = new ThingDetailsPresenterImpl(this);
 
         mThing = getIntent().getParcelableExtra(EXTRA_THING);
         displayThing();
@@ -166,11 +164,6 @@ public class ThingDetailsActivity extends BaseActivity implements ThingDetailsVi
         transition.excludeTarget(android.R.id.statusBarBackground, true);
         transition.excludeTarget(android.R.id.navigationBarBackground, true);
         getWindow().setEnterTransition(transition);
-    }
-
-    private void fetchIntentExtras() {
-        Bundle extras = getIntent().getExtras();
-        mThingPath = extras.getString(EXTRA_THING_PATH);
     }
 
     @Override
@@ -301,6 +294,7 @@ public class ThingDetailsActivity extends BaseActivity implements ThingDetailsVi
                 .listener(new RequestListener<String, Bitmap>() {
                     @Override
                     public boolean onException(Exception e, String model, Target<Bitmap> target, boolean isFirstResource) {
+                        scheduleStartPostponedTransition(ivThingPhoto);
                         return false;
                     }
 
@@ -319,7 +313,6 @@ public class ThingDetailsActivity extends BaseActivity implements ThingDetailsVi
     }
 
     private void setDescription() {
-        Log.d(TAG, "setDescription: description: " + mThing.getDescription());
         tvDescription.setText(mThing.getDescription());
     }
 
@@ -370,10 +363,6 @@ public class ThingDetailsActivity extends BaseActivity implements ThingDetailsVi
         }
     }
 
-    private void updateDescriptionPhotosAdapter(List<String> descriptionPhotos) {
-        mDescriptionPhotosAdapter.setDescriptionPhotos(descriptionPhotos);
-    }
-
     private void hideDescriptionPhotos() {
         rvDescriptionPhotos.setVisibility(View.GONE);
         mDescriptionPhotosAdapter = null;
@@ -382,22 +371,15 @@ public class ThingDetailsActivity extends BaseActivity implements ThingDetailsVi
 
     private void launchDescriptionPhotosActivity(View view, int position) {
         Intent intent = new Intent(ThingDetailsActivity.this, DescriptionPhotosActivity.class);
-        intent.putExtra(DescriptionPhotosActivity.KEY_THING_KEY, mThingPath);
         intent.putExtra(EXTRA_START_POSITION, position);
-
+        ArrayList<String> descriptionPhotos = new ArrayList<>();
+        descriptionPhotos.addAll(mThing.getDescriptionPhotos());
+        intent.putExtra(DescriptionPhotosActivity.EXTRA_DESCRIPTION_PHOTOS, descriptionPhotos);
         ActivityOptionsCompat options = ActivityOptionsCompat.
                 makeSceneTransitionAnimation(ThingDetailsActivity.this,
                         view,
                         view.getTransitionName());
         startActivity(intent, options.toBundle());
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        if (mCommentsAdapter != null) {
-            mCommentsAdapter.cleanup();
-        }
     }
 
     @OnClick(R.id.btn_send_comment)

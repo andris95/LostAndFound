@@ -17,10 +17,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
-import com.firebase.ui.storage.images.FirebaseImageLoader;
-import com.google.firebase.storage.StorageReference;
 import com.sanislo.lostandfound.R;
-import com.sanislo.lostandfound.utils.FirebaseUtils;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -31,19 +28,19 @@ import butterknife.ButterKnife;
 
 public class FragmentDescriptionPhoto extends Fragment {
     private final String TAG = FragmentDescriptionPhoto.class.getSimpleName();
-    public final String KEY_PHOTO_PATH = "KEY_DESCRIPTION_PHOTO_PATH";
+    public static final String KEY_PHOTO_PATH = "KEY_DESCRIPTION_PHOTO_PATH";
+    public static final String KEY_POSITION = "KEY_POSITION";
 
     @BindView(R.id.iv_description_photo)
     ImageView ivDescriptionPhoto;
 
     private int mPosition;
     private String mPhotoPath;
-    private StorageReference mStorageReference;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mPosition = getArguments().getInt("KEY_POSITION");
+        mPosition = getArguments().getInt(KEY_POSITION);
         mPhotoPath = getArguments().getString(KEY_PHOTO_PATH);
     }
 
@@ -68,23 +65,19 @@ public class FragmentDescriptionPhoto extends Fragment {
     }
 
     private void displayDescriptionPhoto() {
-        Log.d(TAG, "displayDescriptionPhoto: " + mPhotoPath);
-        mStorageReference = FirebaseUtils.getStorageRef();
-        StorageReference reference = mStorageReference.child(mPhotoPath);
         Glide.with(this)
-                .using(new FirebaseImageLoader())
-                .load(reference)
+                .load(mPhotoPath)
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .error(R.drawable.error_placeholder)
-                .listener(new RequestListener<StorageReference, GlideDrawable>() {
+                .listener(new RequestListener<String, GlideDrawable>() {
                     @Override
-                    public boolean onException(Exception e, StorageReference model, Target<GlideDrawable> target, boolean isFirstResource) {
-                        Log.d(TAG, "onException: error displaying " + model.getPath());
+                    public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
+                        scheduleStartPostponedTransition(ivDescriptionPhoto);
                         return false;
                     }
 
                     @Override
-                    public boolean onResourceReady(GlideDrawable resource, StorageReference model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                    public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
                         scheduleStartPostponedTransition(ivDescriptionPhoto);
                         return false;
                     }
