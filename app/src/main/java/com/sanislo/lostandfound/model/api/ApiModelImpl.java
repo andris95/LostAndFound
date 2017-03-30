@@ -43,4 +43,9 @@ public class ApiModelImpl implements ApiModel {
     public Call<List<User>> getUserListByUID(String uid) {
         return mApiInterface.getUserByUIDList(uid);
     }
+
+    @Override
+    public Call<List<Thing>> getUsersThingsByType(String uid, String type) {
+        return mApiInterface.getUsersThingsByType(uid, type);
+    }
 }

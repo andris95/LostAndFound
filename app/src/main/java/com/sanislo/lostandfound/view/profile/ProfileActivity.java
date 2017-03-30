@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
@@ -56,6 +57,9 @@ public class ProfileActivity extends BaseActivity implements ProfileView {
     @BindView(R.id.vp_things)
     ViewPager vpThings;
 
+    @BindView(R.id.tab_things)
+    TabLayout tabThings;
+
     private ProfilePresenter mProfilePresenter;
 
     @Override
@@ -71,8 +75,11 @@ public class ProfileActivity extends BaseActivity implements ProfileView {
         mCollapsingToolbarLayout.setExpandedTitleColor(transparentColor);
 
         mProfilePresenter = new ProfilePresenterImpl(this);
+        //TODO UPDATE USERS UID ON LOGIN!!!!!
         String userUID = PreferencesManager.getUserUID(ProfileActivity.this);
         mProfilePresenter.getProfile(userUID);
+
+        setupUsersThingsPager();
     }
 
     @Override
@@ -135,6 +142,12 @@ public class ProfileActivity extends BaseActivity implements ProfileView {
 
         fab.setRippleColor(lightVibrantColor);
         fab.setBackgroundTintList(ColorStateList.valueOf(vibrantColor));
+    }
+
+    private void setupUsersThingsPager() {
+        UsersThingsPagerAdapter adapter = new UsersThingsPagerAdapter(getSupportFragmentManager());
+        vpThings.setAdapter(adapter);
+        tabThings.setupWithViewPager(vpThings);
     }
 
     @OnClick(R.id.iv_avatar)

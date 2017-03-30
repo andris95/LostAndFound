@@ -168,7 +168,7 @@ public class AddThingPresenterImpl implements AddThingPresenter {
 
     @Override
     public void onTypeChanged(String type) {
-        mType = type;
+        mType = type.toLowerCase();
     }
 
     @Override

@@ -41,9 +41,12 @@
     <string name="publishing_progress">Publishing Your Thing</string>
     <string name="publishing_progress_description">Your thing is getting uploaded. Wait a few seconds...</string>
     <string-array name="thing_type">
-        <item>Lost</item>
-        <item>Found</item>
+        <item>@string/type_lost</item>
+        <item>@string/type_found</item>
     </string-array>
+
+    <string name="type_lost">Lost</string>
+    <string name="type_found">Found</string>
 
     <!-- Thing description screen -->
     <string name="add_a_comment">Add a comment</string>

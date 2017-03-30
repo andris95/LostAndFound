@@ -12,6 +12,8 @@ import javax.annotation.Generated;
 
 @Generated("com.robohorse.robopojogenerator")
 public class Thing implements Parcelable {
+	public static final String TYPE_LOST = "lost";
+	public static final String TYPE_FOUND = "found";
 
 	@SerializedName("descriptionPhotos")
 	@Expose
