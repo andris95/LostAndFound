@@ -9,6 +9,7 @@ import android.content.Intent;
 public interface AddThingPresenter {
     void addThing(String title, String description);
     void onCategoryChanged(int category);
+    void onTypeChanged(String type);
     void onResume();
     void onPause();
     void onActivityResult(int requestCode, int resultCode, Intent data);

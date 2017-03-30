@@ -72,6 +72,7 @@ public class AddThingPresenterImpl implements AddThingPresenter {
     private DatabaseReference mDatabaseReference;
     private StorageReference mStorageReference;
     private int mCategory;
+    private String mType;
 
     private Place mThingPlace;
     private Thing mThing;
@@ -166,6 +167,11 @@ public class AddThingPresenterImpl implements AddThingPresenter {
     }
 
     @Override
+    public void onTypeChanged(String type) {
+        mType = type;
+    }
+
+    @Override
     public void onResume() {
 
     }
@@ -181,10 +187,10 @@ public class AddThingPresenterImpl implements AddThingPresenter {
         startThingDataUpload();
     }
 
-    private long mTimetstamp;
+    private long mTimestamp;
     private void configureThing(String title, String description) {
         mThing = new Thing();
-        mTimetstamp = new Date().getTime();
+        mTimestamp = new Date().getTime();
 
         if (mUser != null) {
             mThing.setUserUID(mUser.getUid());
@@ -192,8 +198,9 @@ public class AddThingPresenterImpl implements AddThingPresenter {
             mThing.setUserAvatar(mUser.getAvatarURL());
             mThing.setTitle(title);
             mThing.setDescription(description);
-            mThing.setTimestamp(mTimetstamp);
+            mThing.setTimestamp(mTimestamp);
             mThing.setCategory(String.valueOf(mCategory));
+            mThing.setType(mType);
         } else {
             throw new RuntimeException("User is not yet downloaded");
         }
@@ -213,7 +220,7 @@ public class AddThingPresenterImpl implements AddThingPresenter {
         UploadTask uploadCoverPhotoTask = mStorageReference
                 .child(mUser.getUid())
                 .child(FirebaseConstants.THINGS)
-                .child(String.valueOf(mTimetstamp))
+                .child(String.valueOf(mTimestamp))
                 .child(FirebaseConstants.THING_COVER_PHOTO)
                 .child(FileUtils.getFileName(mContext, mCoverPhotoUri))
                 .putFile(mCoverPhotoUri);
@@ -237,7 +244,7 @@ public class AddThingPresenterImpl implements AddThingPresenter {
         UploadTask descriptionPhotoUploadTask = mStorageReference
                 .child(mUser.getUid())
                 .child(FirebaseConstants.THINGS)
-                .child(String.valueOf(mTimetstamp))
+                .child(String.valueOf(mTimestamp))
                 .child(FirebaseConstants.THING_DESCRIPTION_PHOTOS)
                 .child(FileUtils.getFileName(mContext, uri))
                 .putFile(uri);

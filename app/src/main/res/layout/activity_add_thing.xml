@@ -26,6 +26,12 @@
     </android.support.design.widget.TextInputLayout>
 
     <android.support.v7.widget.AppCompatSpinner
+        android:id="@+id/sp_type"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+    </android.support.v7.widget.AppCompatSpinner>
+
+    <android.support.v7.widget.AppCompatSpinner
         android:id="@+id/sp_category"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">

@@ -9,6 +9,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.AppCompatSpinner;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -49,6 +50,9 @@ public class AddThingActivity extends AppCompatActivity implements AddThingView 
     @BindView(R.id.sp_category)
     Spinner spCategory;
 
+    @BindView(R.id.sp_type)
+    AppCompatSpinner spType;
+
     @BindView(R.id.edt_thing_title)
     EditText edtTitle;
 
@@ -57,6 +61,8 @@ public class AddThingActivity extends AppCompatActivity implements AddThingView 
 
     private boolean DEBUG = true;
     private AddThingPresenter mPresenter;
+    private ArrayAdapter<String> mTypeAdapter;
+    private String[] mThingArray;
     private ArrayAdapter<String> mCategoriesAdapter;
     private MaterialDialog mProgressDialog;
 
@@ -72,6 +78,18 @@ public class AddThingActivity extends AppCompatActivity implements AddThingView 
         }
     };
 
+    private AdapterView.OnItemSelectedListener mTypeSelectedListener = new AdapterView.OnItemSelectedListener() {
+        @Override
+        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+            mPresenter.onTypeChanged(mThingArray[position]);
+        }
+
+        @Override
+        public void onNothingSelected(AdapterView<?> parent) {
+
+        }
+    };
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -80,6 +98,7 @@ public class AddThingActivity extends AppCompatActivity implements AddThingView 
 
         mPresenter = new AddThingPresenterImpl(this);
         initCategories();
+        initTypeSpinner();
     }
 
     @Override
@@ -99,6 +118,16 @@ public class AddThingActivity extends AppCompatActivity implements AddThingView 
         mCategoriesAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spCategory.setAdapter(mCategoriesAdapter);
         spCategory.setOnItemSelectedListener(mCategorySelectedListener);
+    }
+
+    private void initTypeSpinner() {
+        mThingArray = getResources().getStringArray(R.array.thing_type);
+        mTypeAdapter = new ArrayAdapter<String>(AddThingActivity.this,
+                android.R.layout.simple_spinner_item,
+                mThingArray);
+        mTypeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spType.setAdapter(mTypeAdapter);
+        spType.setOnItemSelectedListener(mTypeSelectedListener);
     }
 
     private void initProgressDialog() {
