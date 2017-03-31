@@ -50,6 +50,10 @@ public class ThingAdapter extends RecyclerView.Adapter<ThingAdapter.ViewHolder> 
         mThingList = thingList;
     }
 
+    public void clear() {
+        mThingList.clear();
+    }
+
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = mLayoutInflater.inflate(R.layout.item_thing_simple, null);

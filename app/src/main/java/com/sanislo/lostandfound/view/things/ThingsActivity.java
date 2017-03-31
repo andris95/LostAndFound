@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v4.util.Pair;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -50,6 +52,9 @@ public class ThingsActivity extends BaseActivity implements ThingsView {
     @BindView(R.id.toolbar_main)
     Toolbar toolbar;
 
+    @BindView(R.id.refresh_things)
+        SwipeRefreshLayout swipeRefreshThings;
+
     private FirebaseAuth mFirebaseAuth;
     private ThingAdapter mThingAdapter;
 
@@ -67,10 +72,12 @@ public class ThingsActivity extends BaseActivity implements ThingsView {
         @Override
         public void onClickRootView(View view, Thing thing) {
             Intent intent = new Intent(ThingsActivity.this, ThingDetailsActivity.class);
+            View ivThingPhoto = ButterKnife.findById(view, R.id.iv_thing_photo);
+            View ivAvatar = ButterKnife.findById(view, R.id.iv_thing_author_avatar);
+            Pair<View, String> p1 = Pair.create(ivAvatar, getString(R.string.transition_avatar));
+            Pair<View, String> p2 = Pair.create(ivThingPhoto, getString(R.string.transition_description_photo));
             ActivityOptionsCompat options = ActivityOptionsCompat.
-                    makeSceneTransitionAnimation(ThingsActivity.this,
-                            view.findViewById(R.id.iv_thing_photo),
-                            getString(R.string.transition_description_photo));
+                    makeSceneTransitionAnimation(ThingsActivity.this, p1, p2);
             intent.putExtra(ThingDetailsActivity.EXTRA_THING, thing);
             startActivity(intent, options.toBundle());
         }
@@ -86,14 +93,22 @@ public class ThingsActivity extends BaseActivity implements ThingsView {
         initFirebase();
         initToolbar();
         initThingsAdapter();
+        setupSwipeRefresh();
         mThingsPresenter.getThings();
         mThingsPresenter.getProfile(ThingsActivity.this);
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-
+    private void setupSwipeRefresh() {
+        swipeRefreshThings.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                if (mThingAdapter != null) {
+                    mThingAdapter.clear();
+                    mThingAdapter.notifyDataSetChanged();
+                }
+                mThingsPresenter.getThings();
+            }
+        });
     }
 
     private Drawer.OnDrawerItemClickListener mOnDrawerItemClickListener = new Drawer.OnDrawerItemClickListener() {
@@ -202,6 +217,9 @@ public class ThingsActivity extends BaseActivity implements ThingsView {
 
     @Override
     public void onThingsLoaded(List<Thing> thingList) {
+        if (swipeRefreshThings.isRefreshing()) {
+            swipeRefreshThings.setRefreshing(false);
+        }
         mThingAdapter.setThingList(thingList);
         mThingAdapter.notifyDataSetChanged();
     }

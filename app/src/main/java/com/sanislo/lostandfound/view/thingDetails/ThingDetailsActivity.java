@@ -153,6 +153,7 @@ public class ThingDetailsActivity extends BaseActivity implements ThingDetailsVi
         postponeEnterTransition();
         ButterKnife.bind(this);
         ivThingPhoto.setTransitionName(getString(R.string.transition_description_photo));
+        ivAuthorAvatar.setTransitionName(getString(R.string.transition_avatar));
         mThingDetailsPresenter = new ThingDetailsPresenterImpl(this);
 
         mThing = getIntent().getParcelableExtra(EXTRA_THING);
@@ -163,6 +164,7 @@ public class ThingDetailsActivity extends BaseActivity implements ThingDetailsVi
         Transition transition = new Slide();
         transition.excludeTarget(android.R.id.statusBarBackground, true);
         transition.excludeTarget(android.R.id.navigationBarBackground, true);
+        //transition.addTarget(R.id.rl_thing_description);
         getWindow().setEnterTransition(transition);
     }
 

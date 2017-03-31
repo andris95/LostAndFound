@@ -76,6 +76,7 @@ Thank you</string>
     <string name="path_chevron_down">M7.41,8.58L12,13.17L16.59,8.58L18,10L12,16L6,10L7.41,8.58Z</string>
     <string name="path_chevron_up">M7.41,15.41L12,10.83L16.59,15.41L18,14L12,8L6,14L7.41,15.41Z</string>
 
+    <string name="transition_avatar">transition_avatar</string>
     <string name="transition_description_photo">transition_description_photo</string>
     <string name="transition_description_text">transition_description_text</string>
 
