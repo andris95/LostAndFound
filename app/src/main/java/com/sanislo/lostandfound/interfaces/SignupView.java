@@ -5,7 +5,7 @@ package com.sanislo.lostandfound.interfaces;
  */
 
 public interface SignupView {
-    void onUserCreated();
+    void onUserSaved();
     void onUserSignedIn();
     void onError(String errorMessage);
 }

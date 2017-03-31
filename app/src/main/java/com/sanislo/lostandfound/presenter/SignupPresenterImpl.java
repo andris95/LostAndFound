@@ -1,9 +1,9 @@
 package com.sanislo.lostandfound.presenter;
 
+import com.sanislo.lostandfound.interfaces.SignupView;
 import com.sanislo.lostandfound.model.User;
 import com.sanislo.lostandfound.model.api.ApiModel;
 import com.sanislo.lostandfound.model.api.ApiModelImpl;
-import com.sanislo.lostandfound.interfaces.SignupView;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -29,7 +29,7 @@ public class SignupPresenterImpl implements SignupPresenter {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
                 if (response.isSuccessful()) {
-                    mSignupView.onUserCreated();
+                    mSignupView.onUserSaved();
                 } else {
                     mSignupView.onError("Error creating user");
                 }

@@ -20,6 +20,8 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.sanislo.lostandfound.R;
+import com.sanislo.lostandfound.model.api.ApiModel;
+import com.sanislo.lostandfound.model.api.ApiModelImpl;
 import com.sanislo.lostandfound.model.firebaseModel.User;
 import com.sanislo.lostandfound.utils.FirebaseConstants;
 import com.sanislo.lostandfound.utils.FirebaseUtils;
@@ -27,9 +29,14 @@ import com.sanislo.lostandfound.utils.PreferencesManager;
 import com.sanislo.lostandfound.view.BaseActivity;
 import com.sanislo.lostandfound.view.things.ThingsActivity;
 
+import java.util.List;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class LoginActivity extends BaseActivity {
 
@@ -50,13 +57,41 @@ public class LoginActivity extends BaseActivity {
         @Override
         public void onComplete(@NonNull Task task) {
             if (task.isSuccessful()) {
-                PreferencesManager.setUserUID(LoginActivity.this, mFirebaseAuth.getCurrentUser().getUid());
-                Intent intent = new Intent(LoginActivity.this, ThingsActivity.class);
-                startActivity(intent);
-                finish();
+                final String uid = mFirebaseAuth.getCurrentUser().getUid();
+                //TODO FIX THIS
+                ApiModel apiModel = new ApiModelImpl();
+                Call<List<com.sanislo.lostandfound.model.User>> userCall = apiModel.getUserListByUID(uid);
+                userCall.enqueue(new Callback<List<com.sanislo.lostandfound.model.User>>() {
+                    @Override
+                    public void onResponse(Call<List<com.sanislo.lostandfound.model.User>> call, Response<List<com.sanislo.lostandfound.model.User>> response) {
+                        if (response.isSuccessful()) {
+                            com.sanislo.lostandfound.model.User user = response.body().get(0);
+                            updatePreferencesForLoggedInUser(user.getId(), uid);
+                            openMainActivity();
+                        } else {
+                            Log.d(TAG, "onResponse: " + response.message());
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<List<com.sanislo.lostandfound.model.User>> call, Throwable t) {
+
+                    }
+                });
             }
         }
     };
+
+    private void updatePreferencesForLoggedInUser(int id, String uid) {
+        PreferencesManager.setUserUID(LoginActivity.this, uid);
+        PreferencesManager.setUserID(LoginActivity.this, id);
+    }
+
+    private void openMainActivity() {
+        Intent intent = new Intent(LoginActivity.this, ThingsActivity.class);
+        startActivity(intent);
+        finish();
+    }
 
     private OnFailureListener onSignInFailureListener = new OnFailureListener() {
         @Override

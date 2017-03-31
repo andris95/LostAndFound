@@ -216,6 +216,7 @@ public class ProfileActivity extends BaseActivity implements ProfileView {
         super.onActivityResult(requestCode, resultCode, data);
         mProfilePresenter.onActivityResult(requestCode, resultCode, data);
         //TODO FIX THIS
-        mProfilePresenter.updateUserAvatar(ProfileActivity.this);
+        mProfilePresenter.updateUserAvatar(ProfileActivity.this,
+                PreferencesManager.getUserID(ProfileActivity.this));
     }
 }

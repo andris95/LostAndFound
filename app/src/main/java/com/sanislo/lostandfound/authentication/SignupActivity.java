@@ -12,12 +12,15 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.sanislo.lostandfound.R;
 import com.sanislo.lostandfound.interfaces.SignupView;
 import com.sanislo.lostandfound.model.User;
+import com.sanislo.lostandfound.model.api.ApiModel;
+import com.sanislo.lostandfound.model.api.ApiModelImpl;
 import com.sanislo.lostandfound.presenter.SignupPresenter;
 import com.sanislo.lostandfound.presenter.SignupPresenterImpl;
 import com.sanislo.lostandfound.utils.FirebaseUtils;
@@ -25,9 +28,14 @@ import com.sanislo.lostandfound.utils.PreferencesManager;
 import com.sanislo.lostandfound.view.BaseActivity;
 import com.sanislo.lostandfound.view.things.ThingsActivity;
 
+import java.util.List;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class SignupActivity extends BaseActivity implements SignupView {
 
@@ -81,9 +89,17 @@ public class SignupActivity extends BaseActivity implements SignupView {
 
         if (isValidName && isValidEmailPwrd) {
             mFirebaseAuth.createUserWithEmailAndPassword(mEmail, mPassword)
-                    .addOnCompleteListener(onCreateUserCompleteListener);
+                    .addOnCompleteListener(onCreateUserCompleteListener)
+                    .addOnFailureListener(mCreateUserFailureListener);
         }
     }
+
+    private OnFailureListener mCreateUserFailureListener = new OnFailureListener() {
+        @Override
+        public void onFailure(@NonNull Exception e) {
+            e.printStackTrace();
+        }
+    };
 
     private void setEditable(boolean editable) {
         if (!editable) {
@@ -122,7 +138,7 @@ public class SignupActivity extends BaseActivity implements SignupView {
     }
 
     @Override
-    public void onUserCreated() {
+    public void onUserSaved() {
         mFirebaseAuth.signInWithEmailAndPassword(mEmail, mPassword)
                 .addOnCompleteListener(onSignInCompleteListener);
     }
@@ -132,11 +148,35 @@ public class SignupActivity extends BaseActivity implements SignupView {
         public void onComplete(@NonNull Task task) {
             FirebaseUser firebaseUser = mFirebaseAuth.getCurrentUser();
             if (firebaseUser != null) {
-                PreferencesManager.setUserUID(getApplicationContext(), firebaseUser.getUid());
+                final String uid = firebaseUser.getUid();
+                ApiModel apiModel = new ApiModelImpl();
+                Call<List<User>> userCall = apiModel.getUserListByUID(uid);
+                userCall.enqueue(new Callback<List<User>>() {
+                    @Override
+                    public void onResponse(Call<List<com.sanislo.lostandfound.model.User>> call, Response<List<User>> response) {
+                        if (response.isSuccessful()) {
+                            com.sanislo.lostandfound.model.User user = response.body().get(0);
+                            updatePreferencesForLoggedInUser(user.getId(), uid);
+                            launchMainActivity();
+                        } else {
+
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<List<com.sanislo.lostandfound.model.User>> call, Throwable t) {
+
+                    }
+                });
                 launchMainActivity();
             }
         }
     };
+
+    private void updatePreferencesForLoggedInUser(int id, String uid) {
+        PreferencesManager.setUserUID(SignupActivity.this, uid);
+        PreferencesManager.setUserID(SignupActivity.this, id);
+    }
 
     private void launchMainActivity() {
         startActivity(new Intent(SignupActivity.this, ThingsActivity.class));

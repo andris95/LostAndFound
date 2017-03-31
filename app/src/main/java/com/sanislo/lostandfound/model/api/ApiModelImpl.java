@@ -36,6 +36,11 @@ public class ApiModelImpl implements ApiModel {
     }
 
     @Override
+    public Call<Void> updateUser(int userId, User user) {
+        return mApiInterface.updateUser(userId, user);
+    }
+
+    @Override
     public Call<Void> postThing(Thing thing) {
         return mApiInterface.postThing(thing);
     }

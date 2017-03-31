@@ -27,7 +27,6 @@ import com.sanislo.lostandfound.R;
 import com.sanislo.lostandfound.interfaces.AddThingView;
 import com.sanislo.lostandfound.presenter.AddThingPresenter;
 import com.sanislo.lostandfound.presenter.AddThingPresenterImpl;
-import com.sanislo.lostandfound.view.UploadType;
 
 import java.util.List;
 
@@ -253,16 +252,25 @@ public class AddThingActivity extends AppCompatActivity implements AddThingView 
     }
 
     @Override
-    public void onUploadStarted(UploadType uploadType) {
-        initProgressDialog();
-    }
-
-    private void initProgressDialog() {
-        boolean showMinMax = true;
+    public void onUploadStartedSimple() {
+        boolean showMinMax = false;
+        boolean indeterminate = true;
         mProgressDialog = new MaterialDialog.Builder(this)
                 .title(R.string.publishing_progress)
                 .content(R.string.publishing_progress_description)
-                .progress(false, 100, showMinMax)
+                .progress(indeterminate, 100, showMinMax)
+                .cancelable(false)
+                .show();
+    }
+
+    @Override
+    public void onUploadStartedWithPhotos(int fileCount) {
+        boolean showMinMax = true;
+        boolean indeterminate = false;
+        mProgressDialog = new MaterialDialog.Builder(this)
+                .title(R.string.publishing_progress)
+                .content(R.string.publishing_progress_description)
+                .progress(indeterminate, fileCount, showMinMax)
                 .cancelable(false)
                 .show();
     }

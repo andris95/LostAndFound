@@ -17,6 +17,7 @@ public interface ApiModel {
     Call<List<Thing>> getThings(String sort, String order);
     Call<Void> updateUserAvatar(int userId, String avatarURL);
     Call<Void> updateUserAvatar(int userId, UserAvatarUpdateRequest userAvatarUpdateRequest);
+    Call<Void> updateUser(int userId, User user);
     Call<Void> postThing(Thing thing);
     Call<Void> saveUser(User user);
     Call<User> getUser(int id);

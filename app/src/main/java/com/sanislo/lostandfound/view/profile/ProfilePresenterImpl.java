@@ -12,7 +12,6 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.sanislo.lostandfound.model.User;
-import com.sanislo.lostandfound.model.UserAvatarUpdateRequest;
 import com.sanislo.lostandfound.model.api.ApiModel;
 import com.sanislo.lostandfound.model.api.ApiModelImpl;
 import com.sanislo.lostandfound.utils.FileUtils;
@@ -35,6 +34,7 @@ public class ProfilePresenterImpl implements ProfilePresenter {
     private String TAG = ProfilePresenter.class.getSimpleName();
     private ApiModel mApiModel = new ApiModelImpl();
     private ProfileView mView;
+    private User mUser;
     private Uri mProfileImageUri;
 
     public ProfilePresenterImpl(ProfileView view) {
@@ -50,9 +50,9 @@ public class ProfilePresenterImpl implements ProfilePresenter {
             @Override
             public void onResponse(Call<List<User>> call, Response<List<User>> response) {
                 if (response.isSuccessful()) {
-                    User user = response.body().get(0);
-                    Log.d(TAG, "onResponse: " + user);
-                    mView.onProfileLoaded(user);
+                    mUser = response.body().get(0);
+                    Log.d(TAG, "onResponse: " + mUser);
+                    mView.onProfileLoaded(mUser);
                 } else {
                     Log.d(TAG, "onResponse: " + response.message());
                 }
@@ -75,7 +75,7 @@ public class ProfilePresenterImpl implements ProfilePresenter {
     }
 
     @Override
-    public void updateUserAvatar(Context context) {
+    public void updateUserAvatar(Context context, final int userId) {
         StorageReference storageReference = FirebaseUtils.getStorageRef();
         String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
         UploadTask uploadTask = storageReference
@@ -89,20 +89,21 @@ public class ProfilePresenterImpl implements ProfilePresenter {
             public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
                 if (task.isComplete() && task.isSuccessful()) {
                     String avatarURL = task.getResult().getDownloadUrl().toString();
-                    updateUserAvatarURL(avatarURL);
+                    mUser.setAvatarURL(avatarURL);
+                    updateUserData(userId);
                 }
             }
         });
     }
 
-    private void updateUserAvatarURL(final String avatarURL) {
-        Call<Void> call = mApiModel.updateUserAvatar(1, new UserAvatarUpdateRequest(avatarURL));
+    private void updateUserData(int userId) {
+        Call<Void> call = mApiModel.updateUser(userId, mUser);
         call.enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
                 if (response.isSuccessful()) {
                     Log.d(TAG, "onResponse: success");
-                    mView.onAvatarUpdated(avatarURL);
+                    mView.onAvatarUpdated(mUser.getAvatarURL());
                 } else {
                     Log.d(TAG, "onResponse: " + response.message());
                 }

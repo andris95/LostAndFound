@@ -9,6 +9,6 @@ import android.content.Intent;
 
 public interface ProfilePresenter {
     void getProfile(String userUID);
-    void updateUserAvatar(Context context);
+    void updateUserAvatar(Context context, int userId);
     void onActivityResult(int requestCode, int resultCode, Intent data);
 }
