@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorPrimary">@color/material_purple500</color>
+    <color name="colorPrimaryDark">@color/md_deep_purple_900</color>
     <color name="colorAccent">#FF4081</color>
+
+    <color name="edt_auth_background_color">#339E9E9E</color>
 
     <!--reds-->
     <color name="md_red_50">#FFEBEE</color>

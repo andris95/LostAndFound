@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">LostAndFound</string>
+    <string name="app_name">Lost &amp; Found</string>
 
     <!-- Main screen - things list screen -->
     <!-- toolbar options -->
@@ -26,10 +26,12 @@
     <string name="hint_last_name">last name</string>
     <string name="login">login</string>
     <string name="link_to_login">Already registered. Sign in Me!</string>
-    <string name="signup_a_new_account">Sign up for a new account!</string>
+    <string name="signup_a_new_account">Don\'t have an account? Sign up!</string>
     <string name="sign_out">sign out</string>
     <string name="forgot_password">Forgot Your Password? Click here!</string>
     <string name="share">share</string>
+
+    <string name="or">or</string>
 
     <!-- Add thing screen -->
     <string name="hint_thing_title">Title</string>

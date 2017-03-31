@@ -1,11 +1,13 @@
 package com.sanislo.lostandfound.authentication;
 
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Log;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.auth.api.Auth;
@@ -45,6 +47,9 @@ public class LoginActivity extends BaseActivity {
 
     @BindView(R.id.password)
     EditText edtPassword;
+
+    @BindView(R.id.tv_logo)
+    TextView tvLogo;
 
     public final String TAG = LoginActivity.class.getSimpleName();
     private final int RC_GOOGLE_SIGNIN = 22228;
@@ -113,6 +118,7 @@ public class LoginActivity extends BaseActivity {
         ButterKnife.bind(this);
 
         initGoogleSignIn();
+        setupLogoFont();
     }
 
     private void initGoogleSignIn() {
@@ -121,6 +127,12 @@ public class LoginActivity extends BaseActivity {
                 .requestEmail()
                 .requestProfile()
                 .build();
+    }
+
+    private void setupLogoFont() {
+        Typeface logoTypeface = Typeface.createFromAsset(getAssets(), "surfing_kiteboarding.ttf");
+        tvLogo.setTypeface(logoTypeface);
+        tvLogo.setTextSize(72);
     }
 
     @OnClick(R.id.btn_login)

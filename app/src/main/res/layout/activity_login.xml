@@ -1,51 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true">
+    android:background="@drawable/background_gradient_2">
+
+    <TextView
+        android:id="@+id/tv_logo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="48dp"
+        android:textColor="@color/md_white_1000"
+        android:textSize="48sp"
+        android:lines="1"
+        android:layout_centerHorizontal="true"
+        android:text="@string/app_name"/>
 
     <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="vertical"
+        android:layout_below="@+id/tv_logo"
+        android:layout_above="@+id/btn_signup"
         android:padding="@dimen/activity_horizontal_margin">
 
-        <android.support.design.widget.TextInputLayout
+        <EditText
+            android:id="@+id/edt_email"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <EditText
-                android:id="@+id/edt_email"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/hint_email"
-                android:inputType="textEmailAddress" />
-        </android.support.design.widget.TextInputLayout>
+            android:layout_height="wrap_content"
+            android:layout_marginTop="64dp"
+            android:hint="@string/hint_email"
+            android:inputType="textEmailAddress"
+            style="@style/AuthEditText"/>
 
-        <android.support.design.widget.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <EditText
-                android:id="@+id/password"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/hint_password"
-                android:inputType="textPassword"
-                />
-        </android.support.design.widget.TextInputLayout>
+        <EditText
+            android:id="@+id/password"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:hint="@string/hint_password"
+            android:inputType="textPassword"
+            style="@style/AuthEditText"/>
 
         <Button
             android:id="@+id/btn_login"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dip"
+            android:layout_marginTop="16dp"
             android:text="@string/login"
+            android:textColor="@color/md_white_1000"
+            android:background="@drawable/login_button_background"
             />
 
         <com.google.android.gms.common.SignInButton
             android:id="@+id/btn_login_google"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp">
         </com.google.android.gms.common.SignInButton>
 
         <Button
@@ -55,16 +66,58 @@
             android:layout_marginTop="20dip"
             android:background="@null"
             android:text="@string/forgot_password"
-            android:textAllCaps="false"
-            />
-
-        <Button
-            android:id="@+id/btn_signup"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dip"
-            android:background="@null"
-            android:text="@string/signup_a_new_account"
-            android:textAllCaps="false" />
+            android:textColor="@color/md_white_1000"
+            android:textAllCaps="false"/>
     </LinearLayout>
-</android.support.design.widget.CoordinatorLayout>
+
+    <!--<LinearLayout
+        android:id="@+id/ll_separator"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_above="@id/btn_signup"
+        android:weightSum="3"
+        xmlns:android="http://schemas.android.com/apk/res/android">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_gravity="center_vertical"
+            android:background="@color/md_white_1000"
+            android:layout_weight="1"/>
+
+        <TextView
+            android:id="@+id/btn_sign_in_anonymous"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:paddingEnd="5dp"
+            android:paddingStart="5dp"
+            android:text="@string/or"
+            android:textColor="@color/md_white_1000" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_gravity="center_vertical"
+            android:background="@color/md_white_1000"
+            android:layout_weight="1"/>
+    </LinearLayout>-->
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/md_white_1000"
+        android:layout_above="@id/btn_signup"/>
+    <Button
+        android:id="@+id/btn_signup"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@null"
+        android:text="@string/signup_a_new_account"
+        android:textColor="@color/md_white_1000"
+        android:textAllCaps="false" />
+</RelativeLayout>

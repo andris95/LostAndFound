@@ -20,4 +20,11 @@
         <item name="rippleColor">@android:color/white</item>
     </style>
 
+    <style name="AuthEditText" parent="Widget.AppCompat.EditText">
+        <item name="android:padding">12dp</item>
+        <item name="android:background">@color/edt_auth_background_color</item>
+        <item name="android:textColor">@color/md_white_1000</item>
+        <item name="android:textColorHint">@color/md_white_1000</item>
+    </style>
+
 </resources>
