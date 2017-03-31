@@ -1,5 +1,6 @@
 package com.sanislo.lostandfound.view.profile;
 
+import android.content.Context;
 import android.content.Intent;
 
 /**
@@ -8,6 +9,6 @@ import android.content.Intent;
 
 public interface ProfilePresenter {
     void getProfile(String userUID);
-    void updateProfile();
+    void updateUserAvatar(Context context);
     void onActivityResult(int requestCode, int resultCode, Intent data);
 }

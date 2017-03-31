@@ -2,6 +2,7 @@ package com.sanislo.lostandfound.model.api;
 
 import com.sanislo.lostandfound.model.Thing;
 import com.sanislo.lostandfound.model.User;
+import com.sanislo.lostandfound.model.UserAvatarUpdateRequest;
 
 import java.util.List;
 
@@ -22,6 +23,16 @@ public class ApiModelImpl implements ApiModel {
     @Override
     public Call<List<Thing>> getThings(String sort, String order) {
         return mApiInterface.getThings(sort, order);
+    }
+
+    @Override
+    public Call<Void> updateUserAvatar(int userId, String avatarURL) {
+        return mApiInterface.updateUserAvatar(userId, avatarURL);
+    }
+
+    @Override
+    public Call<Void> updateUserAvatar(int userId, UserAvatarUpdateRequest userAvatarUpdateRequest) {
+        return mApiInterface.updateUserAvatar(userId, userAvatarUpdateRequest);
     }
 
     @Override

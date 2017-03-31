@@ -1,5 +1,7 @@
 package com.sanislo.lostandfound.interfaces;
 
+import com.sanislo.lostandfound.view.UploadType;
+
 import java.util.List;
 
 /**
@@ -9,5 +11,7 @@ import java.util.List;
 public interface AddThingView {
     void onCategoriesReady(List<String> categories);
     void onThingAdded();
+    void onUploadStarted(UploadType uploadType);
     void onProgress(int progress);
+    void onError(int errorCode);
 }

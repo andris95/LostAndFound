@@ -6,18 +6,18 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatSpinner;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
-import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
@@ -27,6 +27,7 @@ import com.sanislo.lostandfound.R;
 import com.sanislo.lostandfound.interfaces.AddThingView;
 import com.sanislo.lostandfound.presenter.AddThingPresenter;
 import com.sanislo.lostandfound.presenter.AddThingPresenterImpl;
+import com.sanislo.lostandfound.view.UploadType;
 
 import java.util.List;
 
@@ -47,6 +48,9 @@ public class AddThingActivity extends AppCompatActivity implements AddThingView 
     private final int RP_READ_EXTERNAL_FOR_DESCRIPTION_PHOTOS = 444;
     private final int RP_FINE_LOCATION = 555;
 
+    @BindView(R.id.root_add_thing)
+    CoordinatorLayout mRoot;
+
     @BindView(R.id.sp_category)
     Spinner spCategory;
 
@@ -65,6 +69,7 @@ public class AddThingActivity extends AppCompatActivity implements AddThingView 
     private String[] mThingArray;
     private ArrayAdapter<String> mCategoriesAdapter;
     private MaterialDialog mProgressDialog;
+    private Snackbar mErrorSnackbar;
 
     private AdapterView.OnItemSelectedListener mCategorySelectedListener = new AdapterView.OnItemSelectedListener() {
         @Override
@@ -130,33 +135,15 @@ public class AddThingActivity extends AppCompatActivity implements AddThingView 
         spType.setOnItemSelectedListener(mTypeSelectedListener);
     }
 
-    private void initProgressDialog() {
-        boolean showMinMax = true;
-        mProgressDialog = new MaterialDialog.Builder(this)
-                .title(R.string.publishing_progress)
-                .content(R.string.publishing_progress_description)
-                .progress(false, 100, showMinMax)
-                .cancelable(false)
-                .show();
-    }
-
     @OnClick(R.id.btn_add_thing)
     public void onClickAddThing() {
-        initProgressDialog();
+        //initProgressDialog();
         addThing();
     }
 
     private void addThing() {
         String title = edtTitle.getText().toString();
-        if (DEBUG && TextUtils.isEmpty(title)) {
-            title = getString(R.string.lorem_ipsum_title);
-        } else {
-            Toast.makeText(AddThingActivity.this, "Title can't be blank!", Toast.LENGTH_SHORT).show();
-        }
         String description = edtDescription.getText().toString();
-        if (DEBUG && TextUtils.isEmpty(description)) {
-            description = getString(R.string.description);
-        }
         mPresenter.addThing(title, description);
     }
 
@@ -252,9 +239,32 @@ public class AddThingActivity extends AppCompatActivity implements AddThingView 
     }
 
     @Override
+    public void onError(int errorMessageRes) {
+        if (mErrorSnackbar == null || !mErrorSnackbar.isShownOrQueued()) {
+            mErrorSnackbar = Snackbar.make(mRoot, errorMessageRes, Snackbar.LENGTH_LONG);
+            mErrorSnackbar.show();
+        }
+    }
+
+    @Override
     public void onThingAdded() {
         mProgressDialog.dismiss();
         this.finish();
+    }
+
+    @Override
+    public void onUploadStarted(UploadType uploadType) {
+        initProgressDialog();
+    }
+
+    private void initProgressDialog() {
+        boolean showMinMax = true;
+        mProgressDialog = new MaterialDialog.Builder(this)
+                .title(R.string.publishing_progress)
+                .content(R.string.publishing_progress_description)
+                .progress(false, 100, showMinMax)
+                .cancelable(false)
+                .show();
     }
 
     private void selectPlace() {

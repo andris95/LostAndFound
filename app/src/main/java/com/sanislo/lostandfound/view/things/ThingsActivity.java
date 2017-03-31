@@ -138,6 +138,8 @@ public class ThingsActivity extends BaseActivity implements ThingsView {
 
         DrawerBuilder drawerBuilder = new DrawerBuilder()
                 .withActivity(ThingsActivity.this)
+                .withToolbar(toolbar)
+                .withTranslucentStatusBar(false)
                 .withAccountHeader(accountHeaderBuilder.build())
                 .withOnDrawerItemClickListener(mOnDrawerItemClickListener)
                 .withDrawerItems(getDrawerItems());
@@ -208,5 +210,15 @@ public class ThingsActivity extends BaseActivity implements ThingsView {
     public void onProfileLoaded(User user) {
         mUser = user;
         setupDrawer();
+    }
+
+    @Override
+    public void onBackPressed() {
+        //handle the back press :D close the drawer first and if the drawer is closed close the activity
+        if (mDrawer != null && mDrawer.isDrawerOpen()) {
+            mDrawer.closeDrawer();
+        } else {
+            super.onBackPressed();
+        }
     }
 }

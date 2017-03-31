@@ -51,6 +51,10 @@
     <!-- Thing description screen -->
     <string name="add_a_comment">Add a comment</string>
 
+    <!-- Error messages -->
+    <string name="error_empty_title">Please provide title for your thing!</string>
+    <string name="error_empty_description">Please provide description for your thing</string>
+
     <string name="found_keys">Keys found on Aigburth Road, Liverpool, between the Maccies and the garage. It’s got two keyrings on as well but I’ve covered them up for the owner to identify.</string>
     <string name="found_ring">Was found at willy’s car wash, near the dog wash side in blacks beach.
 Sterling silver ring, has one stone missing and engraving on the inside (must be able to identify what it says!)

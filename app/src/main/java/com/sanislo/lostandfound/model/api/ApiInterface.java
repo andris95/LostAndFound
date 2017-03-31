@@ -2,6 +2,7 @@ package com.sanislo.lostandfound.model.api;
 
 import com.sanislo.lostandfound.model.Thing;
 import com.sanislo.lostandfound.model.User;
+import com.sanislo.lostandfound.model.UserAvatarUpdateRequest;
 
 import java.util.List;
 
@@ -9,6 +10,7 @@ import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
+import retrofit2.http.PUT;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 
@@ -29,6 +31,12 @@ public interface ApiInterface {
 
     @POST(ApiConstants.USERS)
     Call<Void> saveUser(@Body User user);
+
+    @PUT("users/{id}")
+    Call<Void> updateUserAvatar(@Path("id") int userId, @Body String avatarURL);
+
+    @PUT("users/{id}/edit")
+    Call<Void> updateUserAvatar(@Path("id") int userId, @Body UserAvatarUpdateRequest userAvatarUpdateRequest);
 
     @GET(ApiConstants.USERS + "/{id}")
     Call<User> getUser(@Path("id") int id);

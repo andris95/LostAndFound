@@ -101,6 +101,11 @@ public class ProfileActivity extends BaseActivity implements ProfileView {
         displayUserAvatar(user.getAvatarURL());
     }
 
+    @Override
+    public void onAvatarUpdated(String avatarURL) {
+        displayUserAvatar(avatarURL);
+    }
+
     private void displayUserAvatar(String url) {
         Glide.with(this)
                 .load(url)
@@ -210,5 +215,7 @@ public class ProfileActivity extends BaseActivity implements ProfileView {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         mProfilePresenter.onActivityResult(requestCode, resultCode, data);
+        //TODO FIX THIS
+        mProfilePresenter.updateUserAvatar(ProfileActivity.this);
     }
 }

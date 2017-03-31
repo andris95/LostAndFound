@@ -8,4 +8,5 @@ import com.sanislo.lostandfound.model.User;
 
 public interface ProfileView {
     void onProfileLoaded(User user);
+    void onAvatarUpdated(String avatarURL);
 }

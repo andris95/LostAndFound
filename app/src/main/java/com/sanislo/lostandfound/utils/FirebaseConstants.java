@@ -6,6 +6,7 @@ package com.sanislo.lostandfound.utils;
 
 public class FirebaseConstants {
     public static final String USERS = "users";
+    public static final String AVATAR = "avatar";
     public static final String CATEGORIES = "categories";
     public static final String THINGS = "things";
     public static final String THINGS_COMMENTS = "comments";
