@@ -19,6 +19,10 @@ public class Location implements Parcelable {
 	@Expose
 	private double lat;
 
+	@SerializedName("placeId")
+	@Expose
+	private String placeId;
+
 	public void setLng(double lng){
 		this.lng = lng;
 	}
@@ -33,6 +37,14 @@ public class Location implements Parcelable {
 
 	public double getLat(){
 		return lat;
+	}
+
+	public String getPlaceId() {
+		return placeId;
+	}
+
+	public void setPlaceId(String placeId) {
+		this.placeId = placeId;
 	}
 
 	public Location() {
@@ -56,6 +68,7 @@ public class Location implements Parcelable {
 	public void writeToParcel(Parcel dest, int flags) {
 		dest.writeDouble(lat);
 		dest.writeDouble(lng);
+		dest.writeString(placeId);
 	}
 
 	public static final Parcelable.Creator<Location> CREATOR = new Parcelable.Creator<Location>() {
@@ -73,5 +86,6 @@ public class Location implements Parcelable {
 	private Location(Parcel parcel) {
 		lat = parcel.readDouble();
 		lng = parcel.readDouble();
+		placeId = parcel.readString();
 	}
 }

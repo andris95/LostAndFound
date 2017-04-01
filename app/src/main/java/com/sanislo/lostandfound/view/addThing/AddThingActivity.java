@@ -12,7 +12,6 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatSpinner;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -234,7 +233,6 @@ public class AddThingActivity extends AppCompatActivity implements AddThingView 
     @Override
     public void onProgress(int progress) {
         mProgressDialog.setProgress(progress);
-        Log.d(TAG, "onProgress: " + mProgressDialog.getCurrentProgress());
     }
 
     @Override
