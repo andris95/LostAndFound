@@ -1,5 +1,7 @@
 package com.sanislo.lostandfound.interfaces;
 
+import com.sanislo.lostandfound.model.DescriptionPhotoItem;
+
 import java.util.List;
 
 /**
@@ -9,6 +11,7 @@ import java.util.List;
 public interface AddThingView {
     void onCategoriesReady(List<String> categories);
     void onThingAdded();
+    void onDescriptionPhotosSelected(List<DescriptionPhotoItem> descriptionPhotoUriList);
     //void onUploadStarted(UploadType uploadType, int fileCount);
     void onUploadStartedSimple();
     void onUploadStartedWithPhotos(int fileCount);

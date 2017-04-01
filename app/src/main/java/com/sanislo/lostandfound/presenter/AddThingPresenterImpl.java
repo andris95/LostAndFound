@@ -31,6 +31,7 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.sanislo.lostandfound.R;
 import com.sanislo.lostandfound.interfaces.AddThingView;
+import com.sanislo.lostandfound.model.DescriptionPhotoItem;
 import com.sanislo.lostandfound.model.Location;
 import com.sanislo.lostandfound.model.Thing;
 import com.sanislo.lostandfound.model.User;
@@ -178,6 +179,14 @@ public class AddThingPresenterImpl implements AddThingPresenter {
         } else {
             configureThing(title, description);
             startThingDataUpload();
+        }
+    }
+
+    @Override
+    public void updateDescriptionPhotosList(List<DescriptionPhotoItem> descriptionPhotoItemList) {
+        mDescriptionPhotoUris = new LinkedList<>();
+        for (DescriptionPhotoItem item : descriptionPhotoItemList) {
+            mDescriptionPhotoUris.add(item.getUri());
         }
     }
 
@@ -374,7 +383,6 @@ public class AddThingPresenterImpl implements AddThingPresenter {
             result.setResultCallback(new ResultCallback<PlaceLikelihoodBuffer>() {
                 @Override
                 public void onResult(PlaceLikelihoodBuffer likelyPlaces) {
-                    likelyPlaces
                     for (PlaceLikelihood placeLikelihood : likelyPlaces) {
                         Log.i(TAG, String.format("Place '%s' has likelihood: %g",
                                 placeLikelihood.getPlace().getName(),
@@ -400,6 +408,7 @@ public class AddThingPresenterImpl implements AddThingPresenter {
         }
         if (resultCode == RESULT_OK && requestCode == PICK_THING_DESCRIPTION_PHOTOS) {
             getDescriptionPhotoUris(data);
+            notifyDescriptionPhotosSelected();
         }
         if (resultCode == RESULT_OK && requestCode == PICK_THING_PLACE) {
             mThingPlace = PlacePicker.getPlace(data, mContext);
@@ -426,6 +435,14 @@ public class AddThingPresenterImpl implements AddThingPresenter {
                 incrementTotalByteCount(uri);
             }
         }
+    }
+
+    private void notifyDescriptionPhotosSelected() {
+        List<DescriptionPhotoItem> descriptionPhotoItemList = new ArrayList<>();
+        for (Uri uri : mDescriptionPhotoUris) {
+            descriptionPhotoItemList.add(new DescriptionPhotoItem(uri));
+        }
+        mView.onDescriptionPhotosSelected(descriptionPhotoItemList);
     }
 
     private void incrementTotalByteCount(Uri uri) {

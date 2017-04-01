@@ -12,21 +12,37 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatSpinner;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
+import android.support.v7.widget.helper.ItemTouchHelper;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.location.places.ui.PlacePicker;
+import com.mikepenz.fastadapter.FastAdapter;
+import com.mikepenz.fastadapter.commons.adapters.FastItemAdapter;
+import com.mikepenz.fastadapter.helpers.ClickListenerHelper;
+import com.mikepenz.fastadapter.listeners.ClickEventHook;
+import com.mikepenz.fastadapter_extensions.drag.ItemTouchCallback;
+import com.mikepenz.fastadapter_extensions.drag.SimpleDragCallback;
 import com.sanislo.lostandfound.R;
 import com.sanislo.lostandfound.interfaces.AddThingView;
+import com.sanislo.lostandfound.model.DescriptionPhotoItem;
 import com.sanislo.lostandfound.presenter.AddThingPresenter;
 import com.sanislo.lostandfound.presenter.AddThingPresenterImpl;
 
+import java.util.Collections;
 import java.util.List;
 
 import butterknife.BindView;
@@ -49,6 +65,9 @@ public class AddThingActivity extends AppCompatActivity implements AddThingView 
     @BindView(R.id.root_add_thing)
     CoordinatorLayout mRoot;
 
+    @BindView(R.id.toolbar)
+    Toolbar toolbar;
+
     @BindView(R.id.sp_category)
     Spinner spCategory;
 
@@ -61,6 +80,12 @@ public class AddThingActivity extends AppCompatActivity implements AddThingView 
     @BindView(R.id.edt_thing_description)
     EditText edtDescription;
 
+    @BindView(R.id.tv_select_description_photos)
+    TextView tvSelectDescriptionPhotos;
+
+    @BindView(R.id.rv_description_photos_preview)
+    RecyclerView rvDescriptionPhotos;
+
     private boolean DEBUG = true;
     private AddThingPresenter mPresenter;
     private ArrayAdapter<String> mTypeAdapter;
@@ -68,6 +93,8 @@ public class AddThingActivity extends AppCompatActivity implements AddThingView 
     private ArrayAdapter<String> mCategoriesAdapter;
     private MaterialDialog mProgressDialog;
     private Snackbar mErrorSnackbar;
+
+    private FastItemAdapter<DescriptionPhotoItem> mDescriptionPhotosAdapter;
 
     private AdapterView.OnItemSelectedListener mCategorySelectedListener = new AdapterView.OnItemSelectedListener() {
         @Override
@@ -99,9 +126,28 @@ public class AddThingActivity extends AppCompatActivity implements AddThingView 
         setContentView(R.layout.activity_add_thing);
         ButterKnife.bind(this);
 
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         mPresenter = new AddThingPresenterImpl(this);
         initCategories();
         initTypeSpinner();
+        initDescriptionPhotosAdapter();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_add_thing, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_add_thing:
+                addThing();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -133,15 +179,57 @@ public class AddThingActivity extends AppCompatActivity implements AddThingView 
         spType.setOnItemSelectedListener(mTypeSelectedListener);
     }
 
-    @OnClick(R.id.btn_add_thing)
-    public void onClickAddThing() {
-        //initProgressDialog();
-        addThing();
+    private ClickEventHook<DescriptionPhotoItem> mRemoveClick = new ClickEventHook<DescriptionPhotoItem>() {
+        @Override
+        public void onClick(View v, int position, FastAdapter<DescriptionPhotoItem> fastAdapter, DescriptionPhotoItem item) {
+            fastAdapter.select(position);
+            fastAdapter.deleteAllSelectedItems();
+            Log.d(TAG, "onClick: getItemCount: " + fastAdapter.getItemCount());
+            if (fastAdapter.getItemCount() == 0) {
+                setTvSelectDescriptionPhotosVisibility(true);
+            } else {
+                setTvSelectDescriptionPhotosVisibility(false);
+            }
+        }
+
+        @Nullable
+        @Override
+        public List<View> onBindMany(@NonNull RecyclerView.ViewHolder viewHolder) {
+            if (viewHolder instanceof DescriptionPhotoItem.ViewHolder) {
+                return ClickListenerHelper.toList(((DescriptionPhotoItem.ViewHolder) viewHolder).getIvRemove());
+            }
+            return super.onBindMany(viewHolder);
+        }
+    };
+
+    private void initDescriptionPhotosAdapter() {
+        mDescriptionPhotosAdapter = new FastItemAdapter();
+        mDescriptionPhotosAdapter.withItemEvent(mRemoveClick);
+        attachDragCallback();
+        LinearLayoutManager layoutManager = new LinearLayoutManager(AddThingActivity.this,
+                LinearLayoutManager.HORIZONTAL,
+                false);
+        rvDescriptionPhotos.setLayoutManager(layoutManager);
+        rvDescriptionPhotos.setAdapter(mDescriptionPhotosAdapter);
+    }
+
+    private void attachDragCallback() {
+        SimpleDragCallback dragCallback = new SimpleDragCallback(SimpleDragCallback.ALL, new ItemTouchCallback() {
+            @Override
+            public boolean itemTouchOnMove(int oldPosition, int newPosition) {
+                Collections.swap(mDescriptionPhotosAdapter.getAdapterItems(), oldPosition, newPosition); // change position
+                mDescriptionPhotosAdapter.notifyAdapterItemMoved(oldPosition, newPosition);
+                return true;
+            }
+        });
+        ItemTouchHelper touchHelper = new ItemTouchHelper(dragCallback);
+        touchHelper.attachToRecyclerView(rvDescriptionPhotos);
     }
 
     private void addThing() {
         String title = edtTitle.getText().toString();
         String description = edtDescription.getText().toString();
+        mPresenter.updateDescriptionPhotosList(mDescriptionPhotosAdapter.getAdapterItems());
         mPresenter.addThing(title, description);
     }
 
@@ -165,7 +253,7 @@ public class AddThingActivity extends AppCompatActivity implements AddThingView 
         startActivityForResult(сhooserIntent, PICK_THING_COVER_PHOTO);
     }
 
-    @OnClick(R.id.btn_select_thing_photos)
+    @OnClick(R.id.tv_select_description_photos)
     public void onClickSelectThingDescriptionPhotos() {
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_EXTERNAL_STORAGE)
                 == PackageManager.PERMISSION_GRANTED) {
@@ -247,6 +335,22 @@ public class AddThingActivity extends AppCompatActivity implements AddThingView 
     public void onThingAdded() {
         mProgressDialog.dismiss();
         this.finish();
+    }
+
+    @Override
+    public void onDescriptionPhotosSelected(List<DescriptionPhotoItem> descriptionPhotoUriList) {
+        if (descriptionPhotoUriList != null && !descriptionPhotoUriList.isEmpty()) {
+            mDescriptionPhotosAdapter.clear();
+            mDescriptionPhotosAdapter.add(descriptionPhotoUriList);
+            mDescriptionPhotosAdapter.notifyDataSetChanged();
+            setTvSelectDescriptionPhotosVisibility(false);
+        } else {
+            setTvSelectDescriptionPhotosVisibility(true);
+        }
+    }
+
+    private void setTvSelectDescriptionPhotosVisibility(boolean visible) {
+        tvSelectDescriptionPhotos.setVisibility(visible ? View.VISIBLE : View.GONE);
     }
 
     @Override

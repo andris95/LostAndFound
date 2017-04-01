@@ -1,76 +1,95 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.design.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/root_add_thing"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="match_parent">
 
-        <android.support.design.widget.TextInputLayout
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <EditText
-                android:id="@+id/edt_thing_title"
+            android:layout_height="?android:actionBarSize"
+            app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+            android:background="@color/colorPrimary"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/toolbar"
+            android:orientation="vertical">
+
+            <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/hint_thing_title"
-                android:maxLines="1" />
-        </android.support.design.widget.TextInputLayout>
+                android:layout_height="wrap_content">
+                <EditText
+                    android:id="@+id/edt_thing_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/hint_thing_title"
+                    android:maxLines="1" />
+            </android.support.design.widget.TextInputLayout>
 
-        <android.support.design.widget.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <EditText
-                android:id="@+id/edt_thing_description"
+            <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <EditText
+                    android:id="@+id/edt_thing_description"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/hint_thing_description"
+                    android:maxLines="1" />
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.v7.widget.AppCompatSpinner
+                android:id="@+id/sp_type"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+            </android.support.v7.widget.AppCompatSpinner>
+
+            <android.support.v7.widget.AppCompatSpinner
+                android:id="@+id/sp_category"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+            </android.support.v7.widget.AppCompatSpinner>
+
+            <Button
+                android:id="@+id/btn_select_thing_cover_photo"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:hint="@string/hint_thing_description"
-                android:maxLines="1" />
-        </android.support.design.widget.TextInputLayout>
+                android:text="@string/select_thing_cover_photo"/>
 
-        <android.support.v7.widget.AppCompatSpinner
-            android:id="@+id/sp_type"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-        </android.support.v7.widget.AppCompatSpinner>
+            <Button
+                android:id="@+id/btn_select_thing_place"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="select place"/>
 
-        <android.support.v7.widget.AppCompatSpinner
-            android:id="@+id/sp_category"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-        </android.support.v7.widget.AppCompatSpinner>
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
 
-        <Button
-            android:id="@+id/btn_select_thing_cover_photo"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/select_thing_cover_photo"/>
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/rv_description_photos_preview"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    tools:listitem="@layout/item_description_photo">
+                </android.support.v7.widget.RecyclerView>
 
-        <Button
-            android:id="@+id/btn_select_thing_photos"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/select_thing_description_photos"/>
-
-        <Button
-            android:id="@+id/btn_select_thing_place"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="select place"/>
-
-        <Button
-            android:id="@+id/btn_add_thing"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/add_thing"/>
-
-        <ImageView
-            android:id="@+id/iv_vector"
-            android:layout_width="96dp"
-            android:layout_height="96dp"/>
-    </LinearLayout>
+                <TextView
+                    android:id="@+id/tv_select_description_photos"
+                    android:layout_width="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:gravity="center"
+                    android:textSize="18sp"
+                    android:layout_height="@dimen/thing_desc_photo_item_size"
+                    android:text="@string/select_thing_description_photos"/>
+            </RelativeLayout>
+        </LinearLayout>
+    </RelativeLayout>
 </android.support.design.widget.CoordinatorLayout>

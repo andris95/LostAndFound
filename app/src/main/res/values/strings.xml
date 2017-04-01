@@ -38,7 +38,7 @@
     <string name="hint_thing_title">Title</string>
     <string name="hint_thing_description">Description</string>
     <string name="select_thing_cover_photo">Add a photo about your stuff!</string>
-    <string name="select_thing_description_photos">Add more photos about your thing!</string>
+    <string name="select_thing_description_photos">Tap here to select detailed photos about Your thing!</string>
     <string name="thing_last_known_location">Last known location:</string>
     <string name="thing_found_location">Found location:</string>
     <string name="publishing_progress">Publishing Your Thing</string>
