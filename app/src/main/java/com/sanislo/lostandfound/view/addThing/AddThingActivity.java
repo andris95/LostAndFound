@@ -1,8 +1,11 @@
 package com.sanislo.lostandfound.view.addThing;
 
 import android.Manifest;
+import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -23,13 +26,29 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.aurelhubert.ahbottomnavigation.AHBottomNavigation;
+import com.aurelhubert.ahbottomnavigation.AHBottomNavigationItem;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.location.places.ui.PlacePicker;
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.GoogleMapOptions;
+import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.mikepenz.fastadapter.FastAdapter;
 import com.mikepenz.fastadapter.commons.adapters.FastItemAdapter;
 import com.mikepenz.fastadapter.helpers.ClickListenerHelper;
@@ -86,7 +105,21 @@ public class AddThingActivity extends AppCompatActivity implements AddThingView 
     @BindView(R.id.rv_description_photos_preview)
     RecyclerView rvDescriptionPhotos;
 
-    private boolean DEBUG = true;
+    @BindView(R.id.iv_cover_photo)
+    ImageView ivCoverPhoto;
+
+    @BindView(R.id.iv_remove)
+    ImageView ivRemoveCoverPhoto;
+
+    @BindView(R.id.bottom_navigation)
+    AHBottomNavigation bottomNavigation;
+
+    @BindView(R.id.fl_map_container)
+    FrameLayout flMapContainer;
+
+    private GoogleMap mGoogleMap;
+    private MapFragment mMapFragment;
+
     private AddThingPresenter mPresenter;
     private ArrayAdapter<String> mTypeAdapter;
     private String[] mThingArray;
@@ -125,13 +158,16 @@ public class AddThingActivity extends AppCompatActivity implements AddThingView 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_thing);
         ButterKnife.bind(this);
-
         setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle(R.string.new_thing);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         mPresenter = new AddThingPresenterImpl(this);
         initCategories();
         initTypeSpinner();
         initDescriptionPhotosAdapter();
+        initBottomNavigation();
+        displayCoverPlaceholder();
+        initMapView();
     }
 
     @Override
@@ -145,6 +181,9 @@ public class AddThingActivity extends AppCompatActivity implements AddThingView 
         switch (item.getItemId()) {
             case R.id.menu_add_thing:
                 addThing();
+                return true;
+            case android.R.id.home:
+                onBackPressed();
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -182,14 +221,7 @@ public class AddThingActivity extends AppCompatActivity implements AddThingView 
     private ClickEventHook<DescriptionPhotoItem> mRemoveClick = new ClickEventHook<DescriptionPhotoItem>() {
         @Override
         public void onClick(View v, int position, FastAdapter<DescriptionPhotoItem> fastAdapter, DescriptionPhotoItem item) {
-            fastAdapter.select(position);
-            fastAdapter.deleteAllSelectedItems();
-            Log.d(TAG, "onClick: getItemCount: " + fastAdapter.getItemCount());
-            if (fastAdapter.getItemCount() == 0) {
-                setTvSelectDescriptionPhotosVisibility(true);
-            } else {
-                setTvSelectDescriptionPhotosVisibility(false);
-            }
+            removeClickedDescriptionPhoto(position);
         }
 
         @Nullable
@@ -201,6 +233,16 @@ public class AddThingActivity extends AppCompatActivity implements AddThingView 
             return super.onBindMany(viewHolder);
         }
     };
+
+    private void removeClickedDescriptionPhoto(int position) {
+        mDescriptionPhotosAdapter.select(position);
+        mDescriptionPhotosAdapter.deleteAllSelectedItems();
+        if (mDescriptionPhotosAdapter.getItemCount() == 0) {
+            setTvSelectDescriptionPhotosVisibility(true);
+        } else {
+            setTvSelectDescriptionPhotosVisibility(false);
+        }
+    }
 
     private void initDescriptionPhotosAdapter() {
         mDescriptionPhotosAdapter = new FastItemAdapter();
@@ -226,6 +268,68 @@ public class AddThingActivity extends AppCompatActivity implements AddThingView 
         touchHelper.attachToRecyclerView(rvDescriptionPhotos);
     }
 
+    private void initBottomNavigation() {
+        int blackColor = ContextCompat.getColor(AddThingActivity.this, R.color.md_black_1000);
+        Drawable location = ContextCompat.getDrawable(AddThingActivity.this, R.drawable.map_marker);
+        Drawable image = ContextCompat.getDrawable(AddThingActivity.this, R.drawable.image);
+        Drawable multipleImage = ContextCompat.getDrawable(AddThingActivity.this, R.drawable.image_multiple);
+        AHBottomNavigationItem locationItem = new AHBottomNavigationItem(getString(R.string.location),
+                location);
+        AHBottomNavigationItem coverPhotoItem = new AHBottomNavigationItem(getString(R.string.cover),
+                image);
+        AHBottomNavigationItem descriptionPhotosItem = new AHBottomNavigationItem(getString(R.string.description_photos),
+                multipleImage);
+        bottomNavigation.setAccentColor(blackColor);
+        bottomNavigation.setInactiveColor(blackColor);
+        bottomNavigation.addItem(locationItem);
+        bottomNavigation.addItem(coverPhotoItem);
+        bottomNavigation.addItem(descriptionPhotosItem);
+        bottomNavigation.setColored(false);
+        bottomNavigation.setUseElevation(true);
+        bottomNavigation.setBehaviorTranslationEnabled(false);
+        bottomNavigation.setTitleTextSize(20, 20);
+        bottomNavigation.setOnTabSelectedListener(new AHBottomNavigation.OnTabSelectedListener() {
+            @Override
+            public boolean onTabSelected(int position, boolean wasSelected) {
+                switch (position) {
+                    case 0:
+                        onSelectPlace();
+                        return true;
+                    case 1:
+                        onSelectThingCoverPhoto();
+                        return true;
+                    case 2:
+                        onSelectThingDescriptionPhotos();
+                        return true;
+                    default:
+                        return false;
+                }
+            }
+        });
+    }
+
+    private void initMapView() {
+        if (mMapFragment == null) {
+            GoogleMapOptions googleMapOptions = new GoogleMapOptions();
+            googleMapOptions.liteMode(true);
+            mMapFragment = MapFragment.newInstance(googleMapOptions);
+            FragmentTransaction ft = getFragmentManager().beginTransaction();
+            ft.replace(R.id.fl_map_container, mMapFragment);
+            ft.commit();
+            mMapFragment.getMapAsync(mOnMapReadyCallback);
+        }
+    }
+
+    private OnMapReadyCallback mOnMapReadyCallback = new OnMapReadyCallback() {
+        @Override
+        public void onMapReady(GoogleMap googleMap) {
+            Log.d(TAG, "onMapReady: ");
+            if (mGoogleMap == null) {
+                mGoogleMap = googleMap;
+            }
+        }
+    };
+
     private void addThing() {
         String title = edtTitle.getText().toString();
         String description = edtDescription.getText().toString();
@@ -233,8 +337,7 @@ public class AddThingActivity extends AppCompatActivity implements AddThingView 
         mPresenter.addThing(title, description);
     }
 
-    @OnClick(R.id.btn_select_thing_cover_photo)
-    public void onClickSelectThingPhoto() {
+    private void onSelectThingCoverPhoto() {
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_EXTERNAL_STORAGE)
                 == PackageManager.PERMISSION_GRANTED) {
             selectThingCoverPhoto();
@@ -245,6 +348,34 @@ public class AddThingActivity extends AppCompatActivity implements AddThingView 
         }
     }
 
+    private void displayCoverPlaceholder() {
+        Glide.with(this)
+                .load(R.drawable.placeholder)
+                .into(ivCoverPhoto);
+    }
+
+    private void displayCoverPhoto(Uri coverPhotoUri) {
+        Glide.with(this)
+                .load(coverPhotoUri)
+                .listener(new RequestListener<Uri, GlideDrawable>() {
+                    @Override
+                    public boolean onException(Exception e, Uri model, Target<GlideDrawable> target, boolean isFirstResource) {
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onResourceReady(GlideDrawable resource, Uri model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                        setRemoveCoverIconVisibility(true);
+                        return false;
+                    }
+                })
+                .into(ivCoverPhoto);
+    }
+
+    private void setRemoveCoverIconVisibility(boolean visible) {
+        ivRemoveCoverPhoto.setVisibility(visible ? View.VISIBLE : View.GONE);
+    }
+
     private void selectThingCoverPhoto() {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.setType("image/*");
@@ -253,8 +384,7 @@ public class AddThingActivity extends AppCompatActivity implements AddThingView 
         startActivityForResult(сhooserIntent, PICK_THING_COVER_PHOTO);
     }
 
-    @OnClick(R.id.tv_select_description_photos)
-    public void onClickSelectThingDescriptionPhotos() {
+    public void onSelectThingDescriptionPhotos() {
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_EXTERNAL_STORAGE)
                 == PackageManager.PERMISSION_GRANTED) {
             selectThingDescriptionPhotos();
@@ -265,8 +395,7 @@ public class AddThingActivity extends AppCompatActivity implements AddThingView 
         }
     }
 
-    @OnClick(R.id.btn_select_thing_place)
-    public void onClickSelectPlace() {
+    public void onSelectPlace() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
             selectPlace();
@@ -338,6 +467,18 @@ public class AddThingActivity extends AppCompatActivity implements AddThingView 
     }
 
     @Override
+    public void onCoverPhotoSelected(Uri coverPhotoUri) {
+        displayCoverPhoto(coverPhotoUri);
+    }
+
+    @OnClick(R.id.iv_remove)
+    public void onClickRemoveCoverPhoto() {
+        mPresenter.removeCoverPhoto();
+        displayCoverPlaceholder();
+        setRemoveCoverIconVisibility(false);
+    }
+
+    @Override
     public void onDescriptionPhotosSelected(List<DescriptionPhotoItem> descriptionPhotoUriList) {
         if (descriptionPhotoUriList != null && !descriptionPhotoUriList.isEmpty()) {
             mDescriptionPhotosAdapter.clear();
@@ -347,6 +488,21 @@ public class AddThingActivity extends AppCompatActivity implements AddThingView 
         } else {
             setTvSelectDescriptionPhotosVisibility(true);
         }
+    }
+
+    @Override
+    public void onPlaceSelected(LatLng latLng) {
+        displayThingMarker(latLng);
+    }
+
+    private void displayThingMarker(LatLng latLng) {
+        if (mGoogleMap == null) return;
+        mGoogleMap.clear();
+        MarkerOptions markerOptions = new MarkerOptions();
+        markerOptions.position(latLng);
+        mGoogleMap.addMarker(markerOptions);
+        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 10f);
+        mGoogleMap.moveCamera(cameraUpdate);
     }
 
     private void setTvSelectDescriptionPhotosVisibility(boolean visible) {

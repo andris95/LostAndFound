@@ -190,6 +190,11 @@ public class AddThingPresenterImpl implements AddThingPresenter {
         }
     }
 
+    @Override
+    public void removeCoverPhoto() {
+        mCoverPhotoUri = null;
+    }
+
     private long mTimestamp;
     private void configureThing(String title, String description) {
         mThing = new Thing();
@@ -404,6 +409,7 @@ public class AddThingPresenterImpl implements AddThingPresenter {
             if (data != null) {
                 mCoverPhotoUri = data.getData();
                 incrementTotalByteCount(mCoverPhotoUri);
+                mView.onCoverPhotoSelected(mCoverPhotoUri);
             }
         }
         if (resultCode == RESULT_OK && requestCode == PICK_THING_DESCRIPTION_PHOTOS) {
@@ -413,6 +419,7 @@ public class AddThingPresenterImpl implements AddThingPresenter {
         if (resultCode == RESULT_OK && requestCode == PICK_THING_PLACE) {
             mThingPlace = PlacePicker.getPlace(data, mContext);
             Log.d(TAG, "onActivityResult: " + mThingPlace);
+            mView.onPlaceSelected(mThingPlace.getLatLng());
         }
     }
 
@@ -435,6 +442,10 @@ public class AddThingPresenterImpl implements AddThingPresenter {
                 incrementTotalByteCount(uri);
             }
         }
+    }
+
+    private void notifyCoverPhotoSelected() {
+        mView.onCoverPhotoSelected(mCoverPhotoUri);
     }
 
     private void notifyDescriptionPhotosSelected() {

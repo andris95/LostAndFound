@@ -28,7 +28,10 @@
         <activity android:name=".view.authentication.SignupActivity" />
         <activity android:name=".view.things.ThingsActivity" />
         <activity android:name=".view.thingDetails.ThingDetailsActivity" />
-        <activity android:name=".view.addThing.AddThingActivity" />
+        <activity
+            android:name=".view.addThing.AddThingActivity"
+            android:windowSoftInputMode="adjustPan|stateHidden">
+        </activity>
         <activity android:name=".view.thingDetails.DescriptionPhotosActivity" />
         <activity android:name=".view.profile.ProfileActivity" />
         <activity android:name=".view.search.SearchActivity">

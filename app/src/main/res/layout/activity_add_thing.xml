@@ -7,9 +7,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <RelativeLayout
+    <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
 
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
@@ -17,16 +17,24 @@
             android:layout_height="?android:actionBarSize"
             app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
             android:background="@color/colorPrimary"/>
+    </android.support.design.widget.AppBarLayout>
+
+    <android.support.v4.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingBottom="56dp"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        android:layout_below="@+id/toolbar">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@+id/toolbar"
             android:orientation="vertical">
 
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp">
                 <EditText
                     android:id="@+id/edt_thing_title"
                     android:layout_width="match_parent"
@@ -35,40 +43,54 @@
                     android:maxLines="1" />
             </android.support.design.widget.TextInputLayout>
 
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:id="@+id/iv_cover_photo"
+                    android:layout_width="match_parent"
+                    android:layout_height="196dp"
+                    android:scaleType="centerCrop"
+                    tools:src="@drawable/aletta"/>
+
+                <ImageView
+                    android:id="@+id/iv_remove"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="8dp"
+                    android:src="@drawable/close_circle"
+                    android:layout_alignTop="@+id/iv_cover_photo"
+                    android:layout_alignEnd="@+id/iv_cover_photo"
+                    tools:visibility="visible"
+                    android:visibility="gone"/>
+            </RelativeLayout>
+
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp">
                 <EditText
                     android:id="@+id/edt_thing_description"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/hint_thing_description"
-                    android:maxLines="1" />
+                    android:text="@string/lorem_ipsum"/>
             </android.support.design.widget.TextInputLayout>
 
             <android.support.v7.widget.AppCompatSpinner
                 android:id="@+id/sp_type"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp">
             </android.support.v7.widget.AppCompatSpinner>
 
             <android.support.v7.widget.AppCompatSpinner
                 android:id="@+id/sp_category"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp">
             </android.support.v7.widget.AppCompatSpinner>
-
-            <Button
-                android:id="@+id/btn_select_thing_cover_photo"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/select_thing_cover_photo"/>
-
-            <Button
-                android:id="@+id/btn_select_thing_place"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="select place"/>
 
             <RelativeLayout
                 android:layout_width="wrap_content"
@@ -90,6 +112,19 @@
                     android:layout_height="@dimen/thing_desc_photo_item_size"
                     android:text="@string/select_thing_description_photos"/>
             </RelativeLayout>
+
+            <FrameLayout
+                android:id="@+id/fl_map_container"
+                android:layout_width="match_parent"
+                android:layout_below="@+id/rv_things_photos"
+                android:layout_height="150dp">
+            </FrameLayout>
         </LinearLayout>
-    </RelativeLayout>
+    </android.support.v4.widget.NestedScrollView>
+
+    <com.aurelhubert.ahbottomnavigation.AHBottomNavigation
+        android:id="@+id/bottom_navigation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom" />
 </android.support.design.widget.CoordinatorLayout>
