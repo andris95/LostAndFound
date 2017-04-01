@@ -18,6 +18,7 @@ import com.sanislo.lostandfound.R;
 import com.sanislo.lostandfound.model.Thing;
 import com.sanislo.lostandfound.view.ThingViewHolder;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -32,7 +33,7 @@ public class ThingAdapter extends RecyclerView.Adapter<ThingAdapter.ViewHolder> 
     private String TAG = ThingAdapter.class.getSimpleName();
     private Context mContext;
     private OnClickListener mOnClickListener;
-    private List<Thing> mThingList;
+    private List<Thing> mThingList = new ArrayList<>();
     private LayoutInflater mLayoutInflater;
 
     public ThingAdapter(Context context, OnClickListener onClickListener, List<Thing> thingList) {
@@ -169,6 +170,7 @@ public class ThingAdapter extends RecyclerView.Adapter<ThingAdapter.ViewHolder> 
 
         @OnClick(R.id.rl_thing_root_view)
         public void onClickRootView() {
+            if (mOnClickListener == null) return;
             mOnClickListener.onClickRootView(mRootView, mThingList.get(getAdapterPosition()));
         }
     }

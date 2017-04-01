@@ -1,4 +1,4 @@
-package com.sanislo.lostandfound.authentication;
+package com.sanislo.lostandfound.view.authentication;
 
 import android.content.Intent;
 import android.graphics.Typeface;

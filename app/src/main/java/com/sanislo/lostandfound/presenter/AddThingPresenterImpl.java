@@ -211,7 +211,8 @@ public class AddThingPresenterImpl implements AddThingPresenter {
     }
 
     private int getPhotoFileCountToUpload() {
-        int count = mDescriptionPhotoUris.size() + (mCoverPhotoUri == null ? 0 : 1);
+        int count = (mDescriptionPhotoUris == null ? 0 : mDescriptionPhotoUris.size())
+                + (mCoverPhotoUri == null ? 0 : 1);
         return count;
     }
 

@@ -2,9 +2,9 @@ package com.sanislo.lostandfound.model.api;
 
 import com.sanislo.lostandfound.model.Thing;
 import com.sanislo.lostandfound.model.User;
-import com.sanislo.lostandfound.model.UserAvatarUpdateRequest;
 
 import java.util.List;
+import java.util.Map;
 
 import retrofit2.Call;
 
@@ -15,8 +15,7 @@ import retrofit2.Call;
 public interface ApiModel {
     Call<List<Thing>> getThings();
     Call<List<Thing>> getThings(String sort, String order);
-    Call<Void> updateUserAvatar(int userId, String avatarURL);
-    Call<Void> updateUserAvatar(int userId, UserAvatarUpdateRequest userAvatarUpdateRequest);
+    Call<List<Thing>> getThings(Map<String, List<String>> options);
     Call<Void> updateUser(int userId, User user);
     Call<Void> postThing(Thing thing);
     Call<Void> saveUser(User user);

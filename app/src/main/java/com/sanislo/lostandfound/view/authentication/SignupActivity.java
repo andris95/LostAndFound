@@ -1,4 +1,4 @@
-package com.sanislo.lostandfound.authentication;
+package com.sanislo.lostandfound.view.authentication;
 
 /**
  * Created by root on 04.09.16.

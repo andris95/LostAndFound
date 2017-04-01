@@ -2,9 +2,9 @@ package com.sanislo.lostandfound.model.api;
 
 import com.sanislo.lostandfound.model.Thing;
 import com.sanislo.lostandfound.model.User;
-import com.sanislo.lostandfound.model.UserAvatarUpdateRequest;
 
 import java.util.List;
+import java.util.Map;
 
 import retrofit2.Call;
 
@@ -26,13 +26,8 @@ public class ApiModelImpl implements ApiModel {
     }
 
     @Override
-    public Call<Void> updateUserAvatar(int userId, String avatarURL) {
-        return mApiInterface.updateUserAvatar(userId, avatarURL);
-    }
-
-    @Override
-    public Call<Void> updateUserAvatar(int userId, UserAvatarUpdateRequest userAvatarUpdateRequest) {
-        return mApiInterface.updateUserAvatar(userId, userAvatarUpdateRequest);
+    public Call<List<Thing>> getThings(Map<String, List<String>> options) {
+        return mApiInterface.getThings(options);
     }
 
     @Override

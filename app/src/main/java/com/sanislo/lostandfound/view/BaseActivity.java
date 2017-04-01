@@ -11,8 +11,8 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.firebase.auth.FirebaseAuth;
-import com.sanislo.lostandfound.authentication.LoginActivity;
-import com.sanislo.lostandfound.authentication.SignupActivity;
+import com.sanislo.lostandfound.view.authentication.LoginActivity;
+import com.sanislo.lostandfound.view.authentication.SignupActivity;
 
 /**
  * BaseActivity class is used as a base class for all activities in the app

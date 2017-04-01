@@ -5,6 +5,7 @@ import com.sanislo.lostandfound.model.User;
 import com.sanislo.lostandfound.model.UserAvatarUpdateRequest;
 
 import java.util.List;
+import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -13,6 +14,7 @@ import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
+import retrofit2.http.QueryMap;
 
 /**
  * Created by root on 16.03.17.
@@ -25,6 +27,15 @@ public interface ApiInterface {
 
     @GET(ApiConstants.THINGS)
     Call<List<Thing>> getThings(@Query("_sort") String sort, @Query("_order") String order);
+
+    @GET(ApiConstants.THINGS)
+    Call<List<Thing>> getThings(@Query("_sort") String sort,
+                                @Query("_order") String order,
+                                @Query("title") List<String> titles,
+                                @Query("city") List<String> cities);
+
+    @GET(ApiConstants.THINGS)
+    Call<List<Thing>> getThings(@QueryMap Map<String, List<String>> options);
 
     @POST(ApiConstants.THINGS)
     Call<Void> postThing(@Body Thing thing);

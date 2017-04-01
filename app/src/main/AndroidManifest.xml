@@ -18,19 +18,23 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:name=".LostAndFoundApplication">
-        <activity android:name=".authentication.LoginActivity">
+        <activity android:name=".view.authentication.LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".authentication.SignupActivity" />
+        <activity android:name=".view.authentication.SignupActivity" />
         <activity android:name=".view.things.ThingsActivity" />
         <activity android:name=".view.thingDetails.ThingDetailsActivity" />
         <activity android:name=".view.addThing.AddThingActivity" />
         <activity android:name=".view.thingDetails.DescriptionPhotosActivity" />
         <activity android:name=".view.profile.ProfileActivity" />
+        <activity android:name=".view.search.SearchActivity">
+            <meta-data android:name="android.app.searchable"
+                       android:resource="@xml/searchable" />
+        </activity>
 
         <service
             android:name=".notifications.LostAndFoundMessagingService">

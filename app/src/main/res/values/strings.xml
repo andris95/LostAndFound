@@ -11,6 +11,7 @@
     <!-- Main Screen -->
     <string name="drawer_things">Things</string>
     <string name="drawer_settings">Settings</string>
+    <string name="drawer_search">Search</string>
 
     <!-- Edit Profile Screem -->
     <string name="select_profile_image">Select profile image</string>
@@ -52,6 +53,11 @@
 
     <!-- Thing description screen -->
     <string name="add_a_comment">Add a comment</string>
+
+    <!-- Search Screen -->
+    <string name="search_title">Search</string>
+    <string name="search_hint">Search for a thing...</string>
+    <string name="filter">Filter</string>
 
     <!-- Error messages -->
     <string name="error_empty_title">Please provide title for your thing!</string>

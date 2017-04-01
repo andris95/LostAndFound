@@ -35,6 +35,7 @@ import com.sanislo.lostandfound.presenter.ThingsPresenterImpl;
 import com.sanislo.lostandfound.view.BaseActivity;
 import com.sanislo.lostandfound.view.addThing.AddThingActivity;
 import com.sanislo.lostandfound.view.profile.ProfileActivity;
+import com.sanislo.lostandfound.view.search.SearchActivity;
 import com.sanislo.lostandfound.view.thingDetails.ThingDetailsActivity;
 
 import java.util.ArrayList;
@@ -115,9 +116,19 @@ public class ThingsActivity extends BaseActivity implements ThingsView {
         @Override
         public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
             Log.d(TAG, "onItemClick: position: " + position);
+            switch (position) {
+                case 3:
+                    openSearchActivity();
+                    return true;
+            }
             return true;
         }
     };
+
+    private void openSearchActivity() {
+        Intent intent = new Intent(ThingsActivity.this, SearchActivity.class);
+        startActivity(intent);
+    }
 
     private void openProfileActivity() {
         Intent intent = new Intent(ThingsActivity.this, ProfileActivity.class);
@@ -167,8 +178,11 @@ public class ThingsActivity extends BaseActivity implements ThingsView {
                 .withName(R.string.drawer_things);
         PrimaryDrawerItem settings = new PrimaryDrawerItem()
                 .withName(R.string.drawer_settings);
+        PrimaryDrawerItem search = new PrimaryDrawerItem()
+                .withName(R.string.drawer_search);
         drawerItems.add(things);
         drawerItems.add(settings);
+        drawerItems.add(search);
         return drawerItems;
     }
 
