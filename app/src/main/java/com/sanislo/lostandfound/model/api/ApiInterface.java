@@ -35,7 +35,7 @@ public interface ApiInterface {
                                 @Query("city") List<String> cities);
 
     @GET(ApiConstants.THINGS)
-    Call<List<Thing>> getThings(@QueryMap Map<String, List<String>> options);
+    Call<List<Thing>> getThings(@QueryMap Map<String, String> options);
 
     @POST(ApiConstants.THINGS)
     Call<Void> postThing(@Body Thing thing);

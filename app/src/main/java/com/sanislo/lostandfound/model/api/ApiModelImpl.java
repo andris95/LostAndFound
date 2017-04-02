@@ -26,7 +26,7 @@ public class ApiModelImpl implements ApiModel {
     }
 
     @Override
-    public Call<List<Thing>> getThings(Map<String, List<String>> options) {
+    public Call<List<Thing>> getThings(Map<String, String> options) {
         return mApiInterface.getThings(options);
     }
 

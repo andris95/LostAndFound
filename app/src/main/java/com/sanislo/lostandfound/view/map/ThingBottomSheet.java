@@ -105,10 +105,11 @@ public class ThingBottomSheet extends BottomSheetDialogFragment {
 
         @Override
         public void onStateChanged(@NonNull View bottomSheet, int newState) {
+            Log.d(TAG, "onStateChanged: " + newState);
             if (newState == BottomSheetBehavior.STATE_HIDDEN) {
+                Log.d(TAG, "onStateChanged: hidden, dismiss");
                 dismiss();
             }
-
         }
 
         @Override
