@@ -4,11 +4,11 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import java.io.IOException;
-import java.net.CookieHandler;
-import java.util.HashSet;
 
+import okhttp3.HttpUrl;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
+import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
@@ -29,6 +29,7 @@ public class ApiModule {
 
         OkHttpClient httpClient = new OkHttpClient.Builder()
                 .addInterceptor(logging)
+                .addInterceptor(new AmpersandInterceptor())
                 .build();
 
         Gson gson = new GsonBuilder()
@@ -56,5 +57,23 @@ public class ApiModule {
             RETROFIT_CLIENT = createApiInterface();
         }
         return RETROFIT_CLIENT;
+    }
+
+    public static class AmpersandInterceptor implements Interceptor {
+
+        @Override
+        public Response intercept(Chain chain) throws IOException {
+            HttpUrl originalUrl = chain.request().url();
+            String query = originalUrl.encodedQuery();
+            if (query == null) {
+                return chain.proceed(chain.request());
+            } else {
+                Request.Builder builder = chain.request().newBuilder();
+                builder.url(originalUrl.newBuilder()
+                        .encodedQuery(query.replaceAll("%26", "&").replaceAll("%3D", "="))
+                        .build());
+                return chain.proceed(builder.build());
+            }
+        }
     }
 }

@@ -1,6 +1,5 @@
 package com.sanislo.lostandfound.view.search;
 
-import android.text.TextUtils;
 import android.util.Log;
 
 import com.sanislo.lostandfound.model.Thing;
@@ -30,9 +29,15 @@ public class SearchPresenterImpl implements SearchPresenter {
 
     @Override
     public void searchThings(String title) {
-        if (!TextUtils.isEmpty(title)) {
-            mQueryManager.addTitle(title);
+        boolean isTitleNew = mQueryManager.addTitle(title);
+        if (isTitleNew) {
+            doRequest();
+        } else {
+            mView.onMessage("Already searched!");
         }
+    }
+
+    private void doRequest() {
         Map<String, String> queryOptions = mQueryManager.toQueryOptions();
         Log.d(TAG, "searchThings: queryOptions: " + queryOptions.toString());
         Call<List<Thing>> call = mApiModel.getThings(queryOptions);

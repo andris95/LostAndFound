@@ -63,6 +63,7 @@
     <string name="search_title">Search</string>
     <string name="search_hint">Search for a thing...</string>
     <string name="filter">Filter</string>
+    <string name="confirm_search">Confirm search</string>
 
     <!-- Error messages -->
     <string name="error_empty_title">Please provide title for your thing!</string>

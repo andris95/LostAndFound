@@ -50,15 +50,12 @@ public class SearchActivity extends BaseActivity implements SearchThingView {
     private SearchView.OnQueryTextListener mSearchListener = new SearchView.OnQueryTextListener() {
         @Override
         public boolean onQueryTextSubmit(String query) {
-            return false;
+            mSearchPresenter.searchThings(query);
+            return true;
         }
 
         @Override
         public boolean onQueryTextChange(String newText) {
-            // newText is text entered by user to SearchThingView
-            mThingAdapter.clear();
-            mThingAdapter.notifyDataSetChanged();
-            mSearchPresenter.searchThings(newText);
             return false;
         }
     };
@@ -87,15 +84,28 @@ public class SearchActivity extends BaseActivity implements SearchThingView {
         inflater.inflate(R.menu.menu_search, menu);
         mSearchView = (SearchView) menu.findItem(R.id.search).getActionView();
         mSearchView.setOnQueryTextListener(mSearchListener);
+        mSearchView.setSubmitButtonEnabled(true);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem menuItem) {
-        if (menuItem.getItemId() == android.R.id.home) {
-            onBackPressed();
+        switch (menuItem.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+            case R.id.filter:
+                Toast.makeText(getApplicationContext(), "filter", Toast.LENGTH_SHORT).show();
+                return true;
         }
         return super.onOptionsItemSelected(menuItem);
+    }
+
+    private void onConfirmTitle() {
+        // newText is text entered by user to SearchThingView
+        mThingAdapter.clear();
+        mThingAdapter.notifyDataSetChanged();
+        mSearchPresenter.searchThings(mSearchView.getQuery().toString());
     }
 
     @Override
@@ -108,7 +118,7 @@ public class SearchActivity extends BaseActivity implements SearchThingView {
             Chip chip = new Chip(SearchActivity.this);
             chip.setChipText(query);
             LinearLayout.LayoutParams chipParams = new LinearLayout.LayoutParams(
-                    ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                    ViewGroup.LayoutParams.WRAP_CONTENT, 56);
             chipParams.setMargins(8, 8, 8, 8);
             chip.setLayoutParams(chipParams);
             chip.setClosable(true);
@@ -131,5 +141,10 @@ public class SearchActivity extends BaseActivity implements SearchThingView {
             });
             chipContainer.addView(chip);
         }
+    }
+
+    @Override
+    public void onMessage(String message) {
+        Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
     }
 }

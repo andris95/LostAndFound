@@ -10,4 +10,5 @@ import java.util.List;
 
 public interface SearchThingView {
     void onThingsFound(List<Thing> thingList);
+    void onMessage(String message);
 }

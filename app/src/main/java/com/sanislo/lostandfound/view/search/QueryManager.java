@@ -40,17 +40,20 @@ public class QueryManager {
 
     private String getTitleOptions() {
         StringBuilder sb = new StringBuilder();
+        boolean isFirst = true;
         for (String title : mTitles) {
+            if (isFirst) {
+                sb.append(title);
+                isFirst = false;
+                continue;
+            }
             sb.append("&");
             sb.append("title=");
             sb.append(title);
         }
         Log.d(TAG, "getTitleOptions: " + sb.toString());
         String titleOptions = sb.toString();
-        Log.d(TAG, "getTitleOptions: titleOptions: " + titleOptions);
-        titleOptions.replaceAll("&(?!amp;)", "&amp;");
-        Log.d(TAG, "getTitleOptions: titleOptions: " + titleOptions);
-        return sb.toString();
+        return titleOptions;
     }
 
     public String toQuery() {
