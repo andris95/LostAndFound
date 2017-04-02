@@ -25,6 +25,7 @@ import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IProfile;
+import com.sanislo.lostandfound.FakeDataGenerator;
 import com.sanislo.lostandfound.R;
 import com.sanislo.lostandfound.adapter.ThingAdapter;
 import com.sanislo.lostandfound.interfaces.ThingsView;
@@ -34,6 +35,7 @@ import com.sanislo.lostandfound.presenter.ThingsPresenter;
 import com.sanislo.lostandfound.presenter.ThingsPresenterImpl;
 import com.sanislo.lostandfound.view.BaseActivity;
 import com.sanislo.lostandfound.view.addThing.AddThingActivity;
+import com.sanislo.lostandfound.view.map.MapActivity;
 import com.sanislo.lostandfound.view.profile.ProfileActivity;
 import com.sanislo.lostandfound.view.search.SearchActivity;
 import com.sanislo.lostandfound.view.thingDetails.ThingDetailsActivity;
@@ -120,6 +122,14 @@ public class ThingsActivity extends BaseActivity implements ThingsView {
                 case 3:
                     openSearchActivity();
                     return true;
+                case 4:
+                    Intent intent = new Intent(ThingsActivity.this, MapActivity.class);
+                    startActivity(intent);
+                    break;
+                case 5:
+                    FakeDataGenerator fakeDataGenerator = new FakeDataGenerator(ThingsActivity.this, mUser);
+                    fakeDataGenerator.postFakeThings();
+                    break;
             }
             return true;
         }
@@ -180,9 +190,15 @@ public class ThingsActivity extends BaseActivity implements ThingsView {
                 .withName(R.string.drawer_settings);
         PrimaryDrawerItem search = new PrimaryDrawerItem()
                 .withName(R.string.drawer_search);
+        PrimaryDrawerItem nearbyThings = new PrimaryDrawerItem()
+                .withName(R.string.drawer_nearby_things);
+        PrimaryDrawerItem fakeThings = new PrimaryDrawerItem()
+                .withName("Create 500 fake things");
         drawerItems.add(things);
         drawerItems.add(settings);
         drawerItems.add(search);
+        drawerItems.add(nearbyThings);
+        drawerItems.add(fakeThings);
         return drawerItems;
     }
 

@@ -3,6 +3,7 @@ package com.sanislo.lostandfound.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -45,6 +46,10 @@ public class Location implements Parcelable {
 
 	public void setPlaceId(String placeId) {
 		this.placeId = placeId;
+	}
+
+	public LatLng getLatLng() {
+		return new LatLng(lat, lng);
 	}
 
 	public Location() {

@@ -12,6 +12,7 @@
     <string name="drawer_things">Things</string>
     <string name="drawer_settings">Settings</string>
     <string name="drawer_search">Search</string>
+    <string name="drawer_nearby_things">Nearby things</string>
 
     <!-- Edit Profile Screem -->
     <string name="select_profile_image">Select profile image</string>
