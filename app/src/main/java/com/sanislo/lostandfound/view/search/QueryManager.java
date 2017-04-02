@@ -41,14 +41,14 @@ public class QueryManager {
     private String getTitleOptions() {
         StringBuilder sb = new StringBuilder();
         for (String title : mTitles) {
-            sb.append("&amp;");
+            sb.append("&");
             sb.append("title=");
             sb.append(title);
         }
         Log.d(TAG, "getTitleOptions: " + sb.toString());
         String titleOptions = sb.toString();
         Log.d(TAG, "getTitleOptions: titleOptions: " + titleOptions);
-        titleOptions.replaceAll("&amp;", "&");
+        titleOptions.replaceAll("&(?!amp;)", "&amp;");
         Log.d(TAG, "getTitleOptions: titleOptions: " + titleOptions);
         return sb.toString();
     }

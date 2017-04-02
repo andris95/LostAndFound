@@ -1,5 +1,6 @@
 package com.sanislo.lostandfound.view.map;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
@@ -34,6 +35,7 @@ public class ThingsMapFragment extends SupportMapFragment implements MapView,
     private Map<String, Thing> mMarkers = new HashMap<>();
     private ClusterManager<AbstractMarker> mClusterManager;
     private MapPresenter mMapPresenter;
+    private MarkerClickListener mMarkerClickListener;
 
     @Override
     public void onCreate(Bundle bundle) {
@@ -41,6 +43,16 @@ public class ThingsMapFragment extends SupportMapFragment implements MapView,
         mBoundsBuilder = new LatLngBounds.Builder();
         mMapPresenter = new MapPresenterImpl(this);
         getMapAsync(mOnMapReadyCallback);
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        try {
+            mMarkerClickListener = (MarkerClickListener) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString() + " must implement MarkerClickListener");
+        }
     }
 
     @Override
@@ -112,9 +124,11 @@ public class ThingsMapFragment extends SupportMapFragment implements MapView,
 
     @Override
     public boolean onClusterItemClick(AbstractMarker abstractMarker) {
-        Toast.makeText(getActivity(), "Cluster item click", Toast.LENGTH_SHORT).show();
+        /*Toast.makeText(getActivity(), "Cluster item click", Toast.LENGTH_SHORT).show();
         ThingBottomSheet thingBottomSheet = ThingBottomSheet.newInstance(abstractMarker.getThing());
         thingBottomSheet.show(getActivity().getSupportFragmentManager(), ThingBottomSheet.class.getCanonicalName());
+        */
+        mMarkerClickListener.onClusterItemClick(abstractMarker);
         return true;
     }
 
@@ -128,5 +142,9 @@ public class ThingsMapFragment extends SupportMapFragment implements MapView,
         }
         Log.d(TAG, "onClusterClick: " + sb.toString());
         return true;
+    }
+
+    public interface MarkerClickListener {
+        void onClusterItemClick(AbstractMarker abstractMarker);
     }
 }

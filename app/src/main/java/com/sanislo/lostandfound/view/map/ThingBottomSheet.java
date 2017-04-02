@@ -85,9 +85,8 @@ public class ThingBottomSheet extends BottomSheetDialogFragment {
     public static final String EXTRA_THING = "EXTRA_THING";
 
     private Thing mThing;
-    private GoogleMap mGoogleMap;
+    private GoogleMap mThingMiniMap;
     private SupportMapFragment mMapFragment;
-
     private DescriptionPhotosAdapter mDescriptionPhotosAdapter;
 
     public ThingBottomSheet() {
@@ -180,7 +179,7 @@ public class ThingBottomSheet extends BottomSheetDialogFragment {
 
     private void hideMapView() {
         flMapContainer.setVisibility(View.GONE);
-        if (mGoogleMap == null) return;
+        if (mThingMiniMap == null) return;
         FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
         ft.hide(mMapFragment);
         ft.commit();
@@ -190,23 +189,23 @@ public class ThingBottomSheet extends BottomSheetDialogFragment {
         @Override
         public void onMapReady(GoogleMap googleMap) {
             Log.d(TAG, "onMapReady: " + (googleMap == null));
-            if (mGoogleMap == null) {
-                mGoogleMap = googleMap;
+            if (mThingMiniMap == null) {
+                mThingMiniMap = googleMap;
             }
             displayThingMarker();
         }
     };
 
     private void displayThingMarker() {
-        mGoogleMap.clear();
+        mThingMiniMap.clear();
         MarkerOptions markerOptions = new MarkerOptions();
         Location location = mThing.getLocation();
         LatLng latLng = new LatLng(location.getLat(),
                 location.getLng());
         markerOptions.position(latLng);
-        mGoogleMap.addMarker(markerOptions);
+        mThingMiniMap.addMarker(markerOptions);
         CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 10f);
-        mGoogleMap.moveCamera(cameraUpdate);
+        mThingMiniMap.moveCamera(cameraUpdate);
     }
 
     private void setAuthorPhoto() {
