@@ -128,7 +128,7 @@ public class ThingsActivity extends BaseActivity implements ThingsView {
                     break;
                 case 5:
                     FakeDataGenerator fakeDataGenerator = new FakeDataGenerator(ThingsActivity.this, mUser);
-                    fakeDataGenerator.postFakeThings();
+                    fakeDataGenerator.postCloseFakeThings();
                     break;
             }
             return true;

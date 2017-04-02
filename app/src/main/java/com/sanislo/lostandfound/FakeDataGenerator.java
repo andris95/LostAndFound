@@ -48,6 +48,11 @@ public class FakeDataGenerator {
         postThing(mFakeThingList.get(mCurrentUploadingThing));
     }
 
+    public void postCloseFakeThings() {
+        mFakeThingList = generateCloseThings();
+        postThing(mFakeThingList.get(mCurrentUploadingThing));
+    }
+
     private void postThing(Thing thing) {
         Call<Void> call = mApiModel.postThing(thing);
         call.enqueue(new Callback<Void>() {
@@ -88,6 +93,37 @@ public class FakeDataGenerator {
 
             double lat = ThreadLocalRandom.current().nextDouble(-90, 90);
             double lng = ThreadLocalRandom.current().nextDouble(-180, 180);
+            Location location = new Location();
+            location.setLat(lat);
+            location.setLng(lng);
+            thing.setLocation(location);
+
+            thing.setDescriptionPhotos(Arrays.asList(mTestPhotoURLs));
+
+            thingList.add(thing);
+        }
+        return thingList;
+    }
+
+    private List<Thing> generateCloseThings() {
+        List<Thing> thingList = new ArrayList<>();
+        for (int i = 0; i < 100; i++) {
+            Thing thing = new Thing();
+            thing.setCategory("");
+            thing.setTitle("Thing NO_" + i);
+            thing.setDescription("Description NO_" + i);
+            thing.setType(i % 2 == 0 ? "lost" : "found");
+            thing.setTimestamp(new Date().getTime());
+
+            int randomPhotoPosition = ThreadLocalRandom.current().nextInt(0, mTestPhotoURLs.length - 1);
+            thing.setPhoto(mTestPhotoURLs[randomPhotoPosition]);
+
+            thing.setUserName(mUser.getFullName());
+            thing.setUserAvatar(mUser.getAvatarURL());
+            thing.setUserUID(mUser.getUid());
+
+            double lng = ThreadLocalRandom.current().nextDouble(18, 27);
+            double lat = ThreadLocalRandom.current().nextDouble(44, 52);
             Location location = new Location();
             location.setLat(lat);
             location.setLng(lng);

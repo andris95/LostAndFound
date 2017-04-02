@@ -1,7 +1,7 @@
 package com.sanislo.lostandfound.view.map;
 
-import android.app.FragmentTransaction;
 import android.os.Bundle;
+import android.support.v4.app.FragmentTransaction;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -42,7 +42,7 @@ public class MapActivity extends BaseActivity {
     private void initMapFragment() {
         mMapFragment = new ThingsMapFragment();
         FragmentTransaction fragmentTransaction =
-                getFragmentManager().beginTransaction();
+                getSupportFragmentManager().beginTransaction();
         fragmentTransaction.add(R.id.fl_map_container, mMapFragment);
         fragmentTransaction.commit();
     }

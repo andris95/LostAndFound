@@ -79,6 +79,7 @@ dependencies {
     compile 'com.mikepenz:materialize:1.0.1@aar'
 
     compile 'com.aurelhubert:ahbottomnavigation:2.0.6'
+    compile 'com.google.maps.android:android-maps-utils:0.5+'
 }
 
 apply plugin: 'com.google.gms.google-services'
