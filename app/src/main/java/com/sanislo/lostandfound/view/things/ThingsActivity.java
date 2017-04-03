@@ -67,7 +67,7 @@ public class ThingsActivity extends BaseActivity implements ThingsView {
     private Drawer mDrawer;
     private AccountHeader mAccountHeader;
     private User mUser = new User();
-    private int mClickedDrawerItemPos = RecyclerView.NO_POSITION;
+    private int mClickedDrawerItemPos = -100;
 
     private ThingAdapter.OnClickListener mThingClickListener = new ThingAdapter.OnClickListener() {
 

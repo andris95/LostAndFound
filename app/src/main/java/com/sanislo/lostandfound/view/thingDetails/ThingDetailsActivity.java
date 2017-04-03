@@ -8,10 +8,12 @@ import android.os.Bundle;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.text.format.DateUtils;
 import android.transition.Slide;
 import android.transition.Transition;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.Window;
@@ -57,6 +59,9 @@ import butterknife.OnClick;
 
 public class ThingDetailsActivity extends BaseActivity implements ThingDetailsView {
     private String TAG = ThingDetailsActivity.class.getSimpleName();
+
+    @BindView(R.id.toolbar)
+    Toolbar mToolbar;
 
     @BindView(R.id.iv_thing_author_avatar)
     ImageView ivAuthorAvatar;
@@ -152,12 +157,18 @@ public class ThingDetailsActivity extends BaseActivity implements ThingDetailsVi
         setContentView(R.layout.activity_thing_details);
         postponeEnterTransition();
         ButterKnife.bind(this);
+        setupToolbar();
         ivThingPhoto.setTransitionName(getString(R.string.transition_description_photo));
         ivAuthorAvatar.setTransitionName(getString(R.string.transition_avatar));
         mThingDetailsPresenter = new ThingDetailsPresenterImpl(this);
 
         mThing = getIntent().getParcelableExtra(EXTRA_THING);
         displayThing();
+    }
+
+    private void setupToolbar() {
+        setSupportActionBar(mToolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
     private void setEnterTransition() {
@@ -182,6 +193,16 @@ public class ThingDetailsActivity extends BaseActivity implements ThingDetailsVi
         super.onPause();
         mThingDetailsPresenter.onPause();
         if (mMapFragment != null) mMapFragment.onPause();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem menuItem) {
+        switch (menuItem.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+        }
+        return super.onOptionsItemSelected(menuItem);
     }
 
     @Override
@@ -319,15 +340,14 @@ public class ThingDetailsActivity extends BaseActivity implements ThingDetailsVi
     }
 
     private void setTypeAndDate() {
-        String type = mThing.getType();
-        String time = DateUtils.formatDateTime(ThingDetailsActivity.this,
-                mThing.getTimestamp(),
-                DateUtils.FORMAT_SHOW_DATE);
         StringBuilder sb = new StringBuilder();
-        sb.append("Posted in ");
+        CharSequence date = DateUtils.getRelativeTimeSpanString(mThing.getTimestamp(),
+                System.currentTimeMillis(),
+                DateUtils.MINUTE_IN_MILLIS).toString();
+        String type = mThing.getType().substring(0,1).toUpperCase() + mThing.getType().substring(1).toLowerCase();
         sb.append(type);
         sb.append(" ");
-        sb.append(time);
+        sb.append(date);
         tvType.setText(sb.toString());
     }
 
