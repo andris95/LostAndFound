@@ -122,7 +122,7 @@ public class AddThingActivity extends AppCompatActivity implements AddThingView 
 
     private AddThingPresenter mPresenter;
     private ArrayAdapter<String> mTypeAdapter;
-    private String[] mThingArray;
+    private String[] mTypeArray;
     private ArrayAdapter<String> mCategoriesAdapter;
     private MaterialDialog mProgressDialog;
     private Snackbar mErrorSnackbar;
@@ -144,7 +144,7 @@ public class AddThingActivity extends AppCompatActivity implements AddThingView 
     private AdapterView.OnItemSelectedListener mTypeSelectedListener = new AdapterView.OnItemSelectedListener() {
         @Override
         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-            mPresenter.onTypeChanged(mThingArray[position]);
+            mPresenter.onTypeChanged(mTypeArray, position);
         }
 
         @Override
@@ -189,18 +189,6 @@ public class AddThingActivity extends AppCompatActivity implements AddThingView 
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        mPresenter.onResume();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        mPresenter.onPause();
-    }
-
     private void initCategories() {
         mCategoriesAdapter = new ArrayAdapter<String>(AddThingActivity.this, android.R.layout.simple_spinner_item);
         mCategoriesAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -209,10 +197,10 @@ public class AddThingActivity extends AppCompatActivity implements AddThingView 
     }
 
     private void initTypeSpinner() {
-        mThingArray = getResources().getStringArray(R.array.thing_type);
+        mTypeArray = getResources().getStringArray(R.array.thing_type);
         mTypeAdapter = new ArrayAdapter<String>(AddThingActivity.this,
                 android.R.layout.simple_spinner_item,
-                mThingArray);
+                mTypeArray);
         mTypeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spType.setAdapter(mTypeAdapter);
         spType.setOnItemSelectedListener(mTypeSelectedListener);
@@ -443,6 +431,7 @@ public class AddThingActivity extends AppCompatActivity implements AddThingView 
     @Override
     public void onCategoriesReady(List<String> categories) {
         mCategoriesAdapter.clear();
+        categories.add(0, getString(R.string.select_category));
         mCategoriesAdapter.addAll(categories);
         mCategoriesAdapter.notifyDataSetChanged();
     }

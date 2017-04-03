@@ -61,6 +61,7 @@
     <string name="cover">Cover photo</string>
     <string name="description_photos">Description photos</string>
     <string name="select_type">Select type</string>
+    <string name="select_category">Select category</string>
     <string name="type_lost">Lost</string>
     <string name="type_found">Found</string>
     <string name="type_any">Any</string>
@@ -79,6 +80,8 @@
     <!-- Error messages -->
     <string name="error_empty_title">Please provide title for your thing!</string>
     <string name="error_empty_description">Please provide description for your thing</string>
+    <string name="error_select_type">Please, select type</string>
+    <string name="error_select_category">Please, select category</string>
 
     <string name="found_keys">Keys found on Aigburth Road, Liverpool, between the Maccies and the garage. It’s got two keyrings on as well but I’ve covered them up for the owner to identify.</string>
     <string name="found_ring">Was found at willy’s car wash, near the dog wash side in blacks beach.

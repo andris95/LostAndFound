@@ -14,8 +14,8 @@ public interface AddThingPresenter {
     void addThing(String title, String description);
     void updateDescriptionPhotosList(List<DescriptionPhotoItem> descriptionPhotoItemList);
     void removeCoverPhoto();
-    void onCategoryChanged(int category);
-    void onTypeChanged(String type);
+    void onCategoryChanged(int position);
+    void onTypeChanged(String[] types, int position);
     void onResume();
     void onPause();
     void onActivityResult(int requestCode, int resultCode, Intent data);

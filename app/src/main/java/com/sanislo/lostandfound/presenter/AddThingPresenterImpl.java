@@ -22,15 +22,11 @@ import com.google.android.gms.location.places.Places;
 import com.google.android.gms.location.places.ui.PlacePicker;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.sanislo.lostandfound.R;
 import com.sanislo.lostandfound.interfaces.AddThingView;
+import com.sanislo.lostandfound.model.Category;
 import com.sanislo.lostandfound.model.DescriptionPhotoItem;
 import com.sanislo.lostandfound.model.Location;
 import com.sanislo.lostandfound.model.Thing;
@@ -70,9 +66,7 @@ public class AddThingPresenterImpl implements AddThingPresenter {
     private AddThingView mView;
 
     private User mUser;
-    private DatabaseReference mDatabaseReference;
     private StorageReference mStorageReference;
-    private int mCategory;
     private String mType;
 
     private GoogleApiClient mGoogleApiClient;
@@ -122,42 +116,36 @@ public class AddThingPresenterImpl implements AddThingPresenter {
     }
 
     private void initFirebase() {
-        mDatabaseReference = FirebaseUtils.getDatabase().getReference();
         mStorageReference = FirebaseUtils.getStorageRef();
     }
 
+    private List<String> mCategories;
     private void getCategories() {
-        mDatabaseReference.child(FirebaseConstants.CATEGORIES)
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        getCategories(dataSnapshot);
-                    }
+        Call<List<Category>> call = mApiModel.getCategories();
+        call.enqueue(new Callback<List<Category>>() {
+            @Override
+            public void onResponse(Call<List<Category>> call, Response<List<Category>> response) {
+                mCategories = new ArrayList<String>();
+                for (Category c : response.body()) {
+                    mCategories.add(c.getName());
+                }
+                mView.onCategoriesReady(mCategories);
+            }
 
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
+            @Override
+            public void onFailure(Call<List<Category>> call, Throwable t) {
 
-                    }
-                });
+            }
+        });
     }
 
-    private void getCategories(DataSnapshot dataSnapshot) {
-        List<String> categories = new ArrayList<>();
-        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-            String category = (String) snapshot.getValue();
-            categories.add(category);
-        }
-        mView.onCategoriesReady(categories);
-    }
-
+    private int mTypePosition = 0;
+    private String[] mTypes;
     @Override
-    public void onCategoryChanged(int category) {
-        mCategory = category;
-    }
-
-    @Override
-    public void onTypeChanged(String type) {
-        mType = type.toLowerCase();
+    public void onTypeChanged(String[] types, int position) {
+        mTypePosition = position;
+        mTypes = types;
+        mType = mTypes[position];
     }
 
     @Override
@@ -176,10 +164,22 @@ public class AddThingPresenterImpl implements AddThingPresenter {
             mView.onError(R.string.error_empty_title);
         } else if (TextUtils.isEmpty(description)) {
             mView.onError(R.string.error_empty_description);
+        } else if (!isTypeSelected()) {
+            mView.onError(R.string.error_select_type);
+        } else if (!isCategorySelected()) {
+            mView.onError(R.string.error_select_category);
         } else {
             configureThing(title, description);
             startThingDataUpload();
         }
+    }
+
+    private boolean isTypeSelected() {
+        return mTypePosition > 0;
+    }
+
+    private boolean isCategorySelected() {
+        return mCategoryPosition > 0;
     }
 
     @Override
@@ -195,6 +195,12 @@ public class AddThingPresenterImpl implements AddThingPresenter {
         mCoverPhotoUri = null;
     }
 
+    private int mCategoryPosition = 0;
+    @Override
+    public void onCategoryChanged(int position) {
+        mCategoryPosition = position;
+    }
+
     private long mTimestamp;
     private void configureThing(String title, String description) {
         mThing = new Thing();
@@ -207,7 +213,8 @@ public class AddThingPresenterImpl implements AddThingPresenter {
             mThing.setTitle(title);
             mThing.setDescription(description);
             mThing.setTimestamp(mTimestamp);
-            mThing.setCategory(String.valueOf(mCategory));
+            String category = mCategories.get(mCategoryPosition);
+            mThing.setCategory(category);
             mThing.setType(mType);
         } else {
             throw new RuntimeException("User is not yet downloaded");
@@ -266,7 +273,7 @@ public class AddThingPresenterImpl implements AddThingPresenter {
                     postThing();
                 }
             }
-        }).addOnProgressListener(mProgressListener);
+        });
     }
 
     private void uploadDescriptionPhotos() {
@@ -292,18 +299,8 @@ public class AddThingPresenterImpl implements AddThingPresenter {
                     postThing();
                 }
             }
-        }).addOnProgressListener(mProgressListener);
+        });
     }
-
-    private OnProgressListener<UploadTask.TaskSnapshot> mProgressListener = new OnProgressListener<UploadTask.TaskSnapshot>() {
-        @Override
-        public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
-            /*mBytesTransferred += taskSnapshot.getBytesTransferred();
-            Log.d(TAG, "onProgress: mBytesTransferred: " + mBytesTransferred);
-            float progress = (float) (mBytesTransferred / mTotalBytesToTransfer);
-            mView.onProgress((int) progress);*/
-        }
-    };
 
     private void publishProgress() {
         mCurrentUploadCounter++;

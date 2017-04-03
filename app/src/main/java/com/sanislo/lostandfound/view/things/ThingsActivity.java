@@ -123,6 +123,7 @@ public class ThingsActivity extends BaseActivity implements ThingsView {
         @Override
         public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
             Log.d(TAG, "onItemClick: position: " + position);
+            Toast.makeText(getApplicationContext(), String.valueOf(position), Toast.LENGTH_SHORT).show();
             mClickedDrawerItemPos = position;
             mDrawer.closeDrawer();
             return true;
@@ -196,7 +197,7 @@ public class ThingsActivity extends BaseActivity implements ThingsView {
                         FakeDataGenerator fakeDataGenerator = new FakeDataGenerator(ThingsActivity.this, mUser);
                         fakeDataGenerator.postCloseFakeThings();
                         break;
-                    case 5:
+                    case -1:
                         mFirebaseAuth.signOut();
                         break;
                 }
@@ -241,13 +242,16 @@ public class ThingsActivity extends BaseActivity implements ThingsView {
         List<IDrawerItem> drawerItems = new ArrayList<>();
         PrimaryDrawerItem addThing = new PrimaryDrawerItem()
                 .withName(R.string.add_thing)
-                .withIcon(R.drawable.plus);
+                .withIcon(R.drawable.plus)
+                .withSelectable(false);
         PrimaryDrawerItem search = new PrimaryDrawerItem()
                 .withName(R.string.drawer_search)
-                .withIcon(R.drawable.magnify);
+                .withIcon(R.drawable.magnify)
+                .withSelectable(false);
         PrimaryDrawerItem nearbyThings = new PrimaryDrawerItem()
                 .withName(R.string.drawer_nearby_things)
-                .withIcon(R.drawable.map_marker_radius);
+                .withIcon(R.drawable.map_marker_radius)
+                .withSelectable(false);
         PrimaryDrawerItem fakeThings = new PrimaryDrawerItem()
                 .withName("Create 500 fake things");
         drawerItems.add(addThing);
