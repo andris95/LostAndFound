@@ -16,6 +16,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.mikepenz.materialdrawer.AccountHeader;
@@ -151,9 +152,20 @@ public class ThingsActivity extends BaseActivity implements ThingsView {
                 .withTranslucentStatusBar(false)
                 .withAccountHeader(mAccountHeader)
                 .withOnDrawerItemClickListener(mOnDrawerItemClickListener)
+                .withStickyDrawerItems(getStickyFooterItems())
                 .withDrawerItems(getDrawerItems());
         mDrawer = drawerBuilder.build();
+        mDrawer.setSelection(-1);
         addDrawerCloseListener();
+    }
+
+    private List<IDrawerItem> getStickyFooterItems() {
+        ArrayList<IDrawerItem> list = new ArrayList<>();
+        PrimaryDrawerItem logout = new PrimaryDrawerItem()
+                .withName(R.string.sign_out)
+                .withIcon(R.drawable.logout);
+        list.add(logout);
+        return list;
     }
 
     private void addDrawerCloseListener() {
@@ -171,17 +183,21 @@ public class ThingsActivity extends BaseActivity implements ThingsView {
             @Override
             public void onDrawerClosed(View drawerView) {
                 switch (mClickedDrawerItemPos) {
-                    case 3:
+                    case 1:
+                        startAddThingActivity();
+                        break;
+                    case 2:
                         openSearchActivity();
-                        mDrawer.closeDrawer();
+                        break;
+                    case 3:
+                        openMapsActivity();
                         break;
                     case 4:
-                        openMapsActivity();
-                        mDrawer.closeDrawer();
-                        break;
-                    case 5:
                         FakeDataGenerator fakeDataGenerator = new FakeDataGenerator(ThingsActivity.this, mUser);
                         fakeDataGenerator.postCloseFakeThings();
+                        break;
+                    case 5:
+                        mFirebaseAuth.signOut();
                         break;
                 }
             }
@@ -223,21 +239,22 @@ public class ThingsActivity extends BaseActivity implements ThingsView {
 
     private List<IDrawerItem> getDrawerItems() {
         List<IDrawerItem> drawerItems = new ArrayList<>();
-        PrimaryDrawerItem things = new PrimaryDrawerItem()
-                .withName(R.string.drawer_things);
-        PrimaryDrawerItem settings = new PrimaryDrawerItem()
-                .withName(R.string.drawer_settings);
+        PrimaryDrawerItem addThing = new PrimaryDrawerItem()
+                .withName(R.string.add_thing)
+                .withIcon(R.drawable.plus);
         PrimaryDrawerItem search = new PrimaryDrawerItem()
-                .withName(R.string.drawer_search);
+                .withName(R.string.drawer_search)
+                .withIcon(R.drawable.magnify);
         PrimaryDrawerItem nearbyThings = new PrimaryDrawerItem()
-                .withName(R.string.drawer_nearby_things);
+                .withName(R.string.drawer_nearby_things)
+                .withIcon(R.drawable.map_marker_radius);
         PrimaryDrawerItem fakeThings = new PrimaryDrawerItem()
                 .withName("Create 500 fake things");
-        drawerItems.add(things);
-        drawerItems.add(settings);
+        drawerItems.add(addThing);
         drawerItems.add(search);
         drawerItems.add(nearbyThings);
         drawerItems.add(fakeThings);
+        //drawerItems.add(logout);
         return drawerItems;
     }
 
@@ -267,14 +284,10 @@ public class ThingsActivity extends BaseActivity implements ThingsView {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.menu_add_thing:
-                startAddThingActivity();
-                return true;
-            case R.id.menu_find_thing:
-                return true;
-            case R.id.menu_sign_out:
-                mFirebaseAuth.signOut();
-                return true;
+            case R.id.menu_info:
+                Toast.makeText(getApplicationContext(), "Created by: Andras Sanislo", Toast.LENGTH_SHORT)
+                        .show();
+                break;
         }
         return super.onOptionsItemSelected(item);
     }
