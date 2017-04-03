@@ -1,5 +1,7 @@
 package com.sanislo.lostandfound.view.map;
 
+import android.location.Location;
+
 import com.sanislo.lostandfound.model.Thing;
 
 import java.util.List;
@@ -10,4 +12,5 @@ import java.util.List;
 
 public interface MapView {
     void onThingsLoaded(List<Thing> thingList);
+    void onLastKnownLocationFound(Location location);
 }

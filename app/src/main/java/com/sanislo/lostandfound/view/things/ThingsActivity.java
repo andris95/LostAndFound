@@ -201,6 +201,7 @@ public class ThingsActivity extends BaseActivity implements ThingsView {
                         mFirebaseAuth.signOut();
                         break;
                 }
+                mClickedDrawerItemPos = -100;
             }
 
             @Override

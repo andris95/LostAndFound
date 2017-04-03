@@ -1,6 +1,7 @@
 package com.sanislo.lostandfound.view.map;
 
 import android.app.Activity;
+import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
@@ -10,6 +11,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.maps.android.clustering.Cluster;
@@ -27,7 +29,8 @@ import java.util.Map;
  */
 
 public class ThingsMapFragment extends SupportMapFragment implements MapView,
-        ClusterManager.OnClusterItemClickListener<AbstractMarker>, ClusterManager.OnClusterClickListener<AbstractMarker> {
+        ClusterManager.OnClusterItemClickListener<AbstractMarker>,
+        ClusterManager.OnClusterClickListener<AbstractMarker> {
     private String TAG = ThingsMapFragment.class.getSimpleName();
 
     private GoogleMap mGoogleMap;
@@ -36,12 +39,14 @@ public class ThingsMapFragment extends SupportMapFragment implements MapView,
     private ClusterManager<AbstractMarker> mClusterManager;
     private MapPresenter mMapPresenter;
     private MarkerClickListener mMarkerClickListener;
+    private Location mLocation;
 
     @Override
     public void onCreate(Bundle bundle) {
         super.onCreate(bundle);
         mBoundsBuilder = new LatLngBounds.Builder();
         mMapPresenter = new MapPresenterImpl(this);
+        mMapPresenter.getCurrentLocation(getActivity());
         getMapAsync(mOnMapReadyCallback);
     }
 
@@ -52,14 +57,6 @@ public class ThingsMapFragment extends SupportMapFragment implements MapView,
             mMarkerClickListener = (MarkerClickListener) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString() + " must implement MarkerClickListener");
-        }
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        if (mGoogleMap != null) {
-
         }
     }
 
@@ -87,7 +84,21 @@ public class ThingsMapFragment extends SupportMapFragment implements MapView,
     public void onThingsLoaded(List<Thing> thingList) {
         displayAllAvailableMarkers(thingList);
         mClusterManager.cluster();
+        mItemsClustered = true;
+        if (!mAnimatedToCurrentLocation) {
+            animateCamera(mLocation);
+        }
         //animateCamera();
+    }
+
+    private boolean mItemsClustered;
+    private boolean mAnimatedToCurrentLocation;
+    @Override
+    public void onLastKnownLocationFound(Location location) {
+        mLocation = location;
+        if (mGoogleMap != null && mItemsClustered) {
+            animateCamera(location);
+        }
     }
 
     private void displayAllAvailableMarkers(List<Thing> thingList) {
@@ -113,6 +124,22 @@ public class ThingsMapFragment extends SupportMapFragment implements MapView,
             @Override
             public void onFinish() {
 
+            }
+
+            @Override
+            public void onCancel() {
+
+            }
+        });
+    }
+
+    private void animateCamera(Location location) {
+        LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 12);
+        mGoogleMap.animateCamera(cameraUpdate, new GoogleMap.CancelableCallback() {
+            @Override
+            public void onFinish() {
+                mAnimatedToCurrentLocation = true;
             }
 
             @Override

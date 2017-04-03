@@ -72,7 +72,6 @@ public class AddThingPresenterImpl implements AddThingPresenter {
     private GoogleApiClient mGoogleApiClient;
     private Place mThingPlace;
     private Thing mThing;
-    private Location mThingLocation;
 
     private Uri mCoverPhotoUri;
     private long mTotalBytesToTransfer = 0;
@@ -406,7 +405,7 @@ public class AddThingPresenterImpl implements AddThingPresenter {
             if (data != null) {
                 mCoverPhotoUri = data.getData();
                 incrementTotalByteCount(mCoverPhotoUri);
-                mView.onCoverPhotoSelected(mCoverPhotoUri);
+                notifyCoverPhotoSelected();
             }
         }
         if (resultCode == RESULT_OK && requestCode == PICK_THING_DESCRIPTION_PHOTOS) {
