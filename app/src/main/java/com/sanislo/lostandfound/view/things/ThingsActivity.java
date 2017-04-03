@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.util.Pair;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -56,14 +57,16 @@ public class ThingsActivity extends BaseActivity implements ThingsView {
     Toolbar toolbar;
 
     @BindView(R.id.refresh_things)
-        SwipeRefreshLayout swipeRefreshThings;
+    SwipeRefreshLayout swipeRefreshThings;
 
     private FirebaseAuth mFirebaseAuth;
     private ThingAdapter mThingAdapter;
 
     private ThingsPresenter mThingsPresenter;
     private Drawer mDrawer;
-    private User mUser;
+    private AccountHeader mAccountHeader;
+    private User mUser = new User();
+    private int mClickedDrawerItemPos = RecyclerView.NO_POSITION;
 
     private ThingAdapter.OnClickListener mThingClickListener = new ThingAdapter.OnClickListener() {
 
@@ -95,6 +98,7 @@ public class ThingsActivity extends BaseActivity implements ThingsView {
         mThingsPresenter = new ThingsPresenterImpl(this);
         initFirebase();
         initToolbar();
+        setupDrawer();
         initThingsAdapter();
         setupSwipeRefresh();
         mThingsPresenter.getThings();
@@ -118,19 +122,8 @@ public class ThingsActivity extends BaseActivity implements ThingsView {
         @Override
         public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
             Log.d(TAG, "onItemClick: position: " + position);
-            switch (position) {
-                case 3:
-                    openSearchActivity();
-                    return true;
-                case 4:
-                    Intent intent = new Intent(ThingsActivity.this, MapActivity.class);
-                    startActivity(intent);
-                    break;
-                case 5:
-                    FakeDataGenerator fakeDataGenerator = new FakeDataGenerator(ThingsActivity.this, mUser);
-                    fakeDataGenerator.postCloseFakeThings();
-                    break;
-            }
+            mClickedDrawerItemPos = position;
+            mDrawer.closeDrawer();
             return true;
         }
     };
@@ -145,7 +138,62 @@ public class ThingsActivity extends BaseActivity implements ThingsView {
         startActivity(intent);
     }
 
+    private void openMapsActivity() {
+        Intent intent = new Intent(ThingsActivity.this, MapActivity.class);
+        startActivity(intent);
+    }
+
     private void setupDrawer() {
+        setupAccountHeader();
+        DrawerBuilder drawerBuilder = new DrawerBuilder()
+                .withActivity(ThingsActivity.this)
+                .withToolbar(toolbar)
+                .withTranslucentStatusBar(false)
+                .withAccountHeader(mAccountHeader)
+                .withOnDrawerItemClickListener(mOnDrawerItemClickListener)
+                .withDrawerItems(getDrawerItems());
+        mDrawer = drawerBuilder.build();
+        addDrawerCloseListener();
+    }
+
+    private void addDrawerCloseListener() {
+        mDrawer.getDrawerLayout().addDrawerListener(new DrawerLayout.DrawerListener() {
+            @Override
+            public void onDrawerSlide(View drawerView, float slideOffset) {
+
+            }
+
+            @Override
+            public void onDrawerOpened(View drawerView) {
+
+            }
+
+            @Override
+            public void onDrawerClosed(View drawerView) {
+                switch (mClickedDrawerItemPos) {
+                    case 3:
+                        openSearchActivity();
+                        mDrawer.closeDrawer();
+                        break;
+                    case 4:
+                        openMapsActivity();
+                        mDrawer.closeDrawer();
+                        break;
+                    case 5:
+                        FakeDataGenerator fakeDataGenerator = new FakeDataGenerator(ThingsActivity.this, mUser);
+                        fakeDataGenerator.postCloseFakeThings();
+                        break;
+                }
+            }
+
+            @Override
+            public void onDrawerStateChanged(int newState) {
+
+            }
+        });
+    }
+
+    private void setupAccountHeader() {
         ProfileDrawerItem profileDrawerItem = new ProfileDrawerItem()
                 .withName(mUser.getFullName())
                 .withEmail(mUser.getEmailAddress())
@@ -154,7 +202,6 @@ public class ThingsActivity extends BaseActivity implements ThingsView {
 
         AccountHeaderBuilder accountHeaderBuilder = new AccountHeaderBuilder()
                 .withActivity(ThingsActivity.this)
-                .withProfileImagesVisible(TextUtils.isEmpty(mUser.getAvatarURL()))
                 .addProfiles(profileDrawerItem)
                 .withTextColor(Color.BLACK)
                 .withOnAccountHeaderProfileImageListener(new AccountHeader.OnAccountHeaderProfileImageListener() {
@@ -171,15 +218,7 @@ public class ThingsActivity extends BaseActivity implements ThingsView {
                 })
                 .withSelectionListEnabledForSingleProfile(false)
                 .withOnlyMainProfileImageVisible(true);
-
-        DrawerBuilder drawerBuilder = new DrawerBuilder()
-                .withActivity(ThingsActivity.this)
-                .withToolbar(toolbar)
-                .withTranslucentStatusBar(false)
-                .withAccountHeader(accountHeaderBuilder.build())
-                .withOnDrawerItemClickListener(mOnDrawerItemClickListener)
-                .withDrawerItems(getDrawerItems());
-        mDrawer = drawerBuilder.build();
+        mAccountHeader = accountHeaderBuilder.build();
     }
 
     private List<IDrawerItem> getDrawerItems() {
@@ -257,8 +296,18 @@ public class ThingsActivity extends BaseActivity implements ThingsView {
     @Override
     public void onProfileLoaded(User user) {
         mUser = user;
-        //TODO FIX THIS
-        setupDrawer();
+        updateProfile();
+    }
+
+    private void updateProfile() {
+        ProfileDrawerItem profileDrawerItem = new ProfileDrawerItem()
+                .withName(mUser.getFullName())
+                .withEmail(mUser.getEmailAddress())
+                .withTextColor(Color.BLACK);
+        if (!TextUtils.isEmpty(mUser.getAvatarURL())) profileDrawerItem.withIcon(mUser.getAvatarURL());
+
+        mAccountHeader.clear();
+        mAccountHeader.setActiveProfile(profileDrawerItem);
     }
 
     @Override
