@@ -6,6 +6,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -31,7 +32,7 @@ import butterknife.ButterKnife;
  * Created by root on 31.03.17.
  */
 
-public class SearchActivity extends BaseActivity implements SearchThingView {
+public class SearchActivity extends BaseActivity implements SearchThingView, FilterDialogFragment.FilterListener {
     private String TAG = SearchActivity.class.getSimpleName();
 
     @BindView(R.id.toolbar)
@@ -95,17 +96,15 @@ public class SearchActivity extends BaseActivity implements SearchThingView {
                 onBackPressed();
                 return true;
             case R.id.filter:
-                Toast.makeText(getApplicationContext(), "filter", Toast.LENGTH_SHORT).show();
+                showFilter();
                 return true;
         }
         return super.onOptionsItemSelected(menuItem);
     }
 
-    private void onConfirmTitle() {
-        // newText is text entered by user to SearchThingView
-        mThingAdapter.clear();
-        mThingAdapter.notifyDataSetChanged();
-        mSearchPresenter.searchThings(mSearchView.getQuery().toString());
+    private void showFilter() {
+        FilterDialogFragment filterDialogFragment = new FilterDialogFragment();
+        filterDialogFragment.show(getSupportFragmentManager(), "");
     }
 
     @Override
@@ -146,5 +145,10 @@ public class SearchActivity extends BaseActivity implements SearchThingView {
     @Override
     public void onMessage(String message) {
         Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onFilterDone(FilterQuery filterQuery) {
+        Log.d(TAG, "onFilterDone: " + filterQuery);
     }
 }

@@ -1,5 +1,6 @@
 package com.sanislo.lostandfound.model.api;
 
+import com.sanislo.lostandfound.model.Category;
 import com.sanislo.lostandfound.model.Thing;
 import com.sanislo.lostandfound.model.User;
 
@@ -28,6 +29,11 @@ public class ApiModelImpl implements ApiModel {
     @Override
     public Call<List<Thing>> getThings(Map<String, String> options) {
         return mApiInterface.getThings(options);
+    }
+
+    @Override
+    public Call<List<Category>> getCategories() {
+        return mApiInterface.getCategories();
     }
 
     @Override

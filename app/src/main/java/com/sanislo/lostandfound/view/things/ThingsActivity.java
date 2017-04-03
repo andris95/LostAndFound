@@ -257,6 +257,7 @@ public class ThingsActivity extends BaseActivity implements ThingsView {
     @Override
     public void onProfileLoaded(User user) {
         mUser = user;
+        //TODO FIX THIS
         setupDrawer();
     }
 

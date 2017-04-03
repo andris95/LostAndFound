@@ -46,15 +46,23 @@
     <string name="publishing_progress">Publishing Your Thing</string>
     <string name="publishing_progress_description">Your thing is getting uploaded. Wait a few seconds...</string>
     <string-array name="thing_type">
+        <item>@string/select_type</item>
+        <item>@string/type_lost</item>
+        <item>@string/type_found</item>
+    </string-array>
+    <string-array name="thing_type_filter">
+        <item>@string/select_type</item>
+        <item>@string/type_any</item>
         <item>@string/type_lost</item>
         <item>@string/type_found</item>
     </string-array>
     <string name="location">Location</string>
     <string name="cover">Cover photo</string>
     <string name="description_photos">Description photos</string>
-
+    <string name="select_type">Select type</string>
     <string name="type_lost">Lost</string>
     <string name="type_found">Found</string>
+    <string name="type_any">Any</string>
 
     <!-- Thing description screen -->
     <string name="add_a_comment">Add a comment</string>
@@ -64,6 +72,8 @@
     <string name="search_hint">Search for a thing...</string>
     <string name="filter">Filter</string>
     <string name="confirm_search">Confirm search</string>
+    <string name="is_exact_match">Exact match for title?</string>
+    <string name="show_results">Show results</string>
 
     <!-- Error messages -->
     <string name="error_empty_title">Please provide title for your thing!</string>

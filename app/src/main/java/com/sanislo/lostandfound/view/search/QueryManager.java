@@ -20,6 +20,7 @@ public class QueryManager {
     private Set<String> mTitles = new HashSet<>();
     private String type;
     private ArrayList<String> mCities = new ArrayList<>();
+    private boolean mIsExactMatch;
     private String mOrder = "DESC";
     private String mSort = "timestamp";
 
@@ -40,16 +41,18 @@ public class QueryManager {
 
     private String getTitleOptions() {
         StringBuilder sb = new StringBuilder();
+        String title = mIsExactMatch ? "title" : "title_like";
         boolean isFirst = true;
-        for (String title : mTitles) {
+        for (String titleQuery : mTitles) {
             if (isFirst) {
-                sb.append(title);
+                sb.append(titleQuery);
                 isFirst = false;
                 continue;
             }
             sb.append("&");
-            sb.append("title=");
             sb.append(title);
+            sb.append("=");
+            sb.append(titleQuery);
         }
         Log.d(TAG, "getTitleOptions: " + sb.toString());
         String titleOptions = sb.toString();

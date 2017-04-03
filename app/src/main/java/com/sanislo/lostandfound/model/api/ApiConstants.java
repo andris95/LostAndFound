@@ -5,7 +5,7 @@ package com.sanislo.lostandfound.model.api;
  */
 
 public class ApiConstants {
-    public static final String BASE_API                         = "http://192.168.1.101:3000/";
+    public static final String BASE_API                         = "http://192.168.0.102:3000/";
     public static final String API_KEY_VALUE                    = "04ACEBmyUVXUpvD7JLkASRtNtAFqzOlf";
 
     public static final String API_UPLOAD_IMAGE                 = "documentRecognition";
@@ -21,6 +21,6 @@ public class ApiConstants {
     public static final String QUERY_KEY_PATH                   = "query";
 
     public static final String THINGS                           = "things";
-    public static final String GET_THING                        = "thing/";
+    public static final String CATEGORIES                       = "categories";
     public static final String USERS                            = "users";
 }

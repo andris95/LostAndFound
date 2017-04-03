@@ -1,5 +1,6 @@
 package com.sanislo.lostandfound.model.api;
 
+import com.sanislo.lostandfound.model.Category;
 import com.sanislo.lostandfound.model.Thing;
 import com.sanislo.lostandfound.model.User;
 import com.sanislo.lostandfound.model.UserAvatarUpdateRequest;
@@ -39,6 +40,9 @@ public interface ApiInterface {
 
     @POST(ApiConstants.THINGS)
     Call<Void> postThing(@Body Thing thing);
+
+    @GET(ApiConstants.CATEGORIES)
+    Call<List<Category>> getCategories();
 
     @POST(ApiConstants.USERS)
     Call<Void> saveUser(@Body User user);

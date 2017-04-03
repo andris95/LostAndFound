@@ -1,5 +1,6 @@
 package com.sanislo.lostandfound.model.api;
 
+import com.sanislo.lostandfound.model.Category;
 import com.sanislo.lostandfound.model.Thing;
 import com.sanislo.lostandfound.model.User;
 
@@ -16,6 +17,7 @@ public interface ApiModel {
     Call<List<Thing>> getThings();
     Call<List<Thing>> getThings(String sort, String order);
     Call<List<Thing>> getThings(Map<String, String> options);
+    Call<List<Category>> getCategories();
     Call<Void> updateUser(int userId, User user);
     Call<Void> postThing(Thing thing);
     Call<Void> saveUser(User user);
