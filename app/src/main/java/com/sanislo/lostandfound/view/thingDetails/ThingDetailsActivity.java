@@ -153,7 +153,7 @@ public class ThingDetailsActivity extends BaseActivity implements ThingDetailsVi
         super.onCreate(savedInstanceState);
         getWindow().requestFeature(Window.FEATURE_CONTENT_TRANSITIONS);
         setExitSharedElementCallback(mCallback);
-        setEnterTransition();
+        //setEnterTransition();
         setContentView(R.layout.activity_thing_details);
         postponeEnterTransition();
         ButterKnife.bind(this);
