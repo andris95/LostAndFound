@@ -103,8 +103,10 @@ public class SearchActivity extends BaseActivity implements SearchThingView, Fil
     }
 
     private void showFilter() {
-        FilterDialogFragment filterDialogFragment = new FilterDialogFragment();
-        filterDialogFragment.show(getSupportFragmentManager(), "");
+        FilterQuery filterQuery = mSearchPresenter.getFilterQuery();
+        FilterDialogFragment filterDialogFragment =
+                FilterDialogFragment.newInstance(filterQuery);
+        filterDialogFragment.show(getSupportFragmentManager(), null);
     }
 
     @Override
@@ -150,5 +152,6 @@ public class SearchActivity extends BaseActivity implements SearchThingView, Fil
     @Override
     public void onFilterDone(FilterQuery filterQuery) {
         Log.d(TAG, "onFilterDone: " + filterQuery);
+        mSearchPresenter.filter(filterQuery);
     }
 }

@@ -214,7 +214,7 @@ public class AddThingPresenterImpl implements AddThingPresenter {
             mThing.setTimestamp(mTimestamp);
             String category = mCategories.get(mCategoryPosition);
             mThing.setCategory(category);
-            mThing.setType(mType);
+            mThing.setType(mType.toLowerCase());
         } else {
             throw new RuntimeException("User is not yet downloaded");
         }

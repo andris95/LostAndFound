@@ -6,4 +6,6 @@ package com.sanislo.lostandfound.view.search;
 
 public interface SearchPresenter {
     void searchThings(String title);
+    void filter(FilterQuery filterQuery);
+    FilterQuery getFilterQuery();
 }

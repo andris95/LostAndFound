@@ -6,11 +6,13 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.widget.AppCompatSpinner;
 import android.support.v7.widget.SwitchCompat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ArrayAdapter;
+import android.widget.Toast;
 
 import com.sanislo.lostandfound.R;
 import com.sanislo.lostandfound.model.Category;
@@ -33,6 +35,7 @@ import retrofit2.Response;
 
 public class FilterDialogFragment extends DialogFragment {
     private String TAG = FilterDialogFragment.class.getSimpleName();
+    public static final String EXTRA_FILTER_QUERY = "EXTRA_FILTER_QUERY";
 
     @BindView(R.id.sp_category)
     AppCompatSpinner spCategory;
@@ -40,16 +43,29 @@ public class FilterDialogFragment extends DialogFragment {
     @BindView(R.id.sp_type)
     AppCompatSpinner spType;
 
-    @BindView(R.id.sw_exact_match_title)
-    SwitchCompat swExactMatch;
+    @BindView(R.id.sw_newest_first)
+    SwitchCompat swNewestFirst;
+
+    @BindView(R.id.sw_returned)
+    SwitchCompat swOnlyReturned;
 
     private FilterListener mFilterListener;
-
+    private FilterQuery mFilterQuery;
     private ArrayAdapter<String> mTypeAdapter;
     private String[] mThingTypeArray;
-    private List<Category> mCategories;
     private List<String> mCategoriesStringList;
     private ArrayAdapter<String> mCategoriesAdapter;
+
+    public FilterDialogFragment() {
+    }
+
+    public static FilterDialogFragment newInstance(FilterQuery filterQuery) {
+        Bundle args = new Bundle();
+        args.putParcelable(EXTRA_FILTER_QUERY, filterQuery);
+        FilterDialogFragment fragment = new FilterDialogFragment();
+        fragment.setArguments(args);
+        return fragment;
+    }
 
     @Override
     public void onAttach(Context context) {
@@ -64,6 +80,7 @@ public class FilterDialogFragment extends DialogFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mFilterQuery = getArguments().getParcelable(EXTRA_FILTER_QUERY);
     }
 
     @Nullable
@@ -80,6 +97,8 @@ public class FilterDialogFragment extends DialogFragment {
         initCategories();
         loadCategories();
         initTypeSpinner();
+        swNewestFirst.setChecked(mFilterQuery.isNewestFirst());
+        swOnlyReturned.setChecked(mFilterQuery.isReturnedOnly());
     }
 
     @Override
@@ -91,6 +110,7 @@ public class FilterDialogFragment extends DialogFragment {
 
     private void initCategories() {
         mCategoriesAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item);
+        mCategoriesAdapter.add(getString(R.string.category_any));
         mCategoriesAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spCategory.setAdapter(mCategoriesAdapter);
         //spCategory.setOnItemSelectedListener(mCategorySelectedListener);
@@ -113,31 +133,42 @@ public class FilterDialogFragment extends DialogFragment {
             @Override
             public void onResponse(Call<List<Category>> call, Response<List<Category>> response) {
                 if (response.isSuccessful()) {
-                    mCategories = response.body();
-                    mCategoriesStringList = new ArrayList<String>();
-                    for(Category c : response.body()) {
-                        mCategoriesStringList.add(c.getName());
-                    }
-                    mCategoriesAdapter.addAll(mCategoriesStringList);
+                    parseCategories(response.body());
+                } else {
+                    Toast.makeText(getContext(), "ERROR", Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(Call<List<Category>> call, Throwable t) {
-
+                t.printStackTrace();
             }
         });
     }
 
+    private void parseCategories(List<Category> categoryList) {
+        mCategoriesStringList = new ArrayList<String>();
+        for(Category c : categoryList) {
+            mCategoriesStringList.add(c.getName());
+        }
+        mCategoriesAdapter.addAll(mCategoriesStringList);
+    }
+
     @OnClick(R.id.btn_show_results)
     public void filterDone() {
-        boolean isExactMatch = swExactMatch.isChecked();
+        boolean newestFirst = swNewestFirst.isChecked();
+        boolean returnedOnly = swOnlyReturned.isChecked();
+        String type = (spType.getSelectedItemPosition() == 0) ? "" : (String) spType.getSelectedItem();
+        String category = (spCategory.getSelectedItemPosition() == 0) ? "" : (String) spCategory.getSelectedItem();
 
-        FilterQuery filterQuery = new FilterQuery(isExactMatch,
-                getSelectedCategoryName(),
-                getSelectedType(),
-                null);
+        FilterQuery filterQuery = new FilterQuery(category,
+                type,
+                null,
+                -1,
+                newestFirst,
+                returnedOnly);
         mFilterListener.onFilterDone(filterQuery);
+        Log.d(TAG, "filterDone: filterQuery: " + filterQuery);
         dismiss();
     }
 

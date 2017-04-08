@@ -63,6 +63,7 @@
     <string name="description_photos">Description photos</string>
     <string name="select_type">Select type</string>
     <string name="select_category">Select category</string>
+    <string name="category_any">Any category</string>
     <string name="type_lost">Lost</string>
     <string name="type_found">Found</string>
     <string name="type_any">Any</string>
@@ -76,6 +77,9 @@
     <string name="filter">Filter</string>
     <string name="confirm_search">Confirm search</string>
     <string name="is_exact_match">Exact match for title?</string>
+    <string name="newest_first">Newest first</string>
+    <string name="oldest_first">Oldest first</string>
+    <string name="returned_to_the_owner">Show only returned to the owner</string>
     <string name="show_results">Show results</string>
 
     <!-- Error messages -->

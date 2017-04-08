@@ -29,15 +29,22 @@ public class SearchPresenterImpl implements SearchPresenter {
 
     @Override
     public void searchThings(String title) {
-        boolean isTitleNew = mQueryManager.addTitle(title);
-        if (isTitleNew) {
-            doRequest();
-        } else {
-            mView.onMessage("Already searched!");
-        }
+        mQueryManager.setTitle(title);
+        doQuery();
     }
 
-    private void doRequest() {
+    @Override
+    public void filter(FilterQuery filterQuery) {
+        mQueryManager.filter(filterQuery);
+        doQuery();
+    }
+
+    @Override
+    public FilterQuery getFilterQuery() {
+        return mQueryManager.getFilterQuery();
+    }
+
+    private void doQuery() {
         Map<String, String> queryOptions = mQueryManager.toQueryOptions();
         Log.d(TAG, "searchThings: queryOptions: " + queryOptions.toString());
         Call<List<Thing>> call = mApiModel.getThings(queryOptions);
