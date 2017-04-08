@@ -105,9 +105,4 @@ public class QueryManager {
     private boolean isAnyType() {
         return TextUtils.isEmpty(type);
     }
-
-    public String toQuery() {
-        String query = null;
-        return query;
-    }
 }
