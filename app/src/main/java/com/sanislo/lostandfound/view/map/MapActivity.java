@@ -277,4 +277,13 @@ public class MapActivity extends BaseActivity implements ThingsMapFragment.Marke
                         view.getTransitionName());
         startActivity(intent, options.toBundle());
     }
+
+    @Override
+    public void onBackPressed() {
+        if (mBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
+            mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+        } else {
+            super.onBackPressed();
+        }
+    }
 }

@@ -1,8 +1,11 @@
 package com.sanislo.lostandfound.model;
 
 import com.google.gson.annotations.Expose;
-import javax.annotation.Generated;
 import com.google.gson.annotations.SerializedName;
+
+import java.util.List;
+
+import javax.annotation.Generated;
 
 @Generated("com.robohorse.robopojogenerator")
 public class User{
@@ -54,6 +57,10 @@ public class User{
 	@SerializedName("birthDate")
 	@Expose
 	private int birthDate;
+
+	@SerializedName("contacts")
+	@Expose
+	private List<String> contacts;
 
 	public void setUid(String uid){
 		this.uid = uid;
@@ -149,6 +156,14 @@ public class User{
 
 	public int getBirthDate(){
 		return birthDate;
+	}
+
+	public List<String> getContacts() {
+		return contacts;
+	}
+
+	public void setContacts(List<String> contacts) {
+		this.contacts = contacts;
 	}
 
 	@Override

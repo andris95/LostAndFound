@@ -131,6 +131,12 @@ public class FakeDataGenerator {
 
             thing.setDescriptionPhotos(Arrays.asList(mTestPhotoURLs));
 
+            List<String> contact = new ArrayList<>();
+            contact.add("szaniszlo.andris95@gmail.com");
+            contact.add("+380935376339");
+            contact.add("sanisloandras@gmail.com");
+            thing.setUserContantcs(contact);
+
             thingList.add(thing);
         }
         return thingList;

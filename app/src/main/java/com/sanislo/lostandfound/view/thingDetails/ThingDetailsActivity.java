@@ -38,6 +38,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.sanislo.lostandfound.R;
 import com.sanislo.lostandfound.adapter.CommentsAdapter;
+import com.sanislo.lostandfound.adapter.ContactsAdapter;
 import com.sanislo.lostandfound.adapter.DescriptionPhotosAdapter;
 import com.sanislo.lostandfound.model.Location;
 import com.sanislo.lostandfound.model.Thing;
@@ -83,6 +84,9 @@ public class ThingDetailsActivity extends BaseActivity implements ThingDetailsVi
 
     @BindView(R.id.rv_things_photos)
     RecyclerView rvDescriptionPhotos;
+
+    @BindView(R.id.rv_contacts)
+    RecyclerView rvContacts;
 
     @BindView(R.id.rv_things_comments)
     RecyclerView rvComments;
@@ -235,6 +239,7 @@ public class ThingDetailsActivity extends BaseActivity implements ThingDetailsVi
         setAuthorPhoto();
         setThingPhoto();
         setDescriptionPhotos();
+        setContacts();
         setComments();
         setMap();
     }
@@ -434,5 +439,11 @@ public class ThingDetailsActivity extends BaseActivity implements ThingDetailsVi
                         return true;
                     }
                 });
+    }
+
+    private void setContacts() {
+        ContactsAdapter contactsAdapter = new ContactsAdapter(mThing.getUserContantcs());
+        rvContacts.setLayoutManager(new LinearLayoutManager(ThingDetailsActivity.this));
+        rvContacts.setAdapter(contactsAdapter);
     }
 }

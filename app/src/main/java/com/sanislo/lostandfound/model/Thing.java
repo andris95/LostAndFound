@@ -67,6 +67,10 @@ public class Thing implements Parcelable {
 	@Expose
 	private String userUID;
 
+	@SerializedName("userContacts")
+	@Expose
+	private List<String> userContantcs;
+
 	public Thing() {
 
 	}
@@ -175,6 +179,14 @@ public class Thing implements Parcelable {
 		this.type = type;
 	}
 
+	public List<String> getUserContantcs() {
+		return userContantcs;
+	}
+
+	public void setUserContantcs(List<String> userContantcs) {
+		this.userContantcs = userContantcs;
+	}
+
 	@Override
 	public String toString() {
 		return "Thing{" +
@@ -215,6 +227,7 @@ public class Thing implements Parcelable {
 		dest.writeInt(commentCount);
 		dest.writeString(userUID);
 		dest.writeLong(timestamp);
+		dest.writeList(userContantcs);
 	}
 
 	public static final Parcelable.Creator<Thing> CREATOR = new Parcelable.Creator<Thing>() {
@@ -243,5 +256,6 @@ public class Thing implements Parcelable {
 		commentCount = parcel.readInt();
 		userUID = parcel.readString();
 		timestamp = parcel.readLong();
+		userContantcs = parcel.readArrayList(null);
 	}
 }
