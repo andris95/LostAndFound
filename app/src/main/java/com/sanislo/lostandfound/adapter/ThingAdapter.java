@@ -123,12 +123,15 @@ public class ThingAdapter extends RecyclerView.Adapter<ThingAdapter.ViewHolder> 
         }
 
         private void setTypeAndDate() {
+            StringBuilder sb = new StringBuilder();
+            CharSequence date = DateUtils.getRelativeTimeSpanString(mThing.getTimestamp(),
+                    System.currentTimeMillis(),
+                    DateUtils.MINUTE_IN_MILLIS).toString();
             String type = convertType();
-            String time = DateUtils.formatDateTime(mRootView.getContext(),
-                    mThing.getTimestamp(),
-                    DateUtils.FORMAT_SHOW_DATE);
-            String postedIn = mContext.getString(R.string.thing_posted_in_at, type, time);
-            tvType.setText(postedIn);
+            sb.append(type);
+            sb.append(" ");
+            sb.append(date);
+            tvType.setText(sb.toString());
         }
 
         private String convertType() {
@@ -137,7 +140,6 @@ public class ThingAdapter extends RecyclerView.Adapter<ThingAdapter.ViewHolder> 
                     : mContext.getString(R.string.type_found);
             return type;
         }
-
         private void setAuthorPhoto() {
             displayPhoto(mThing.getUserAvatar(), ivAuthorAvatar);
         }

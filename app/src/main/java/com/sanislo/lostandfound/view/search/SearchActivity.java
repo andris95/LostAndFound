@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
 import com.sanislo.lostandfound.R;
@@ -20,6 +21,7 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import me.zhanghai.android.materialprogressbar.MaterialProgressBar;
 
 /**
  * Created by root on 31.03.17.
@@ -33,6 +35,9 @@ public class SearchActivity extends BaseActivity implements SearchThingView, Fil
 
     @BindView(R.id.rv_things)
     RecyclerView rvThings;
+
+    @BindView(R.id.pb_material)
+    MaterialProgressBar mProgressBar;
 
     private SearchView mSearchView;
     private SearchPresenter mSearchPresenter;
@@ -103,6 +108,7 @@ public class SearchActivity extends BaseActivity implements SearchThingView, Fil
     public void onThingsFound(List<Thing> thingList) {
         mThingAdapter.setThingList(thingList);
         mThingAdapter.notifyDataSetChanged();
+        mProgressBar.setVisibility(View.GONE);
     }
 
     @Override
@@ -113,6 +119,7 @@ public class SearchActivity extends BaseActivity implements SearchThingView, Fil
     @Override
     public void onFilterDone(FilterQuery filterQuery) {
         Log.d(TAG, "onFilterDone: " + filterQuery);
+        mProgressBar.setVisibility(View.VISIBLE);
         mSearchPresenter.filter(filterQuery);
     }
 }

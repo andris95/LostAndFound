@@ -70,6 +70,7 @@ dependencies {
     compile 'com.github.mcginty:material-colors:1.1.0'
     compile 'com.robertlevonyan.view:MaterialChipView:1.0.1'
     //compile 'com.doodle.android:android-material-chips:1.2.0'
+    compile 'me.zhanghai.android.materialprogressbar:library:1.3.0'
 
     compile('com.mikepenz:fastadapter:2.1.7@aar') {
         transitive = true

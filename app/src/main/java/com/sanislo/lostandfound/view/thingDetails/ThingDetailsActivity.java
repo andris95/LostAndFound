@@ -298,6 +298,7 @@ public class ThingDetailsActivity extends BaseActivity implements ThingDetailsVi
         mGoogleMap.clear();
         MarkerOptions markerOptions = new MarkerOptions();
         Location location = mThing.getLocation();
+
         LatLng latLng = new LatLng(location.getLat(),
                 location.getLng());
         markerOptions.position(latLng);

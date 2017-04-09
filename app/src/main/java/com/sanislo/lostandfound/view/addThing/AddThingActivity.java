@@ -49,6 +49,7 @@ import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.auth.FirebaseAuth;
 import com.mikepenz.fastadapter.FastAdapter;
 import com.mikepenz.fastadapter.commons.adapters.FastItemAdapter;
 import com.mikepenz.fastadapter.helpers.ClickListenerHelper;
@@ -57,6 +58,7 @@ import com.mikepenz.fastadapter_extensions.drag.ItemTouchCallback;
 import com.mikepenz.fastadapter_extensions.drag.SimpleDragCallback;
 import com.sanislo.lostandfound.R;
 import com.sanislo.lostandfound.interfaces.AddThingView;
+import com.sanislo.lostandfound.model.Contact;
 import com.sanislo.lostandfound.model.DescriptionPhotoItem;
 import com.sanislo.lostandfound.presenter.AddThingPresenter;
 import com.sanislo.lostandfound.presenter.AddThingPresenterImpl;
@@ -105,6 +107,9 @@ public class AddThingActivity extends AppCompatActivity implements AddThingView 
     @BindView(R.id.rv_description_photos_preview)
     RecyclerView rvDescriptionPhotos;
 
+    @BindView(R.id.rv_contacts)
+    RecyclerView rvContacts;
+
     @BindView(R.id.iv_cover_photo)
     ImageView ivCoverPhoto;
 
@@ -128,6 +133,7 @@ public class AddThingActivity extends AppCompatActivity implements AddThingView 
     private Snackbar mErrorSnackbar;
 
     private FastItemAdapter<DescriptionPhotoItem> mDescriptionPhotosAdapter;
+    private FastItemAdapter<Contact> mContactsAdapter;
 
     private AdapterView.OnItemSelectedListener mCategorySelectedListener = new AdapterView.OnItemSelectedListener() {
         @Override
@@ -165,6 +171,7 @@ public class AddThingActivity extends AppCompatActivity implements AddThingView 
         initCategories();
         initTypeSpinner();
         initDescriptionPhotosAdapter();
+        initContactsAdapter();
         initBottomNavigation();
         displayCoverPlaceholder();
         initMapView();
@@ -206,7 +213,7 @@ public class AddThingActivity extends AppCompatActivity implements AddThingView 
         spType.setOnItemSelectedListener(mTypeSelectedListener);
     }
 
-    private ClickEventHook<DescriptionPhotoItem> mRemoveClick = new ClickEventHook<DescriptionPhotoItem>() {
+    private ClickEventHook<DescriptionPhotoItem> mRemovePhotoClick = new ClickEventHook<DescriptionPhotoItem>() {
         @Override
         public void onClick(View v, int position, FastAdapter<DescriptionPhotoItem> fastAdapter, DescriptionPhotoItem item) {
             removeClickedDescriptionPhoto(position);
@@ -222,6 +229,23 @@ public class AddThingActivity extends AppCompatActivity implements AddThingView 
         }
     };
 
+    private ClickEventHook<Contact> mRemoveContactClick = new ClickEventHook<Contact>() {
+
+        @Override
+        public void onClick(View v, int position, FastAdapter<Contact> fastAdapter, Contact item) {
+            removeContact(position);
+        }
+
+        @Nullable
+        @Override
+        public List<View> onBindMany(@NonNull RecyclerView.ViewHolder viewHolder) {
+            if (viewHolder instanceof Contact.ViewHolder) {
+                return ClickListenerHelper.toList(((Contact.ViewHolder) viewHolder).getIvRemove());
+            }
+            return super.onBindMany(viewHolder);
+        }
+    };
+
     private void removeClickedDescriptionPhoto(int position) {
         mDescriptionPhotosAdapter.select(position);
         mDescriptionPhotosAdapter.deleteAllSelectedItems();
@@ -232,9 +256,14 @@ public class AddThingActivity extends AppCompatActivity implements AddThingView 
         }
     }
 
+    private void removeContact(int position) {
+        mContactsAdapter.select(position);
+        mContactsAdapter.deleteAllSelectedItems();
+    }
+
     private void initDescriptionPhotosAdapter() {
         mDescriptionPhotosAdapter = new FastItemAdapter();
-        mDescriptionPhotosAdapter.withItemEvent(mRemoveClick);
+        mDescriptionPhotosAdapter.withItemEvent(mRemovePhotoClick);
         attachDragCallback();
         LinearLayoutManager layoutManager = new LinearLayoutManager(AddThingActivity.this,
                 LinearLayoutManager.HORIZONTAL,
@@ -254,6 +283,18 @@ public class AddThingActivity extends AppCompatActivity implements AddThingView 
         });
         ItemTouchHelper touchHelper = new ItemTouchHelper(dragCallback);
         touchHelper.attachToRecyclerView(rvDescriptionPhotos);
+    }
+
+    private void initContactsAdapter() {
+        mContactsAdapter = new FastItemAdapter();
+        mContactsAdapter.withItemEvent(mRemoveContactClick);
+        mContactsAdapter.add(new Contact(FirebaseAuth.getInstance().getCurrentUser().getEmail()));
+        mContactsAdapter.add(new Contact("+380935376339"));
+        mContactsAdapter.add(new Contact("szaniszlo.andris95@gmail.com"));
+        mContactsAdapter.add(new Contact("+380509153922"));
+        mContactsAdapter.add(new Contact("sanisloandras@gmail.com"));
+        rvContacts.setLayoutManager(new LinearLayoutManager(AddThingActivity.this));
+        rvContacts.setAdapter(mContactsAdapter);
     }
 
     private void initBottomNavigation() {
