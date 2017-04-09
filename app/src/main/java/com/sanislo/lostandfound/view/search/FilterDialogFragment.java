@@ -197,15 +197,6 @@ public class FilterDialogFragment extends DialogFragment {
         return type - 1;
     }
 
-    private String getSelectedCategoryName() {
-        int selectedCategoryPosition = spCategory.getSelectedItemPosition();
-        if (selectedCategoryPosition != 0) {
-            return mCategoriesStringList.get(selectedCategoryPosition);
-        } else {
-            return null;
-        }
-    }
-
     public interface FilterListener {
         void onFilterDone(FilterQuery filterQuery);
     }

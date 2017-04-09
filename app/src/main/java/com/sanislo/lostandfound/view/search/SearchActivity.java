@@ -5,19 +5,12 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import com.robertlevonyan.views.chip.Chip;
-import com.robertlevonyan.views.chip.OnChipClickListener;
-import com.robertlevonyan.views.chip.OnCloseClickListener;
 import com.sanislo.lostandfound.R;
 import com.sanislo.lostandfound.adapter.ThingAdapter;
 import com.sanislo.lostandfound.model.Thing;
@@ -37,9 +30,6 @@ public class SearchActivity extends BaseActivity implements SearchThingView, Fil
 
     @BindView(R.id.toolbar)
     Toolbar mToolbar;
-
-    @BindView(R.id.ll_chip_container)
-    LinearLayout chipContainer;
 
     @BindView(R.id.rv_things)
     RecyclerView rvThings;
@@ -113,35 +103,6 @@ public class SearchActivity extends BaseActivity implements SearchThingView, Fil
     public void onThingsFound(List<Thing> thingList) {
         mThingAdapter.setThingList(thingList);
         mThingAdapter.notifyDataSetChanged();
-
-        String query = mSearchView.getQuery().toString();
-        if (!TextUtils.isEmpty(query) && thingList != null && !thingList.isEmpty()) {
-            Chip chip = new Chip(SearchActivity.this);
-            chip.setChipText(query);
-            LinearLayout.LayoutParams chipParams = new LinearLayout.LayoutParams(
-                    ViewGroup.LayoutParams.WRAP_CONTENT, 56);
-            chipParams.setMargins(8, 8, 8, 8);
-            chip.setLayoutParams(chipParams);
-            chip.setClosable(true);
-            chip.setOnCloseClickListener(new OnCloseClickListener() {
-                @Override
-                public void onCloseClick(View v) {
-                    Toast.makeText(getApplicationContext(), "Close", Toast.LENGTH_SHORT).show();
-                }
-            });
-            chip.setOnChipClickListener(new OnChipClickListener() {
-                @Override
-                public void onChipClick(View v) {
-                    try {
-                        Chip c = (Chip) v;
-                        Toast.makeText(getApplicationContext(), c.getChipText(), Toast.LENGTH_SHORT).show();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            });
-            chipContainer.addView(chip);
-        }
     }
 
     @Override

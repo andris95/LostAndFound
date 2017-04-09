@@ -69,6 +69,7 @@ dependencies {
     compile 'com.android.support.constraint:constraint-layout:1.0.1'
     compile 'com.github.mcginty:material-colors:1.1.0'
     compile 'com.robertlevonyan.view:MaterialChipView:1.0.1'
+    //compile 'com.doodle.android:android-material-chips:1.2.0'
 
     compile('com.mikepenz:fastadapter:2.1.7@aar') {
         transitive = true

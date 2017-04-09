@@ -111,11 +111,6 @@ public class SignupActivity extends BaseActivity implements SignupView {
         }
     }
 
-    @OnClick(R.id.btn_reset_password)
-    public void onClickResetPassword() {
-        //startActivity(new Intent(SignupActivity.this, ResetPasswordActivity.class));
-    }
-
     private OnCompleteListener onCreateUserCompleteListener = new OnCompleteListener() {
         @Override
         public void onComplete(@NonNull Task task) {
