@@ -12,8 +12,9 @@ import javax.annotation.Generated;
 
 @Generated("com.robohorse.robopojogenerator")
 public class Thing implements Parcelable {
-	public static final String TYPE_LOST = "lost";
-	public static final String TYPE_FOUND = "found";
+	public static final int TYPE_ANY = 0;
+	public static final int TYPE_LOST = 1;
+	public static final int TYPE_FOUND = 2;
 
 	@SerializedName("descriptionPhotos")
 	@Expose
@@ -53,7 +54,7 @@ public class Thing implements Parcelable {
 
 	@SerializedName("type")
 	@Expose
-	private String type;
+	private int type;
 
 	@SerializedName("commentCount")
 	@Expose
@@ -171,11 +172,11 @@ public class Thing implements Parcelable {
 		this.userAvatar = userAvatar;
 	}
 
-	public String getType() {
+	public int getType() {
 		return type;
 	}
 
-	public void setType(String type) {
+	public void setType(int type) {
 		this.type = type;
 	}
 
@@ -223,7 +224,7 @@ public class Thing implements Parcelable {
 		dest.writeString(title);
 		dest.writeString(userName);
 		dest.writeString(userAvatar);
-		dest.writeString(type);
+		dest.writeInt(type);
 		dest.writeInt(commentCount);
 		dest.writeString(userUID);
 		dest.writeLong(timestamp);
@@ -252,7 +253,7 @@ public class Thing implements Parcelable {
 		title = parcel.readString();
 		userName = parcel.readString();
 		userAvatar = parcel.readString();
-		type = parcel.readString();
+		type = parcel.readInt();
 		commentCount = parcel.readInt();
 		userUID = parcel.readString();
 		timestamp = parcel.readLong();

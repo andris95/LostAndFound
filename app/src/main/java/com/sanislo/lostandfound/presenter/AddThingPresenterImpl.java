@@ -67,7 +67,6 @@ public class AddThingPresenterImpl implements AddThingPresenter {
 
     private User mUser;
     private StorageReference mStorageReference;
-    private String mType;
 
     private GoogleApiClient mGoogleApiClient;
     private Place mThingPlace;
@@ -144,7 +143,6 @@ public class AddThingPresenterImpl implements AddThingPresenter {
     public void onTypeChanged(String[] types, int position) {
         mTypePosition = position;
         mTypes = types;
-        mType = mTypes[position];
     }
 
     @Override
@@ -214,7 +212,7 @@ public class AddThingPresenterImpl implements AddThingPresenter {
             mThing.setTimestamp(mTimestamp);
             String category = mCategories.get(mCategoryPosition);
             mThing.setCategory(category);
-            mThing.setType(mType.toLowerCase());
+            mThing.setType(mTypePosition);
         } else {
             throw new RuntimeException("User is not yet downloaded");
         }

@@ -3,7 +3,8 @@ package com.sanislo.lostandfound.view.search;
 import android.text.TextUtils;
 import android.util.Log;
 
-import java.util.ArrayList;
+import com.sanislo.lostandfound.model.Thing;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -20,16 +21,15 @@ public class QueryManager {
     public static final String TITLE = "title";
     public static final String TITLE_LIKE = "title_like";
     public static final String TYPE = "type";
+    public static final String CATEGORY = "category";
     public static final String ORDER_ASC = "ASC";
     public static final String ORDER_DESC = "DESC";
 
     private FilterQuery mFilterQuery;
     private Set<String> mTitles = new HashSet<>();
     private String title;
-    private String type;
+    private int type;
     private String category;
-    private ArrayList<String> mCities = new ArrayList<>();
-    private boolean newestFirst;
     private String order = ORDER_DESC;
     private String sort = "timestamp";
 
@@ -43,6 +43,9 @@ public class QueryManager {
         if (!isTitleEmpty()) queryOptions.put(TITLE_LIKE, title);
         if (!isAnyType()) {
             queryOptions.put(TYPE, getTypeOption());
+        }
+        if (!isAnyCategory()) {
+            queryOptions.put(CATEGORY, category);
         }
         return queryOptions;
     }
@@ -87,13 +90,13 @@ public class QueryManager {
     }
 
     private String getTypeOption() {
-        return type.toLowerCase();
+        return String.valueOf(type);
     }
 
     public FilterQuery getFilterQuery() {
         if (mFilterQuery == null) {
             mFilterQuery = new FilterQuery(null,
-                    null,
+                    Thing.TYPE_ANY,
                     null,
                     -1,
                     true,
@@ -103,6 +106,11 @@ public class QueryManager {
     }
 
     private boolean isAnyType() {
-        return TextUtils.isEmpty(type);
+        //return TextUtils.isEmpty(type);
+        return type == Thing.TYPE_ANY;
+    }
+
+    private boolean isAnyCategory() {
+        return TextUtils.isEmpty(category);
     }
 }

@@ -240,7 +240,6 @@ public class ThingDetailsActivity extends BaseActivity implements ThingDetailsVi
         setThingPhoto();
         setDescriptionPhotos();
         setContacts();
-        setComments();
         setMap();
     }
 
@@ -349,25 +348,18 @@ public class ThingDetailsActivity extends BaseActivity implements ThingDetailsVi
         CharSequence date = DateUtils.getRelativeTimeSpanString(mThing.getTimestamp(),
                 System.currentTimeMillis(),
                 DateUtils.MINUTE_IN_MILLIS).toString();
-        String type = mThing.getType().substring(0,1).toUpperCase() + mThing.getType().substring(1).toLowerCase();
+        String type = convertType();
         sb.append(type);
         sb.append(" ");
         sb.append(date);
         tvType.setText(sb.toString());
     }
 
-    private void setComments() {
-       /* if (mCommentsAdapter != null) return;
-        Query commentQuery = FirebaseUtils.getDatabase()
-                .getReference()
-                .child(FirebaseConstants.THINGS_COMMENTS)
-                .child(mThing.getKey());
-        mCommentsAdapter = new CommentsAdapter(Comment.class,
-                R.layout.item_comment,
-                CommentViewHolder.class,
-                commentQuery);
-        rvComments.setLayoutManager(new LinearLayoutManager(ThingDetailsActivity.this));
-        rvComments.setAdapter(mCommentsAdapter);*/
+    private String convertType() {
+        String type = (mThing.getType() == Thing.TYPE_LOST) ?
+                getString(R.string.type_lost)
+                : getString(R.string.type_found);
+        return type;
     }
 
     private void setDescriptionPhotos() {

@@ -233,7 +233,7 @@ public class ThingBottomSheet extends BottomSheetDialogFragment {
     }
 
     private void setTypeAndDate() {
-        String type = mThing.getType();
+        String type = convertType();
         String time = DateUtils.formatDateTime(getActivity(),
                 mThing.getTimestamp(),
                 DateUtils.FORMAT_SHOW_DATE);
@@ -243,6 +243,13 @@ public class ThingBottomSheet extends BottomSheetDialogFragment {
         sb.append(" ");
         sb.append(time);
         tvType.setText(sb.toString());
+    }
+
+    private String convertType() {
+        String type = (mThing.getType() == Thing.TYPE_LOST) ?
+                getString(R.string.type_lost)
+                : getString(R.string.type_found);
+        return type;
     }
 
     private void setComments() {

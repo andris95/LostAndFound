@@ -227,7 +227,7 @@ public class MapActivity extends BaseActivity implements ThingsMapFragment.Marke
     }
 
     private void setTypeAndDate() {
-        String type = mThing.getType();
+        String type = convertType();
         String time = DateUtils.formatDateTime(MapActivity.this,
                 mThing.getTimestamp(),
                 DateUtils.FORMAT_SHOW_DATE);
@@ -237,6 +237,13 @@ public class MapActivity extends BaseActivity implements ThingsMapFragment.Marke
         sb.append(" ");
         sb.append(time);
         tvType.setText(sb.toString());
+    }
+
+    private String convertType() {
+        String type = (mThing.getType() == Thing.TYPE_LOST) ?
+                getString(R.string.type_lost)
+                : getString(R.string.type_found);
+        return type;
     }
 
     private void setDescriptionPhotos() {

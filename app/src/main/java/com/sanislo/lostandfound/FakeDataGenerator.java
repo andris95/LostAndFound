@@ -81,7 +81,7 @@ public class FakeDataGenerator {
             thing.setCategory("");
             thing.setTitle("Thing NO_" + i);
             thing.setDescription("Description NO_" + i);
-            thing.setType(i % 2 == 0 ? "lost" : "found");
+            thing.setType(i % 2 == 0 ? 1 : 2);
             thing.setTimestamp(new Date().getTime());
 
             int randomPhotoPosition = ThreadLocalRandom.current().nextInt(0, mTestPhotoURLs.length - 1);
@@ -112,7 +112,7 @@ public class FakeDataGenerator {
             thing.setCategory("");
             thing.setTitle("Thing NO_" + i);
             thing.setDescription("Description NO_" + i);
-            thing.setType(i % 2 == 0 ? "lost" : "found");
+            thing.setType(i % 2 == 0 ? 1 : 2);
             thing.setTimestamp(new Date().getTime());
 
             int randomPhotoPosition = ThreadLocalRandom.current().nextInt(0, mTestPhotoURLs.length - 1);

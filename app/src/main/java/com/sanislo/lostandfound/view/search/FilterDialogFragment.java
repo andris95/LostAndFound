@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.widget.AppCompatSpinner;
 import android.support.v7.widget.SwitchCompat;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -134,6 +135,7 @@ public class FilterDialogFragment extends DialogFragment {
             public void onResponse(Call<List<Category>> call, Response<List<Category>> response) {
                 if (response.isSuccessful()) {
                     parseCategories(response.body());
+                    setLastSelectedCategory();
                 } else {
                     Toast.makeText(getContext(), "ERROR", Toast.LENGTH_SHORT).show();
                 }
@@ -154,15 +156,32 @@ public class FilterDialogFragment extends DialogFragment {
         mCategoriesAdapter.addAll(mCategoriesStringList);
     }
 
+    private void setLastSelectedCategory() {
+        String category = mFilterQuery.getCategory();
+        Log.d(TAG, "setLastSelectedCategory: category: " + category);
+        if (TextUtils.isEmpty(category)) {
+            spCategory.setSelection(0);
+        } else {
+            //
+            int indexOfCategory = mCategoriesStringList.indexOf(category);
+            Log.d(TAG, "setLastSelectedCategory: indexOfCategory: " + indexOfCategory);
+            if (indexOfCategory != -1) {
+                //Add 1, because the first item is "Any category"!!!
+                spCategory.setSelection(indexOfCategory + 1);
+            }
+        }
+    }
+
     @OnClick(R.id.btn_show_results)
     public void filterDone() {
         boolean newestFirst = swNewestFirst.isChecked();
         boolean returnedOnly = swOnlyReturned.isChecked();
-        String type = (spType.getSelectedItemPosition() == 0) ? "" : (String) spType.getSelectedItem();
+        //String type = (spType.getSelectedItemPosition() == 0) ? "" : (String) spType.getSelectedItem();
+
         String category = (spCategory.getSelectedItemPosition() == 0) ? "" : (String) spCategory.getSelectedItem();
 
         FilterQuery filterQuery = new FilterQuery(category,
-                type,
+                getSelectedType(),
                 null,
                 -1,
                 newestFirst,
@@ -172,13 +191,10 @@ public class FilterDialogFragment extends DialogFragment {
         dismiss();
     }
 
-    private String getSelectedType() {
-        int selectedTypePosition = spType.getSelectedItemPosition();
-        if (selectedTypePosition != 0) {
-            return mThingTypeArray[selectedTypePosition];
-        } else {
-            return null;
-        }
+    private int getSelectedType() {
+        int type = spType.getSelectedItemPosition();
+        // return -1 because the first item is "Select type"
+        return type - 1;
     }
 
     private String getSelectedCategoryName() {

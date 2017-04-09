@@ -38,9 +38,9 @@ public class UsersThingsFragment extends Fragment implements UsersThingsView {
 
     public UsersThingsFragment() {};
 
-    public static UsersThingsFragment newInstance(String thingType) {
+    public static UsersThingsFragment newInstance(int thingType) {
         Bundle args = new Bundle();
-        args.putString(EXTRA_THINGS_TYPE, thingType);
+        args.putInt(EXTRA_THINGS_TYPE, thingType);
         UsersThingsFragment fragment = new UsersThingsFragment();
         fragment.setArguments(args);
         return fragment;

@@ -16,7 +16,6 @@ import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.sanislo.lostandfound.R;
 import com.sanislo.lostandfound.model.Thing;
-import com.sanislo.lostandfound.view.ThingViewHolder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -79,7 +78,7 @@ public class ThingAdapter extends RecyclerView.Adapter<ThingAdapter.ViewHolder> 
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
-        public final String TAG = ThingViewHolder.class.getSimpleName();
+        public final String TAG = "ThingViewHolder";
 
         @BindView(R.id.iv_thing_author_avatar)
         ImageView ivAuthorAvatar;
@@ -124,12 +123,19 @@ public class ThingAdapter extends RecyclerView.Adapter<ThingAdapter.ViewHolder> 
         }
 
         private void setTypeAndDate() {
-            String type = mThing.getType();
+            String type = convertType();
             String time = DateUtils.formatDateTime(mRootView.getContext(),
                     mThing.getTimestamp(),
                     DateUtils.FORMAT_SHOW_DATE);
             String postedIn = mContext.getString(R.string.thing_posted_in_at, type, time);
             tvType.setText(postedIn);
+        }
+
+        private String convertType() {
+            String type = (mThing.getType() == Thing.TYPE_LOST) ?
+                    mContext.getString(R.string.type_lost)
+                    : mContext.getString(R.string.type_found);
+            return type;
         }
 
         private void setAuthorPhoto() {

@@ -247,7 +247,7 @@ public class ThingsActivity extends BaseActivity implements ThingsView {
                 .withSelectable(false);
         PrimaryDrawerItem search = new PrimaryDrawerItem()
                 .withName(R.string.drawer_search)
-                .withIcon(R.drawable.magnify)
+                .withIcon(R.drawable.magnify_black)
                 .withSelectable(false);
         PrimaryDrawerItem nearbyThings = new PrimaryDrawerItem()
                 .withName(R.string.drawer_nearby_things)

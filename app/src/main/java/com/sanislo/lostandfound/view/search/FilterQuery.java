@@ -9,13 +9,13 @@ import android.os.Parcelable;
 
 public class FilterQuery implements Parcelable {
     private String category;
-    private String type;
+    private int type;
     private String city;
     private int radius;
     private boolean newestFirst;
     private boolean returnedOnly;
 
-    public FilterQuery(String category, String type, String city, int radius, boolean newestFirst, boolean returnedOnly) {
+    public FilterQuery(String category, int type, String city, int radius, boolean newestFirst, boolean returnedOnly) {
         this.category = category;
         this.type = type;
         this.city = city;
@@ -32,11 +32,11 @@ public class FilterQuery implements Parcelable {
         this.category = category;
     }
 
-    public String getType() {
+    public int getType() {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(int type) {
         this.type = type;
     }
 
@@ -92,7 +92,7 @@ public class FilterQuery implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(category);
-        dest.writeString(type);
+        dest.writeInt(type);
         dest.writeString(city);
         dest.writeInt(radius);
         dest.writeByte((byte) (newestFirst ? 1 : 0));
@@ -113,7 +113,7 @@ public class FilterQuery implements Parcelable {
     // конструктор, считывающий данные из Parcel
     private FilterQuery(Parcel in) {
         category = in.readString();
-        type = in.readString();
+        type = in.readInt();
         city = in.readString();
         radius = in.readInt();
         newestFirst = in.readByte() != 0;
