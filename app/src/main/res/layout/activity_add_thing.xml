@@ -92,6 +92,12 @@
                 android:layout_margin="8dp">
             </android.support.v7.widget.AppCompatSpinner>
 
+            <TextView
+                android:id="@+id/tv_contacts"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/contacts"/>
+
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/rv_contacts"
                 android:layout_width="match_parent"

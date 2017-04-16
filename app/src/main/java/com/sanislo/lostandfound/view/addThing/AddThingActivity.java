@@ -30,6 +30,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigation;
@@ -240,7 +241,7 @@ public class AddThingActivity extends AppCompatActivity implements AddThingView 
         @Override
         public List<View> onBindMany(@NonNull RecyclerView.ViewHolder viewHolder) {
             if (viewHolder instanceof Contact.ViewHolder) {
-                return ClickListenerHelper.toList(((Contact.ViewHolder) viewHolder).getIvRemove());
+                return ClickListenerHelper.toList(((Contact.ViewHolder) viewHolder).getIvRemove() );
             }
             return super.onBindMany(viewHolder);
         }
@@ -302,17 +303,23 @@ public class AddThingActivity extends AppCompatActivity implements AddThingView 
         Drawable location = ContextCompat.getDrawable(AddThingActivity.this, R.drawable.map_marker);
         Drawable image = ContextCompat.getDrawable(AddThingActivity.this, R.drawable.image);
         Drawable multipleImage = ContextCompat.getDrawable(AddThingActivity.this, R.drawable.image_multiple);
+        Drawable contacts = ContextCompat.getDrawable(AddThingActivity.this, R.drawable.contacts);
         AHBottomNavigationItem locationItem = new AHBottomNavigationItem(getString(R.string.location),
                 location);
         AHBottomNavigationItem coverPhotoItem = new AHBottomNavigationItem(getString(R.string.cover),
                 image);
-        AHBottomNavigationItem descriptionPhotosItem = new AHBottomNavigationItem(getString(R.string.description_photos),
+        AHBottomNavigationItem descriptionPhotosItem = new AHBottomNavigationItem(
+                getString(R.string.description_photos),
                 multipleImage);
+        AHBottomNavigationItem contactsItem = new AHBottomNavigationItem(
+                getString(R.string.contact),
+                contacts);
         bottomNavigation.setAccentColor(blackColor);
         bottomNavigation.setInactiveColor(blackColor);
         bottomNavigation.addItem(locationItem);
         bottomNavigation.addItem(coverPhotoItem);
         bottomNavigation.addItem(descriptionPhotosItem);
+        bottomNavigation.addItem(contactsItem);
         bottomNavigation.setColored(false);
         bottomNavigation.setUseElevation(true);
         bottomNavigation.setBehaviorTranslationEnabled(false);
@@ -330,6 +337,8 @@ public class AddThingActivity extends AppCompatActivity implements AddThingView 
                     case 2:
                         onSelectThingDescriptionPhotos();
                         return true;
+                    case 3:
+                        Toast.makeText(getApplicationContext(), "TO be continued", Toast.LENGTH_SHORT).show();
                     default:
                         return false;
                 }

@@ -47,6 +47,8 @@
     <string name="thing_found_location">Found location:</string>
     <string name="publishing_progress">Publishing Your Thing</string>
     <string name="publishing_progress_description">Your thing is getting uploaded. Wait a few seconds...</string>
+    <string name="contacts">Contacts:</string>
+    <string name="contact">Contact</string>
     <string-array name="thing_type">
         <item>@string/select_type</item>
         <item>@string/type_lost</item>
