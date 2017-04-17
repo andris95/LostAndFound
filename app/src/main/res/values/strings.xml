@@ -65,6 +65,10 @@
     <string name="description_photos">Description photos</string>
     <string name="select_type">Select type</string>
     <string name="select_category">Select category</string>
+    <string name="category">Category:</string>
+    <string name="returned">Returned to the owner:</string>
+    <string name="returned_false">Not yet</string>
+    <string name="returned_true">Already returned</string>
     <string name="category_any">Any category</string>
     <string name="type_lost">Lost</string>
     <string name="type_found">Found</string>

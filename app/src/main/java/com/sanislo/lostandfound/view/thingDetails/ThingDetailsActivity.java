@@ -17,7 +17,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.Window;
-import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -37,7 +36,6 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.sanislo.lostandfound.R;
-import com.sanislo.lostandfound.adapter.CommentsAdapter;
 import com.sanislo.lostandfound.adapter.ContactsAdapter;
 import com.sanislo.lostandfound.adapter.DescriptionPhotosAdapter;
 import com.sanislo.lostandfound.model.Location;
@@ -52,7 +50,6 @@ import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 
 /**
  * Created by root on 15.01.17.
@@ -76,6 +73,12 @@ public class ThingDetailsActivity extends BaseActivity implements ThingDetailsVi
     @BindView(R.id.tv_thing_type)
     TextView tvType;
 
+    @BindView(R.id.tv_returned)
+    TextView tvReturned;
+
+    @BindView(R.id.tv_category)
+    TextView tvCategory;
+
     @BindView(R.id.tv_thing_description)
     TextView tvDescription;
 
@@ -91,9 +94,6 @@ public class ThingDetailsActivity extends BaseActivity implements ThingDetailsVi
     @BindView(R.id.rv_things_comments)
     RecyclerView rvComments;
 
-    @BindView(R.id.edt_thing_comment)
-    EditText edtComment;
-
     @BindView(R.id.fl_map_container)
     FrameLayout flMapContainer;
 
@@ -106,7 +106,6 @@ public class ThingDetailsActivity extends BaseActivity implements ThingDetailsVi
     private MapFragment mMapFragment;
 
     private DescriptionPhotosAdapter mDescriptionPhotosAdapter;
-    private CommentsAdapter mCommentsAdapter;
     private ThingDetailsPresenter mThingDetailsPresenter;
     private Bundle mTmpReenterState;
 
@@ -234,6 +233,8 @@ public class ThingDetailsActivity extends BaseActivity implements ThingDetailsVi
 
     private void displayThing() {
         setTitle();
+        setCategory();
+        setReturned();
         setDescription();
         setTypeAndDate();
         setAuthorPhoto();
@@ -340,6 +341,16 @@ public class ThingDetailsActivity extends BaseActivity implements ThingDetailsVi
         tvTitle.setText(mThing.getTitle());
     }
 
+    private void setCategory() {
+        tvCategory.setText(mThing.getCategory());
+    }
+
+    private void setReturned() {
+        tvReturned.setText(mThing.isReturned() ?
+                R.string.returned_true
+                : R.string.returned_false);
+    }
+
     private void setDescription() {
         tvDescription.setText(mThing.getDescription());
     }
@@ -400,11 +411,6 @@ public class ThingDetailsActivity extends BaseActivity implements ThingDetailsVi
                         view,
                         view.getTransitionName());
         startActivity(intent, options.toBundle());
-    }
-
-    @OnClick(R.id.btn_send_comment)
-    public void onClickAddComment() {
-        mThingDetailsPresenter.addComment(mThing, edtComment.getText().toString());
     }
 
     /**

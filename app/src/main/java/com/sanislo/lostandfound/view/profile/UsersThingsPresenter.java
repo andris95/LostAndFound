@@ -5,5 +5,5 @@ package com.sanislo.lostandfound.view.profile;
  */
 
 public interface UsersThingsPresenter {
-    void getUsersThings(String uid, String type);
+    void getUsersThings(String uid, int type);
 }

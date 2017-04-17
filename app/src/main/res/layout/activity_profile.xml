@@ -43,7 +43,7 @@
             <ImageView
                 android:id="@+id/iv_avatar"
                 android:layout_width="match_parent"
-                android:layout_height="196dp"
+                android:layout_height="224dp"
                 android:scaleType="centerCrop"
                 android:fitsSystemWindows="true"
                 app:layout_collapseMode="parallax"/>

@@ -66,5 +66,5 @@ public interface ApiInterface {
     Call<List<User>> getUserByUIDList(@Query("uid") String uid);
 
     @GET(ApiConstants.THINGS)
-    Call<List<Thing>> getUsersThingsByType(@Query("uid") String uid, @Query("type") String type);
+    Call<List<Thing>> getUsersThingsByType(@Query("uid") String uid, @Query("type") int type);
 }

@@ -24,5 +24,5 @@ public interface ApiModel {
     Call<User> getUser(int id);
     Call<User> getUserByUID(String uid);
     Call<List<User>> getUserListByUID(String uid);
-    Call<List<Thing>> getUsersThingsByType(String uid, String type);
+    Call<List<Thing>> getUsersThingsByType(String uid, int type);
 }

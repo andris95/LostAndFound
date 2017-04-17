@@ -72,6 +72,10 @@ public class Thing implements Parcelable {
 	@Expose
 	private List<String> userContantcs;
 
+	@SerializedName("returned")
+	@Expose
+	private boolean returned;
+
 	public Thing() {
 
 	}
@@ -188,6 +192,14 @@ public class Thing implements Parcelable {
 		this.userContantcs = userContantcs;
 	}
 
+	public boolean isReturned() {
+		return returned;
+	}
+
+	public void setReturned(boolean returned) {
+		this.returned = returned;
+	}
+
 	@Override
 	public String toString() {
 		return "Thing{" +
@@ -229,6 +241,7 @@ public class Thing implements Parcelable {
 		dest.writeString(userUID);
 		dest.writeLong(timestamp);
 		dest.writeList(userContantcs);
+		dest.writeByte((byte) (returned ? 1 : 0));
 	}
 
 	public static final Parcelable.Creator<Thing> CREATOR = new Parcelable.Creator<Thing>() {
@@ -258,5 +271,6 @@ public class Thing implements Parcelable {
 		userUID = parcel.readString();
 		timestamp = parcel.readLong();
 		userContantcs = parcel.readArrayList(null);
+		returned = parcel.readByte() != 0;
 	}
 }

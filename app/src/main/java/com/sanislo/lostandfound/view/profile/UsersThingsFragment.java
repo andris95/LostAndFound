@@ -33,7 +33,7 @@ public class UsersThingsFragment extends Fragment implements UsersThingsView {
     @BindView(R.id.rv_things)
     RecyclerView rvThings;
 
-    private String mType;
+    private int mType;
     private ThingAdapter mThingAdapter;
 
     public UsersThingsFragment() {};
@@ -49,7 +49,7 @@ public class UsersThingsFragment extends Fragment implements UsersThingsView {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mType = getArguments().getString(EXTRA_THINGS_TYPE);
+        mType = getArguments().getInt(EXTRA_THINGS_TYPE);
     }
 
     @Nullable
@@ -64,7 +64,6 @@ public class UsersThingsFragment extends Fragment implements UsersThingsView {
         ButterKnife.bind(this, view);
         setupThingList();
         mUsersThingsPresenter = new UsersThingsPresenterImpl(this);
-        //TODO UPDATE USERS UID ON LOGIN!!!!!
         mUsersThingsPresenter.getUsersThings(PreferencesManager.getUserUID(getActivity()),
                 mType);
     }
@@ -83,7 +82,7 @@ public class UsersThingsFragment extends Fragment implements UsersThingsView {
     }
 
     public String getTitleForTab() {
-        if (mType.equals(Thing.TYPE_FOUND)) {
+        if (mType == Thing.TYPE_FOUND) {
             return getString(R.string.type_found);
         } else {
             return getString(R.string.type_lost);

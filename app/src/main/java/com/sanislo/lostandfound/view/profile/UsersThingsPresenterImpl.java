@@ -26,7 +26,7 @@ public class UsersThingsPresenterImpl implements UsersThingsPresenter {
     }
 
     @Override
-    public void getUsersThings(String uid, String type) {
+    public void getUsersThings(String uid, int type) {
         Call<List<Thing>> call = mApiModel.getUsersThingsByType(uid, type);
         call.enqueue(new Callback<List<Thing>>() {
             @Override

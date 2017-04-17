@@ -67,7 +67,7 @@ public class ApiModelImpl implements ApiModel {
     }
 
     @Override
-    public Call<List<Thing>> getUsersThingsByType(String uid, String type) {
+    public Call<List<Thing>> getUsersThingsByType(String uid, int type) {
         return mApiInterface.getUsersThingsByType(uid, type);
     }
 }

@@ -71,10 +71,50 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/iv_thing_photo">
 
+            <LinearLayout
+                android:id="@+id/ll_category"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/category"/>
+
+                <TextView
+                    android:id="@+id/tv_category"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="end"
+                    tools:text="Electronics"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/ll_returned"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:layout_below="@+id/ll_category">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/returned"/>
+
+                <TextView
+                    android:id="@+id/tv_returned"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="end"
+                    tools:text="Not yet"/>
+            </LinearLayout>
+
             <TextView
                 android:id="@+id/tv_thing_description"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_below="@+id/ll_returned"
                 android:layout_margin="8dp"
                 android:text="@string/lost_donkey"/>
 
@@ -100,28 +140,12 @@
                 android:layout_below="@+id/fl_map_container">
             </android.support.v7.widget.RecyclerView>
 
-
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/rv_things_comments"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/rv_contacts">
             </android.support.v7.widget.RecyclerView>
-
-            <EditText
-                android:id="@+id/edt_thing_comment"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:imeOptions="actionSend"
-                android:layout_below="@+id/rv_things_comments"
-                android:hint="@string/add_a_comment"/>
-
-            <Button
-                android:id="@+id/btn_send_comment"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/edt_thing_comment"
-                android:text="send"/>
         </RelativeLayout>
     </RelativeLayout>
 </ScrollView>
