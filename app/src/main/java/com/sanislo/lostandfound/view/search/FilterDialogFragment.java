@@ -47,15 +47,19 @@ public class FilterDialogFragment extends DialogFragment {
     @BindView(R.id.sw_newest_first)
     SwitchCompat swNewestFirst;
 
-    @BindView(R.id.sw_returned)
-    SwitchCompat swOnlyReturned;
+    @BindView(R.id.sp_return_status)
+    AppCompatSpinner spReturnStatus;
 
     private FilterListener mFilterListener;
     private FilterQuery mFilterQuery;
     private ArrayAdapter<String> mTypeAdapter;
+
     private String[] mThingTypeArray;
     private List<String> mCategoriesStringList;
     private ArrayAdapter<String> mCategoriesAdapter;
+
+    private ArrayAdapter<String> mReturnStatusAdapter;
+    private String[] mReturnStatusArray;
 
     public FilterDialogFragment() {
     }
@@ -98,8 +102,8 @@ public class FilterDialogFragment extends DialogFragment {
         initCategories();
         loadCategories();
         initTypeSpinner();
+        initReturnStatusSpinner();
         swNewestFirst.setChecked(mFilterQuery.isNewestFirst());
-        swOnlyReturned.setChecked(mFilterQuery.isReturnedOnly());
     }
 
     @Override
@@ -124,6 +128,16 @@ public class FilterDialogFragment extends DialogFragment {
                 mThingTypeArray);
         mTypeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spType.setAdapter(mTypeAdapter);
+        //spType.setOnItemSelectedListener(mTypeSelectedListener);
+    }
+
+    private void initReturnStatusSpinner() {
+        mReturnStatusArray = getResources().getStringArray(R.array.thing_return_status_filter);
+        mReturnStatusAdapter = new ArrayAdapter<String>(getActivity(),
+                android.R.layout.simple_spinner_item,
+                mReturnStatusArray);
+        mReturnStatusAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spReturnStatus.setAdapter(mReturnStatusAdapter);
         //spType.setOnItemSelectedListener(mTypeSelectedListener);
     }
 
@@ -175,9 +189,7 @@ public class FilterDialogFragment extends DialogFragment {
     @OnClick(R.id.btn_show_results)
     public void filterDone() {
         boolean newestFirst = swNewestFirst.isChecked();
-        boolean returnedOnly = swOnlyReturned.isChecked();
-        //String type = (spType.getSelectedItemPosition() == 0) ? "" : (String) spType.getSelectedItem();
-
+        int returnStatus = spReturnStatus.getSelectedItemPosition();
         String category = (spCategory.getSelectedItemPosition() == 0) ? "" : (String) spCategory.getSelectedItem();
 
         FilterQuery filterQuery = new FilterQuery(category,
@@ -185,7 +197,7 @@ public class FilterDialogFragment extends DialogFragment {
                 null,
                 -1,
                 newestFirst,
-                returnedOnly);
+                returnStatus);
         mFilterListener.onFilterDone(filterQuery);
         Log.d(TAG, "filterDone: filterQuery: " + filterQuery);
         dismiss();
@@ -194,7 +206,7 @@ public class FilterDialogFragment extends DialogFragment {
     private int getSelectedType() {
         int type = spType.getSelectedItemPosition();
         // return -1 because the first item is "Select type"
-        return type - 1;
+        return type;
     }
 
     public interface FilterListener {

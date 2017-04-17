@@ -5,13 +5,24 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:text="@string/type"/>
+
     <android.support.v7.widget.AppCompatSpinner
         android:id="@+id/sp_type"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        android:padding="8dp">
+        android:layout_margin="8dp">
     </android.support.v7.widget.AppCompatSpinner>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:text="@string/category"/>
 
     <android.support.v7.widget.AppCompatSpinner
         android:id="@+id/sp_category"
@@ -20,15 +31,24 @@
         android:layout_margin="8dp">
     </android.support.v7.widget.AppCompatSpinner>
 
-    <android.support.v7.widget.SwitchCompat
-        android:id="@+id/sw_returned"
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:text="@string/returned"/>
+
+    <android.support.v7.widget.AppCompatSpinner
+        android:id="@+id/sp_return_status"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:text="@string/returned_to_the_owner"/>
+        android:layout_margin="8dp">
+    </android.support.v7.widget.AppCompatSpinner>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:text="@string/order"/>
 
     <android.support.v7.widget.SwitchCompat
         android:id="@+id/sw_newest_first"

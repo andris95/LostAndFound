@@ -13,15 +13,17 @@ public class FilterQuery implements Parcelable {
     private String city;
     private int radius;
     private boolean newestFirst;
-    private boolean returnedOnly;
+    private int returnStatus;
 
-    public FilterQuery(String category, int type, String city, int radius, boolean newestFirst, boolean returnedOnly) {
+    public FilterQuery(String category, int type, String city, int radius,
+                       boolean newestFirst,
+                       int returnStatus) {
         this.category = category;
         this.type = type;
         this.city = city;
         this.radius = radius;
         this.newestFirst = newestFirst;
-        this.returnedOnly = returnedOnly;
+        this.returnStatus = returnStatus;
     }
 
     public String getCategory() {
@@ -64,12 +66,12 @@ public class FilterQuery implements Parcelable {
         this.newestFirst = newestFirst;
     }
 
-    public boolean isReturnedOnly() {
-        return returnedOnly;
+    public int getReturnStatus() {
+        return returnStatus;
     }
 
-    public void setReturnedOnly(boolean returnedOnly) {
-        this.returnedOnly = returnedOnly;
+    public void setReturnStatus(int returnStatus) {
+        this.returnStatus = returnStatus;
     }
 
     @Override
@@ -80,7 +82,7 @@ public class FilterQuery implements Parcelable {
                 ", city='" + city + '\'' +
                 ", radius=" + radius +
                 ", newestFirst=" + newestFirst +
-                ", returnedOnly=" + returnedOnly +
+                ", returnedOnly=" + returnStatus +
                 '}';
     }
 
@@ -96,7 +98,8 @@ public class FilterQuery implements Parcelable {
         dest.writeString(city);
         dest.writeInt(radius);
         dest.writeByte((byte) (newestFirst ? 1 : 0));
-        dest.writeByte((byte) (returnedOnly ? 1 : 0));
+        //dest.writeByte((byte) (returnedOnly ? 1 : 0));
+        dest.writeInt(returnStatus);
     }
 
     public static final Parcelable.Creator<FilterQuery> CREATOR = new Parcelable.Creator<FilterQuery>() {
@@ -117,6 +120,6 @@ public class FilterQuery implements Parcelable {
         city = in.readString();
         radius = in.readInt();
         newestFirst = in.readByte() != 0;
-        returnedOnly = in.readByte() != 0;
+        returnStatus = in.readInt();
     }
 }

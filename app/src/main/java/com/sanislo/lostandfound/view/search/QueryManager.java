@@ -24,6 +24,7 @@ public class QueryManager {
     public static final String CATEGORY = "category";
     public static final String ORDER_ASC = "ASC";
     public static final String ORDER_DESC = "DESC";
+    public static final String RETURNED = "returned";
 
     private FilterQuery mFilterQuery;
     private Set<String> mTitles = new HashSet<>();
@@ -32,6 +33,11 @@ public class QueryManager {
     private String category;
     private String order = ORDER_DESC;
     private String sort = "timestamp";
+
+    public static final int STATUS_ANY = 0;
+    public static final int STATUS_RETURNED_TRUE = 1;
+    public static final int STATUS_RETURNED_FALSE = 2;
+    private int returnStatus = STATUS_ANY;
 
     public QueryManager() {
     }
@@ -46,6 +52,10 @@ public class QueryManager {
         }
         if (!isAnyCategory()) {
             queryOptions.put(CATEGORY, category);
+        }
+        if (isAnyStatus()) {
+            boolean onlyReturned = (returnStatus == STATUS_RETURNED_TRUE);
+            queryOptions.put(RETURNED, String.valueOf(onlyReturned));
         }
         return queryOptions;
     }
@@ -67,6 +77,7 @@ public class QueryManager {
         type = filterQuery.getType();
         category = filterQuery.getCategory();
         order = filterQuery.isNewestFirst() ? ORDER_DESC : ORDER_ASC;
+        returnStatus = filterQuery.getReturnStatus();
     }
 
     private String getTitleOptions() {
@@ -100,7 +111,7 @@ public class QueryManager {
                     null,
                     -1,
                     true,
-                    false);
+                    STATUS_ANY);
         }
         return mFilterQuery;
     }
@@ -112,5 +123,9 @@ public class QueryManager {
 
     private boolean isAnyCategory() {
         return TextUtils.isEmpty(category);
+    }
+
+    private boolean isAnyStatus() {
+        return returnStatus != STATUS_ANY;
     }
 }

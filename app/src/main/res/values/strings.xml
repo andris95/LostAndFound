@@ -55,7 +55,6 @@
         <item>@string/type_found</item>
     </string-array>
     <string-array name="thing_type_filter">
-        <item>@string/select_type</item>
         <item>@string/type_any</item>
         <item>@string/type_lost</item>
         <item>@string/type_found</item>
@@ -87,6 +86,14 @@
     <string name="oldest_first">Oldest first</string>
     <string name="returned_to_the_owner">Show only returned to the owner</string>
     <string name="show_results">Show results</string>
+    <string name="type">Type:</string>
+    <string name="any">Any</string>
+    <string-array name="thing_return_status_filter">
+        <item>@string/any</item>
+        <item>@string/returned_true</item>
+        <item>@string/returned_false</item>
+    </string-array>
+    <string name="order">Order:</string>
 
     <!-- Error messages -->
     <string name="error_empty_title">Please provide title for your thing!</string>
