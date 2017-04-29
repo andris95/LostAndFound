@@ -9,6 +9,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -27,7 +28,6 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -60,7 +60,6 @@ import com.sanislo.lostandfound.R;
 import com.sanislo.lostandfound.interfaces.AddThingView;
 import com.sanislo.lostandfound.model.DescriptionPhotoItem;
 import com.sanislo.lostandfound.presenter.AddThingPresenter;
-import com.sanislo.lostandfound.presenter.AddThingPresenterImpl;
 
 import java.util.Collections;
 import java.util.List;
@@ -73,7 +72,7 @@ import butterknife.OnClick;
  * Created by root on 24.12.16.
  */
 
-public class AddThingActivity extends AppCompatActivity implements AddThingView {
+public class AddThingEditableActivity extends AppCompatActivity implements AddThingView {
     public final String TAG = AddThingActivity.class.getSimpleName();
     private final int PICK_THING_COVER_PHOTO = 111;
     private final int PICK_THING_DESCRIPTION_PHOTOS = 222;
@@ -82,12 +81,8 @@ public class AddThingActivity extends AppCompatActivity implements AddThingView 
     private final int RP_READ_EXTERNAL_FOR_DESCRIPTION_PHOTOS = 444;
     private final int RP_FINE_LOCATION = 555;
 
-    /*@BindView(R.id.root_add_thing)
-    CoordinatorLayout mRoot;
-*/
-
     @BindView(R.id.root_add_thing)
-    RelativeLayout mRoot;
+    CoordinatorLayout mRoot;
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
@@ -119,12 +114,10 @@ public class AddThingActivity extends AppCompatActivity implements AddThingView 
     @BindView(R.id.iv_remove)
     ImageView ivRemoveCoverPhoto;
 
-    @Nullable
     @BindView(R.id.bottom_navigation)
     AHBottomNavigation bottomNavigation;
 
     @BindView(R.id.fl_map_container)
-
     FrameLayout flMapContainer;
 
     private GoogleMap mGoogleMap;
@@ -166,16 +159,16 @@ public class AddThingActivity extends AppCompatActivity implements AddThingView 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add_thing_custom_bottom_bar);
+        setContentView(R.layout.activity_add_thing);
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle(R.string.new_thing);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        mPresenter = new AddThingPresenterImpl(this);
+        //mPresenter = new AddThingPresenterImpl(this);
         initCategories();
         initTypeSpinner();
         initDescriptionPhotosAdapter();
-        //initBottomNavigation();
+        initBottomNavigation();
         displayCoverPlaceholder();
         initMapView();
     }
@@ -200,7 +193,7 @@ public class AddThingActivity extends AppCompatActivity implements AddThingView 
     }
 
     private void initCategories() {
-        mCategoriesAdapter = new ArrayAdapter<String>(AddThingActivity.this, android.R.layout.simple_spinner_item);
+        mCategoriesAdapter = new ArrayAdapter<String>(AddThingEditableActivity.this, android.R.layout.simple_spinner_item);
         mCategoriesAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spCategory.setAdapter(mCategoriesAdapter);
         spCategory.setOnItemSelectedListener(mCategorySelectedListener);
@@ -208,7 +201,7 @@ public class AddThingActivity extends AppCompatActivity implements AddThingView 
 
     private void initTypeSpinner() {
         mTypeArray = getResources().getStringArray(R.array.thing_type);
-        mTypeAdapter = new ArrayAdapter<String>(AddThingActivity.this,
+        mTypeAdapter = new ArrayAdapter<String>(AddThingEditableActivity.this,
                 android.R.layout.simple_spinner_item,
                 mTypeArray);
         mTypeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -246,7 +239,7 @@ public class AddThingActivity extends AppCompatActivity implements AddThingView 
         mDescriptionPhotosAdapter = new FastItemAdapter();
         mDescriptionPhotosAdapter.withItemEvent(mRemovePhotoClick);
         attachDragCallback();
-        LinearLayoutManager layoutManager = new LinearLayoutManager(AddThingActivity.this,
+        LinearLayoutManager layoutManager = new LinearLayoutManager(AddThingEditableActivity.this,
                 LinearLayoutManager.HORIZONTAL,
                 false);
         rvDescriptionPhotos.setLayoutManager(layoutManager);
@@ -267,11 +260,11 @@ public class AddThingActivity extends AppCompatActivity implements AddThingView 
     }
 
     private void initBottomNavigation() {
-        int blackColor = ContextCompat.getColor(AddThingActivity.this, R.color.md_black_1000);
-        Drawable location = ContextCompat.getDrawable(AddThingActivity.this, R.drawable.map_marker);
-        Drawable image = ContextCompat.getDrawable(AddThingActivity.this, R.drawable.image);
-        Drawable multipleImage = ContextCompat.getDrawable(AddThingActivity.this, R.drawable.image_multiple);
-        Drawable contacts = ContextCompat.getDrawable(AddThingActivity.this, R.drawable.contacts);
+        int blackColor = ContextCompat.getColor(AddThingEditableActivity.this, R.color.md_black_1000);
+        Drawable location = ContextCompat.getDrawable(AddThingEditableActivity.this, R.drawable.map_marker);
+        Drawable image = ContextCompat.getDrawable(AddThingEditableActivity.this, R.drawable.image);
+        Drawable multipleImage = ContextCompat.getDrawable(AddThingEditableActivity.this, R.drawable.image_multiple);
+        Drawable contacts = ContextCompat.getDrawable(AddThingEditableActivity.this, R.drawable.contacts);
         AHBottomNavigationItem locationItem = new AHBottomNavigationItem(getString(R.string.location),
                 location);
         AHBottomNavigationItem coverPhotoItem = new AHBottomNavigationItem(getString(R.string.cover),

@@ -1,5 +1,9 @@
 package com.sanislo.lostandfound.adapter;
 
+/**
+ * Created by root on 17.04.17.
+ */
+
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -28,14 +32,14 @@ import butterknife.OnClick;
  * Created by root on 25.12.16.
  */
 
-public class ThingAdapter extends RecyclerView.Adapter<ThingAdapter.ViewHolder> {
+public class ThingEditableAdapter extends RecyclerView.Adapter<ThingEditableAdapter.ViewHolder> {
     private String TAG = ThingAdapter.class.getSimpleName();
     private Context mContext;
     private OnClickListener mOnClickListener;
     private List<Thing> mThingList = new ArrayList<>();
     private LayoutInflater mLayoutInflater;
 
-    public ThingAdapter(Context context, OnClickListener onClickListener, List<Thing> thingList) {
+    public ThingEditableAdapter(Context context, OnClickListener onClickListener, List<Thing> thingList) {
         mContext = context;
         mOnClickListener = onClickListener;
         mThingList = thingList;
@@ -48,12 +52,6 @@ public class ThingAdapter extends RecyclerView.Adapter<ThingAdapter.ViewHolder> 
 
     public void setThingList(List<Thing> thingList) {
         mThingList = thingList;
-    }
-
-    public void clear() {
-        if (mThingList != null) {
-            mThingList.clear();
-        }
     }
 
     @Override
@@ -76,6 +74,7 @@ public class ThingAdapter extends RecyclerView.Adapter<ThingAdapter.ViewHolder> 
 
     public interface OnClickListener {
         void onClickRootView(View view, Thing thing);
+        void onClickEdit(Thing thing);
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
@@ -182,5 +181,13 @@ public class ThingAdapter extends RecyclerView.Adapter<ThingAdapter.ViewHolder> 
             if (mOnClickListener == null) return;
             mOnClickListener.onClickRootView(mRootView, mThingList.get(getAdapterPosition()));
         }
+
+        @OnClick(R.id.iv_edit)
+        public void onClickEdit() {
+            if (mOnClickListener != null) {
+                mOnClickListener.onClickEdit(mThing);
+            }
+        }
     }
 }
+

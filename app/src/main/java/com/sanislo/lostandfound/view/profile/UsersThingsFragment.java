@@ -74,6 +74,13 @@ public class UsersThingsFragment extends Fragment implements UsersThingsView {
         rvThings.setAdapter(mThingAdapter);
     }
 
+    private ThingAdapter.OnClickListener mOnClickListener = new ThingAdapter.OnClickListener() {
+        @Override
+        public void onClickRootView(View view, Thing thing) {
+
+        }
+    };
+
     @Override
     public void onThingsLoaded(List<Thing> thingList) {
         Log.d(TAG, "onThingsLoaded: thingList: " + thingList);

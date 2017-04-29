@@ -9,10 +9,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
-import android.util.Log;
 import android.view.View;
-import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -21,17 +18,8 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
-import com.google.android.gms.maps.CameraUpdate;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.GoogleMapOptions;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.sanislo.lostandfound.R;
 import com.sanislo.lostandfound.adapter.DescriptionPhotosAdapter;
-import com.sanislo.lostandfound.model.Location;
 import com.sanislo.lostandfound.model.Thing;
 import com.sanislo.lostandfound.view.BaseActivity;
 import com.sanislo.lostandfound.view.thingDetails.DescriptionPhotosActivity;
@@ -74,23 +62,12 @@ public class MapActivity extends BaseActivity implements ThingsMapFragment.Marke
     @BindView(R.id.rv_things_photos)
     RecyclerView rvDescriptionPhotos;
 
-    @BindView(R.id.rv_things_comments)
-    RecyclerView rvComments;
-
-    @BindView(R.id.edt_thing_comment)
-    EditText edtComment;
-
-    @BindView(R.id.fl_map_container)
-    FrameLayout flMapContainer;
-
     public static final String EXTRA_START_POSITION = "EXTRA_START_POSITION";
     public static final String EXTRA_UPDATED_POSITION = "EXTRA_UPDATED_POSITION";
     public static final String EXTRA_THING = "EXTRA_THING";
 
     private Thing mThing;
     private DescriptionPhotosAdapter mDescriptionPhotosAdapter;
-    private SupportMapFragment mThingMiniMapFragment;
-    private GoogleMap mThingMiniGoogleMap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -113,6 +90,8 @@ public class MapActivity extends BaseActivity implements ThingsMapFragment.Marke
             if(googleAPI.isUserResolvableError(result)) {
                 googleAPI.getErrorDialog(this, result,
                         PLAY_SERVICES_RESOLUTION_REQUEST).show();
+            } else {
+                googleAPI.makeGooglePlayServicesAvailable(MapActivity.this);
             }
             return false;
         }
@@ -141,65 +120,6 @@ public class MapActivity extends BaseActivity implements ThingsMapFragment.Marke
         setAuthorPhoto();
         setThingPhoto();
         setDescriptionPhotos();
-        //setThingMiniMap();
-    }
-
-    /** check if thing has location */
-    private boolean hasLocation() {
-        return mThing.getLocation() != null;
-    }
-
-    private void setThingMiniMap() {
-        if (hasLocation()) {
-            initMapView();
-        } else {
-            hideMapView();
-        }
-    }
-
-    private void initMapView() {
-        if (mThingMiniMapFragment == null) {
-            GoogleMapOptions googleMapOptions = new GoogleMapOptions();
-            googleMapOptions.liteMode(true);
-            mThingMiniMapFragment = SupportMapFragment.newInstance(googleMapOptions);
-            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-            ft.replace(R.id.fl_map_container, mThingMiniMapFragment);
-            ft.commit();
-            mThingMiniMapFragment.getMapAsync(mOnMapReadyCallback);
-        } else {
-            displayThingMarker();
-        }
-    }
-
-    private void hideMapView() {
-        flMapContainer.setVisibility(View.GONE);
-        if (mThingMiniGoogleMap == null) return;
-        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ft.hide(mThingMiniMapFragment);
-        ft.commit();
-    }
-
-    private OnMapReadyCallback mOnMapReadyCallback = new OnMapReadyCallback() {
-        @Override
-        public void onMapReady(GoogleMap googleMap) {
-            Log.d(TAG, "onMapReady: " + (googleMap == null));
-            if (mThingMiniGoogleMap == null) {
-                mThingMiniGoogleMap = googleMap;
-            }
-            displayThingMarker();
-        }
-    };
-
-    private void displayThingMarker() {
-        mThingMiniGoogleMap.clear();
-        MarkerOptions markerOptions = new MarkerOptions();
-        Location location = mThing.getLocation();
-        LatLng latLng = new LatLng(location.getLat(),
-                location.getLng());
-        markerOptions.position(latLng);
-        mThingMiniGoogleMap.addMarker(markerOptions);
-        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 10f);
-        mThingMiniGoogleMap.moveCamera(cameraUpdate);
     }
 
     private void setAuthorPhoto() {
@@ -227,15 +147,14 @@ public class MapActivity extends BaseActivity implements ThingsMapFragment.Marke
     }
 
     private void setTypeAndDate() {
-        String type = convertType();
-        String time = DateUtils.formatDateTime(MapActivity.this,
-                mThing.getTimestamp(),
-                DateUtils.FORMAT_SHOW_DATE);
         StringBuilder sb = new StringBuilder();
-        sb.append("Posted in ");
+        CharSequence date = DateUtils.getRelativeTimeSpanString(mThing.getTimestamp(),
+                System.currentTimeMillis(),
+                DateUtils.MINUTE_IN_MILLIS).toString();
+        String type = convertType();
         sb.append(type);
         sb.append(" ");
-        sb.append(time);
+        sb.append(date);
         tvType.setText(sb.toString());
     }
 

@@ -53,6 +53,9 @@ public interface ApiInterface {
     @PUT("users/{id}/edit")
     Call<Void> updateUserAvatar(@Path("id") int userId, @Body UserAvatarUpdateRequest userAvatarUpdateRequest);
 
+    @PUT("things/{id}")
+    Call<Void> updateThing(@Path("id") int thingId, @Body Thing thing);
+
     @PUT("users/{id}")
     Call<Void> updateUser(@Path("id") int userId, @Body User user);
 

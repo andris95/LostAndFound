@@ -138,11 +138,9 @@ public class AddThingPresenterImpl implements AddThingPresenter {
     }
 
     private int mTypePosition = 0;
-    private String[] mTypes;
     @Override
     public void onTypeChanged(String[] types, int position) {
         mTypePosition = position;
-        mTypes = types;
     }
 
     @Override

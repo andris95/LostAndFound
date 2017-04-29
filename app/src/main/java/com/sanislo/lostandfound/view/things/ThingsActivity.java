@@ -70,12 +70,6 @@ public class ThingsActivity extends BaseActivity implements ThingsView {
     private int mClickedDrawerItemPos = -100;
 
     private ThingAdapter.OnClickListener mThingClickListener = new ThingAdapter.OnClickListener() {
-
-        @Override
-        public void onClickRootView(View view, String thingKey) {
-
-        }
-
         @Override
         public void onClickRootView(View view, Thing thing) {
             Intent intent = new Intent(ThingsActivity.this, ThingDetailsActivity.class);
@@ -195,7 +189,7 @@ public class ThingsActivity extends BaseActivity implements ThingsView {
                         break;
                     case 4:
                         FakeDataGenerator fakeDataGenerator = new FakeDataGenerator(ThingsActivity.this, mUser);
-                        fakeDataGenerator.postCloseFakeThings();
+                        fakeDataGenerator.postCloseFakeThings(ThingsActivity.this);
                         break;
                     case -1:
                         mFirebaseAuth.signOut();

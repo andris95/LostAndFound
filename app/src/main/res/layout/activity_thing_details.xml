@@ -134,13 +134,6 @@
             </FrameLayout>
 
             <android.support.v7.widget.RecyclerView
-                android:id="@+id/rv_contacts"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/fl_map_container">
-            </android.support.v7.widget.RecyclerView>
-
-            <android.support.v7.widget.RecyclerView
                 android:id="@+id/rv_things_comments"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

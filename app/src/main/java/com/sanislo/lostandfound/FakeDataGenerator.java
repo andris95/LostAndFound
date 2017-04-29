@@ -48,8 +48,8 @@ public class FakeDataGenerator {
         postThing(mFakeThingList.get(mCurrentUploadingThing));
     }
 
-    public void postCloseFakeThings() {
-        mFakeThingList = generateCloseThings();
+    public void postCloseFakeThings(Context context) {
+        mFakeThingList = generateCloseThings(context);
         postThing(mFakeThingList.get(mCurrentUploadingThing));
     }
 
@@ -105,13 +105,13 @@ public class FakeDataGenerator {
         return thingList;
     }
 
-    private List<Thing> generateCloseThings() {
+    private List<Thing> generateCloseThings(Context context) {
         List<Thing> thingList = new ArrayList<>();
         for (int i = 0; i < 100; i++) {
             Thing thing = new Thing();
             thing.setCategory("");
             thing.setTitle("Thing NO_" + i);
-            thing.setDescription("Description NO_" + i);
+            thing.setDescription(context.getString(R.string.lorem_ipsum));
             thing.setType(i % 2 == 0 ? 1 : 2);
             thing.setTimestamp(new Date().getTime());
 
@@ -130,13 +130,6 @@ public class FakeDataGenerator {
             thing.setLocation(location);
 
             thing.setDescriptionPhotos(Arrays.asList(mTestPhotoURLs));
-
-            List<String> contact = new ArrayList<>();
-            contact.add("szaniszlo.andris95@gmail.com");
-            contact.add("+380935376339");
-            contact.add("sanisloandras@gmail.com");
-            thing.setUserContantcs(contact);
-
             thingList.add(thing);
         }
         return thingList;

@@ -19,10 +19,8 @@ import com.google.maps.android.clustering.ClusterManager;
 import com.google.maps.android.clustering.view.DefaultClusterRenderer;
 import com.sanislo.lostandfound.model.Thing;
 
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by root on 02.04.17.
@@ -35,7 +33,6 @@ public class ThingsMapFragment extends SupportMapFragment implements MapView,
 
     private GoogleMap mGoogleMap;
     private LatLngBounds.Builder mBoundsBuilder;
-    private Map<String, Thing> mMarkers = new HashMap<>();
     private ClusterManager<AbstractMarker> mClusterManager;
     private MapPresenter mMapPresenter;
     private MarkerClickListener mMarkerClickListener;

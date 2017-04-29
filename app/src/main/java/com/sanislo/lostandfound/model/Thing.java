@@ -68,10 +68,6 @@ public class Thing implements Parcelable {
 	@Expose
 	private String userUID;
 
-	@SerializedName("userContacts")
-	@Expose
-	private List<String> userContantcs;
-
 	@SerializedName("returned")
 	@Expose
 	private boolean returned;
@@ -184,14 +180,6 @@ public class Thing implements Parcelable {
 		this.type = type;
 	}
 
-	public List<String> getUserContantcs() {
-		return userContantcs;
-	}
-
-	public void setUserContantcs(List<String> userContantcs) {
-		this.userContantcs = userContantcs;
-	}
-
 	public boolean isReturned() {
 		return returned;
 	}
@@ -240,7 +228,6 @@ public class Thing implements Parcelable {
 		dest.writeInt(commentCount);
 		dest.writeString(userUID);
 		dest.writeLong(timestamp);
-		dest.writeList(userContantcs);
 		dest.writeByte((byte) (returned ? 1 : 0));
 	}
 
@@ -270,7 +257,6 @@ public class Thing implements Parcelable {
 		commentCount = parcel.readInt();
 		userUID = parcel.readString();
 		timestamp = parcel.readLong();
-		userContantcs = parcel.readArrayList(null);
 		returned = parcel.readByte() != 0;
 	}
 }
