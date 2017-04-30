@@ -13,6 +13,7 @@ import android.text.format.DateUtils;
 import android.transition.Slide;
 import android.transition.Transition;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
@@ -42,6 +43,7 @@ import com.sanislo.lostandfound.model.Thing;
 import com.sanislo.lostandfound.presenter.ThingDetailsPresenter;
 import com.sanislo.lostandfound.presenter.ThingDetailsPresenterImpl;
 import com.sanislo.lostandfound.view.BaseActivity;
+import com.sanislo.lostandfound.view.ChatActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -168,6 +170,7 @@ public class ThingDetailsActivity extends BaseActivity implements ThingDetailsVi
     private void setupToolbar() {
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
     }
 
     private void setEnterTransition() {
@@ -195,13 +198,32 @@ public class ThingDetailsActivity extends BaseActivity implements ThingDetailsVi
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_thing_detail, menu);
+        return true;
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem menuItem) {
         switch (menuItem.getItemId()) {
             case android.R.id.home:
                 onBackPressed();
                 return true;
+            case R.id.menu_message:
+                launchChatActivity();
+                return true;
         }
         return super.onOptionsItemSelected(menuItem);
+    }
+
+    private void launchChatActivity() {
+        Intent intent = new Intent(ThingDetailsActivity.this, ChatActivity.class);
+        Log.d(TAG, "launchChatActivity: " + mThing.getUserName());
+        Log.d(TAG, "launchChatActivity: " + mThing.getUserAvatar());
+        intent.putExtra(ChatActivity.EXTRA_CHAT_PARTNER_UID, mThing.getUserUID());
+        intent.putExtra(ChatActivity.EXTRA_CHAT_PARTNER_NAME, mThing.getUserName());
+        intent.putExtra(ChatActivity.EXTRA_CHAT_PARTNER_AVATAR_URL, mThing.getUserAvatar());
+        startActivity(intent);
     }
 
     @Override

@@ -83,21 +83,6 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/fl_map_container">
             </android.support.v7.widget.RecyclerView>
-
-            <EditText
-                android:id="@+id/edt_thing_comment"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:imeOptions="actionSend"
-                android:layout_below="@+id/rv_things_comments"
-                android:hint="@string/add_a_comment"/>
-
-            <Button
-                android:id="@+id/btn_send_comment"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/edt_thing_comment"
-                android:text="send"/>
         </RelativeLayout>
     </RelativeLayout>
 </android.support.v4.widget.NestedScrollView>

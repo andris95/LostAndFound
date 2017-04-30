@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/primary_dark">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize">
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent">
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/iv_thing_author_avatar"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginEnd="8dp"
+                android:layout_centerVertical="true"
+                tools:src="@drawable/aletta"/>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toEndOf="@+id/iv_thing_author_avatar"
+                android:layout_centerVertical="true"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tv_user_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toEndOf="@+id/iv_thing_author_avatar"
+                    android:textSize="20sp"
+                    android:textColor="@color/md_white_1000"
+                    tools:text="Aletta Ocean"/>
+            </LinearLayout>
+        </RelativeLayout>
+    </android.support.v7.widget.Toolbar>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rv_chat"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/toolbar"
+        android:layout_above="@+id/ll_chat_message_container">
+    </android.support.v7.widget.RecyclerView>
+
+    <RelativeLayout
+        android:id="@+id/ll_chat_message_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@color/md_white_1000">
+
+        <EditText
+            android:id="@+id/edt_message"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="48dp"
+            android:maxHeight="96dp"
+            android:paddingStart="8dp"
+            android:layout_toStartOf="@+id/iv_send"
+            android:background="@null"
+            android:hint="@string/chat_message_hint"
+            android:textColorHint="@color/md_grey800"/>
+        <ImageView
+            android:id="@+id/iv_send"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:padding="8dp"
+            android:layout_alignParentEnd="true"
+            android:src="@drawable/send"/>
+    </RelativeLayout>
+</RelativeLayout>
