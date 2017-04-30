@@ -74,7 +74,7 @@ public class FakeDataGenerator {
         });
     }
 
-    private List<Thing> generateThings() {
+    private List<Thing> generateThings(User user) {
         List<Thing> thingList = new ArrayList<>();
         for (int i = 0; i < 500; i++) {
             Thing thing = new Thing();
@@ -82,6 +82,7 @@ public class FakeDataGenerator {
             thing.setTitle("Thing NO_" + i);
             thing.setDescription("Description NO_" + i);
             thing.setType(i % 2 == 0 ? 1 : 2);
+            thing.setUserAvatar(user.getAvatarURL());
             thing.setTimestamp(new Date().getTime());
 
             int randomPhotoPosition = ThreadLocalRandom.current().nextInt(0, mTestPhotoURLs.length - 1);

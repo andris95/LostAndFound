@@ -148,14 +148,14 @@ public class ThingEditableAdapter extends RecyclerView.Adapter<ThingEditableAdap
             if (!TextUtils.isEmpty(mThing.getPhoto())) {
                 displayPhoto(mThing.getPhoto(), ivThingPhoto);
             } else {
-                displayErrorPhoto(R.drawable.placeholder, ivThingPhoto);
+                displayErrorPhoto(R.drawable.thing_cover_placeholder, ivThingPhoto);
             }
         }
 
         private void displayPhoto(String path, ImageView targetView) {
             Glide.with(mContext)
                     .load(path)
-                    .error(R.drawable.placeholder)
+                    .error(R.drawable.thing_cover_placeholder)
                     .listener(new RequestListener<String, GlideDrawable>() {
                         @Override
                         public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {

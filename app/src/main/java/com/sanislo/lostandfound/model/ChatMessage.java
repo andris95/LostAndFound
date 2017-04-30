@@ -52,6 +52,10 @@ public class ChatMessage {
         this.timestamp = timestamp;
     }
 
+    public boolean isMine(String uid) {
+        return authorUid.equals(uid);
+    }
+
     @Override
     public String toString() {
         return "ChatMessage{" +

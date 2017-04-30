@@ -11,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
@@ -142,24 +143,14 @@ public class ThingAdapter extends RecyclerView.Adapter<ThingAdapter.ViewHolder> 
             return type;
         }
         private void setAuthorPhoto() {
-            displayPhoto(mThing.getUserAvatar(), ivAuthorAvatar);
-        }
-
-        private void setThingPhoto() {
-            if (!TextUtils.isEmpty(mThing.getPhoto())) {
-                displayPhoto(mThing.getPhoto(), ivThingPhoto);
-            } else {
-                displayErrorPhoto(R.drawable.placeholder, ivThingPhoto);
-            }
-        }
-
-        private void displayPhoto(String path, ImageView targetView) {
-            Glide.with(mContext)
-                    .load(path)
-                    .error(R.drawable.placeholder)
+            Glide.with(itemView.getContext())
+                    .load(mThing.getUserAvatar())
+                    .placeholder(R.drawable.avatar_placeholder)
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .listener(new RequestListener<String, GlideDrawable>() {
                         @Override
                         public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
+                            if (e != null) e.printStackTrace();
                             return false;
                         }
 
@@ -168,13 +159,27 @@ public class ThingAdapter extends RecyclerView.Adapter<ThingAdapter.ViewHolder> 
                             return false;
                         }
                     })
-                    .into(targetView);
+                    .into(ivAuthorAvatar);
         }
 
-        private void displayErrorPhoto(int drawableID, ImageView targetView) {
-            Glide.with(mContext)
-                    .load(drawableID)
-                    .into(targetView);
+        private void setThingPhoto() {
+            Glide.with(itemView.getContext())
+                    .load(mThing.getPhoto())
+                    .placeholder(R.drawable.thing_cover_placeholder)
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .listener(new RequestListener<String, GlideDrawable>() {
+                        @Override
+                        public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
+                            if (e != null) e.printStackTrace();
+                            return false;
+                        }
+
+                        @Override
+                        public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                            return false;
+                        }
+                    })
+                    .into(ivThingPhoto);
         }
 
         @OnClick(R.id.rl_thing_root_view)

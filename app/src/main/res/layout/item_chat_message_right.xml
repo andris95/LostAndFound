@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_height="wrap_content"
+    android:layout_width="match_parent">
+
+    <RelativeLayout
+        android:layout_width="248dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="4dp"
+        android:padding="4dp"
+        android:layout_alignParentEnd="true"
+        android:background="@drawable/chat_message_background_right">
+
+        <TextView
+            android:id="@+id/tv_chat_message"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:maxWidth="256dp"
+            tools:text="Hello Andras! I have found your keys!"
+            android:textColor="@color/md_black_1000"/>
+    </RelativeLayout>
+</RelativeLayout>

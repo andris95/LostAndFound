@@ -1,4 +1,4 @@
-package com.sanislo.lostandfound.view;
+package com.sanislo.lostandfound.view.chatMessage;
 
 
 import android.os.Bundle;
@@ -19,11 +19,13 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.sanislo.lostandfound.R;
 import com.sanislo.lostandfound.adapter.ChatMessageAdapter;
+import com.sanislo.lostandfound.model.ChatHeader;
 import com.sanislo.lostandfound.model.ChatMessage;
 import com.sanislo.lostandfound.model.User;
 import com.sanislo.lostandfound.model.api.ApiModel;
 import com.sanislo.lostandfound.model.api.ApiModelImpl;
 import com.sanislo.lostandfound.utils.FirebaseConstants;
+import com.sanislo.lostandfound.view.BaseActivity;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -67,6 +69,7 @@ public class ChatActivity extends BaseActivity {
     private String mChatPartnerName;
     private String mChatPartnerAvatarUrl;
     private DatabaseReference mDatabaseReference = FirebaseDatabase.getInstance().getReference();
+    private ChatMessage mChatMessage;
     //private ChatPresenter mChatPresenter;
 
     @Override
@@ -100,7 +103,7 @@ public class ChatActivity extends BaseActivity {
         tvUserName.setText(mChatPartnerName);
         Glide.with(this)
                 .load(mChatPartnerAvatarUrl)
-                .error(R.drawable.account)
+                .placeholder(R.drawable.avatar_placeholder)
                 .into(ivChatPartnerAvatar);
     }
 
@@ -134,7 +137,7 @@ public class ChatActivity extends BaseActivity {
                 .child(getAuthenticatedUserUID())
                 .child(mChatPartnerUid);
         mChatMessageAdapter = new ChatMessageAdapter(ChatMessage.class,
-                R.layout.item_chat_message,
+                R.layout.item_chat_message_left,
                 ChatMessageAdapter.ViewHolder.class,
                 query);
         rvChat.setLayoutManager(new LinearLayoutManager(ChatActivity.this));
@@ -145,29 +148,90 @@ public class ChatActivity extends BaseActivity {
     public void onClickSendMessage() {
         String message = edtMessage.getText().toString();
         Log.d(TAG, "onClickSendMessage: " + message);
+        //TODO hardcode
+        if (TextUtils.isEmpty(message)) {
+            message = getString(R.string.lorem_ipsum);
+        }
         if (TextUtils.isEmpty(message) || mUser == null) return;
 
-        ChatMessage chatMessage = new ChatMessage();
-        chatMessage.setAuthorName(mUser.getFullName());
-        chatMessage.setAuthorUid(getAuthenticatedUserUID());
-        chatMessage.setMessage(message);
-        long timestamp = new Date().getTime();
-        chatMessage.setTimestamp(timestamp);
-
-        sendMessage(chatMessage);
+        createNewChatMessage(message);
+        getChatPartnerUser();
     }
 
-    private void sendMessage(ChatMessage chatMessage) {
-        Log.d(TAG, "sendMessage: " + chatMessage);
+    private void createNewChatMessage(String message) {
+        mChatMessage = new ChatMessage();
+        mChatMessage.setAuthorName(mUser.getFullName());
+        mChatMessage.setAuthorUid(getAuthenticatedUserUID());
+        mChatMessage.setMessage(message);
+        long timestamp = new Date().getTime();
+        mChatMessage.setTimestamp(timestamp);
+    }
+
+    private User mChatPartnerUser;
+    private void getChatPartnerUser() {
+        ApiModel apiModel = new ApiModelImpl();
+        Call<List<User>> call = apiModel.getUserListByUID(mChatPartnerUid);
+        call.enqueue(new Callback<List<User>>() {
+            @Override
+            public void onResponse(Call<List<User>> call, Response<List<User>> response) {
+                if (response.isSuccessful()) {
+                    mChatPartnerUser = response.body().get(0);
+                    sendMessage();
+                } else {
+                    Log.d(TAG, "onResponse: fail");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<User>> call, Throwable t) {
+                t.printStackTrace();
+            }
+        });
+    }
+
+    private ChatHeader getMyChatHeader() {
+        ChatHeader chatHeader = new ChatHeader(getAuthenticatedUserUID(),
+                mUser.getFullName(),
+                mUser.getAvatarURL(),
+                mChatMessage.getMessage(),
+                mChatPartnerUid,
+                mChatPartnerUser.getFullName(),
+                mChatPartnerUser.getAvatarURL(),
+                mChatMessage.getTimestamp());
+        return chatHeader;
+    }
+
+    private ChatHeader getPartnersChatHeader() {
+        ChatHeader chatHeader = new ChatHeader(getAuthenticatedUserUID(),
+                mUser.getFullName(),
+                mUser.getAvatarURL(),
+                mChatMessage.getMessage(),
+                getAuthenticatedUserUID(),
+                mUser.getFullName(),
+                mUser.getAvatarURL(),
+                mChatMessage.getTimestamp());
+        return chatHeader;
+    }
+
+    private void sendMessage() {
+        Log.d(TAG, "sendMessage: " + mChatMessage);
         HashMap<String, Object> updateMap = new HashMap<>();
         updateMap.put(FirebaseConstants.CHAT_MESSAGES
                 + "/" + getAuthenticatedUserUID()
                 + "/" + mChatPartnerUid
-                + "/" + chatMessage.getTimestamp(), chatMessage);
+                + "/" + mChatMessage.getTimestamp(), mChatMessage);
         updateMap.put(FirebaseConstants.CHAT_MESSAGES
                 + "/" + mChatPartnerUid
                 + "/" + getAuthenticatedUserUID()
-                + "/" + chatMessage.getTimestamp(), chatMessage);
+                + "/" + mChatMessage.getTimestamp(), mChatMessage);
+        //TODO !!!
+        updateMap.put(FirebaseConstants.CHAT_HEADERS
+                + "/" + getAuthenticatedUserUID()
+                + "/" + mChatPartnerUid, getMyChatHeader());
+        //TODO !!!
+        updateMap.put(FirebaseConstants.CHAT_HEADERS
+                + "/" + mChatPartnerUid
+                + "/" + getAuthenticatedUserUID(), getPartnersChatHeader());
         mDatabaseReference.updateChildren(updateMap, new DatabaseReference.CompletionListener() {
             @Override
             public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {

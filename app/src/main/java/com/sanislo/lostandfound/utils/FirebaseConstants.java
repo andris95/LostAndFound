@@ -12,4 +12,5 @@ public class FirebaseConstants {
     public static final String THING_COVER_PHOTO = "thing_cover_photo";
     public static final String THING_DESCRIPTION_PHOTOS = "thing_description_photos";
     public static final String CHAT_MESSAGES = "chat_messages";
+    public static final String CHAT_HEADERS = "chat_headers";
 }

@@ -352,7 +352,7 @@ public class AddThingActivity extends AppCompatActivity implements AddThingView 
 
     private void displayCoverPlaceholder() {
         Glide.with(this)
-                .load(R.drawable.placeholder)
+                .load(R.drawable.thing_cover_placeholder)
                 .into(ivCoverPhoto);
     }
 

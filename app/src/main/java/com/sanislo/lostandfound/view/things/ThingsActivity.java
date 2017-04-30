@@ -41,6 +41,7 @@ import com.sanislo.lostandfound.presenter.ThingsPresenter;
 import com.sanislo.lostandfound.presenter.ThingsPresenterImpl;
 import com.sanislo.lostandfound.view.BaseActivity;
 import com.sanislo.lostandfound.view.addThing.AddThingActivity;
+import com.sanislo.lostandfound.view.chatHeader.ChatHeaderActivity;
 import com.sanislo.lostandfound.view.map.MapActivity;
 import com.sanislo.lostandfound.view.profile.ProfileActivity;
 import com.sanislo.lostandfound.view.search.SearchActivity;
@@ -150,6 +151,11 @@ public class ThingsActivity extends BaseActivity implements ThingsView {
         startActivity(intent);
     }
 
+    private void openChatHeaders() {
+        Intent intent = new Intent(ThingsActivity.this, ChatHeaderActivity.class);
+        startActivity(intent);
+    }
+
     private void setupDrawer() {
         setupAccountHeader();
         DrawerBuilder drawerBuilder = new DrawerBuilder()
@@ -199,6 +205,8 @@ public class ThingsActivity extends BaseActivity implements ThingsView {
                         openMapsActivity();
                         break;
                     case 4:
+                        openChatHeaders();
+                    case 5:
                         FakeDataGenerator fakeDataGenerator = new FakeDataGenerator(ThingsActivity.this, mUser);
                         fakeDataGenerator.postCloseFakeThings(ThingsActivity.this);
                         break;
@@ -258,11 +266,16 @@ public class ThingsActivity extends BaseActivity implements ThingsView {
                 .withName(R.string.drawer_nearby_things)
                 .withIcon(R.drawable.map_marker_radius)
                 .withSelectable(false);
+        PrimaryDrawerItem chatHeaders = new PrimaryDrawerItem()
+                .withName(R.string.drawer_chats)
+                .withIcon(R.drawable.message_black)
+                .withSelectable(false);
         PrimaryDrawerItem fakeThings = new PrimaryDrawerItem()
                 .withName("Create 500 fake things");
         drawerItems.add(addThing);
         drawerItems.add(search);
         drawerItems.add(nearbyThings);
+        drawerItems.add(chatHeaders);
         drawerItems.add(fakeThings);
         //drawerItems.add(logout);
         return drawerItems;

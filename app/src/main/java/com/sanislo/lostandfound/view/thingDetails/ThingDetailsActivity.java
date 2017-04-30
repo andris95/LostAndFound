@@ -43,7 +43,7 @@ import com.sanislo.lostandfound.model.Thing;
 import com.sanislo.lostandfound.presenter.ThingDetailsPresenter;
 import com.sanislo.lostandfound.presenter.ThingDetailsPresenterImpl;
 import com.sanislo.lostandfound.view.BaseActivity;
-import com.sanislo.lostandfound.view.ChatActivity;
+import com.sanislo.lostandfound.view.chatMessage.ChatActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -218,8 +218,6 @@ public class ThingDetailsActivity extends BaseActivity implements ThingDetailsVi
 
     private void launchChatActivity() {
         Intent intent = new Intent(ThingDetailsActivity.this, ChatActivity.class);
-        Log.d(TAG, "launchChatActivity: " + mThing.getUserName());
-        Log.d(TAG, "launchChatActivity: " + mThing.getUserAvatar());
         intent.putExtra(ChatActivity.EXTRA_CHAT_PARTNER_UID, mThing.getUserUID());
         intent.putExtra(ChatActivity.EXTRA_CHAT_PARTNER_NAME, mThing.getUserName());
         intent.putExtra(ChatActivity.EXTRA_CHAT_PARTNER_AVATAR_URL, mThing.getUserAvatar());

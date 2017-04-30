@@ -349,7 +349,7 @@ public class AddThingEditableActivity extends AppCompatActivity implements AddTh
 
     private void displayCoverPlaceholder() {
         Glide.with(this)
-                .load(R.drawable.placeholder)
+                .load(R.drawable.thing_cover_placeholder)
                 .into(ivCoverPhoto);
     }
 
