@@ -22,9 +22,10 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.sanislo.lostandfound.R;
+import com.sanislo.lostandfound.model.User;
 import com.sanislo.lostandfound.model.api.ApiModel;
 import com.sanislo.lostandfound.model.api.ApiModelImpl;
-import com.sanislo.lostandfound.model.firebaseModel.User;
+import com.sanislo.lostandfound.model.firebaseModel.FirebaseUser;
 import com.sanislo.lostandfound.utils.FirebaseConstants;
 import com.sanislo.lostandfound.utils.FirebaseUtils;
 import com.sanislo.lostandfound.utils.PreferencesManager;
@@ -56,7 +57,7 @@ public class LoginActivity extends BaseActivity {
 
     private FirebaseAuth mFirebaseAuth = FirebaseAuth.getInstance();
     private String mEmail, mPassword;
-    private User mUser;
+    private FirebaseUser mUser;
 
     private OnCompleteListener<AuthResult> onSignInCompleteListener = new OnCompleteListener() {
         @Override
@@ -70,9 +71,9 @@ public class LoginActivity extends BaseActivity {
                     @Override
                     public void onResponse(Call<List<com.sanislo.lostandfound.model.User>> call, Response<List<com.sanislo.lostandfound.model.User>> response) {
                         if (response.isSuccessful()) {
-                            com.sanislo.lostandfound.model.User user = response.body().get(0);
+                            User user = response.body().get(0);
                             updatePreferencesForLoggedInUser(user.getId(), uid);
-                            openMainActivity();
+                            launchMainActivity(user);
                         } else {
                             Log.d(TAG, "onResponse: " + response.message());
                         }
@@ -90,12 +91,6 @@ public class LoginActivity extends BaseActivity {
     private void updatePreferencesForLoggedInUser(int id, String uid) {
         PreferencesManager.setUserUID(LoginActivity.this, uid);
         PreferencesManager.setUserID(LoginActivity.this, id);
-    }
-
-    private void openMainActivity() {
-        Intent intent = new Intent(LoginActivity.this, ThingsActivity.class);
-        startActivity(intent);
-        finish();
     }
 
     private OnFailureListener onSignInFailureListener = new OnFailureListener() {
@@ -192,7 +187,7 @@ public class LoginActivity extends BaseActivity {
             String email = resultSignInAccount.getEmail();
             String id = resultSignInAccount.getId();
             String photoURL = resultSignInAccount.getPhotoUrl().toString();
-            mUser = new User.Builder().setFullName(displayName)
+            mUser = new FirebaseUser.Builder().setFullName(displayName)
                     .setFirstName(resultSignInAccount.getGivenName())
                     .setLastName(resultSignInAccount.getFamilyName())
                     .setAvatarURL(photoURL)
@@ -229,6 +224,15 @@ public class LoginActivity extends BaseActivity {
 
     private void launchMainActivity() {
         Intent intent = new Intent(LoginActivity.this, ThingsActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        finish();
+    }
+
+    private void launchMainActivity(User user) {
+        Intent intent = new Intent(LoginActivity.this, ThingsActivity.class);
+        intent.putExtra(ThingsActivity.EXTRA_USER, user);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
         finish();
     }

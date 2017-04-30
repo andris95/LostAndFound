@@ -5,7 +5,7 @@ import java.util.HashMap;
 /**
  * Created by root on 04.09.16.
  */
-public class User {
+public class FirebaseUser {
     private String uid;
     private String firstName;
     private String lastName;
@@ -25,9 +25,9 @@ public class User {
     private String emailAddress;
     private String websiteAddress;
 
-    public User() {}
+    public FirebaseUser() {}
 
-    public User(String uid, String firstName, String lastName, String fullName, long birthDate, boolean showBirthDate, String city, int gender, String phoneNumber, String linkInstagram, String linkFacebook, String linkTwitter, String avatarURL, String avatarBlurURL, boolean isOnline, long lastActiveTimestamp, String emailAddress, String websiteAddress) {
+    public FirebaseUser(String uid, String firstName, String lastName, String fullName, long birthDate, boolean showBirthDate, String city, int gender, String phoneNumber, String linkInstagram, String linkFacebook, String linkTwitter, String avatarURL, String avatarBlurURL, boolean isOnline, long lastActiveTimestamp, String emailAddress, String websiteAddress) {
         this.uid = uid;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -203,7 +203,7 @@ public class User {
 
     @Override
     public String toString() {
-        return "User{" +
+        return "FirebaseUser{" +
                 "uid='" + uid + '\'' +
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
@@ -336,9 +336,9 @@ public class User {
             return this;
         }
 
-        //Return the finally consrcuted User object
-        public User build() {
-            User user = new User(uid,
+        //Return the finally consrcuted FirebaseUser object
+        public FirebaseUser build() {
+            FirebaseUser user = new FirebaseUser(uid,
                     firstName,
                     lastName,
                     fullName,

@@ -84,7 +84,7 @@ public class AddThingPresenterImpl implements AddThingPresenter {
     private void getUser() {
         String userUID = PreferencesManager.getUserUID(mContext);
         Log.d(TAG, "getUser: userUID: " + userUID);
-        //Call<User> userCall = mApiModel.getUser(userUID);
+        //Call<FirebaseUser> userCall = mApiModel.getUser(userUID);
         Call<List<User>> userCall = mApiModel.getUserListByUID(userUID);
         userCall.enqueue(new Callback<List<User>>() {
             @Override
@@ -212,7 +212,7 @@ public class AddThingPresenterImpl implements AddThingPresenter {
             mThing.setCategory(category);
             mThing.setType(mTypePosition);
         } else {
-            throw new RuntimeException("User is not yet downloaded");
+            throw new RuntimeException("FirebaseUser is not yet downloaded");
         }
     }
 

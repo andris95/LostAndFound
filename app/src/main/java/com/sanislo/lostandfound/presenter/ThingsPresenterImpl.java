@@ -54,7 +54,7 @@ public class ThingsPresenterImpl implements ThingsPresenter {
     public void getProfile(Context context) {
         final String userUID = PreferencesManager.getUserUID(context);
         Log.d(TAG, "getUser: userUID: " + userUID);
-        //Call<User> userCall = mApiModel.getUser(userUID);
+        //Call<FirebaseUser> userCall = mApiModel.getUser(userUID);
         Call<List<User>> userCall = mApiModel.getUserListByUID(userUID);
         userCall.enqueue(new Callback<List<User>>() {
             @Override

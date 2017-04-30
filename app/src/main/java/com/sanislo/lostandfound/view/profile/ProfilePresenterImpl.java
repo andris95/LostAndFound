@@ -43,7 +43,7 @@ public class ProfilePresenterImpl implements ProfilePresenter {
     @Override
     public void getProfile(String userUID) {
         Log.d(TAG, "getUser: userUID: " + userUID);
-        //Call<User> userCall = mApiModel.getUser(userUID);
+        //Call<FirebaseUser> userCall = mApiModel.getUser(userUID);
         Call<List<User>> userCall = mApiModel.getUserListByUID(userUID);
         userCall.enqueue(new Callback<List<User>>() {
             @Override

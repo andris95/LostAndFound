@@ -124,7 +124,7 @@ public class User implements Parcelable {
 
 	@Override
 	public String toString() {
-		return "User{" +
+		return "FirebaseUser{" +
 				"uid='" + uid + '\'' +
 				", firstName='" + firstName + '\'' +
 				", lastName='" + lastName + '\'' +

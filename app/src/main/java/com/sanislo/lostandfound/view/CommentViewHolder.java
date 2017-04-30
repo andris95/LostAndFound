@@ -15,7 +15,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.StorageReference;
 import com.sanislo.lostandfound.R;
 import com.sanislo.lostandfound.model.firebaseModel.Comment;
-import com.sanislo.lostandfound.model.firebaseModel.User;
+import com.sanislo.lostandfound.model.firebaseModel.FirebaseUser;
 import com.sanislo.lostandfound.utils.FirebaseConstants;
 import com.sanislo.lostandfound.utils.FirebaseUtils;
 
@@ -59,7 +59,7 @@ public class CommentViewHolder extends RecyclerView.ViewHolder {
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-                        User author = dataSnapshot.getValue(User.class);
+                        FirebaseUser author = dataSnapshot.getValue(FirebaseUser.class);
                         setAuthorAvatar(author);
                         setAuthorName(author);
                     }
@@ -71,7 +71,7 @@ public class CommentViewHolder extends RecyclerView.ViewHolder {
                 });
     }
 
-    private void setAuthorName(User author) {
+    private void setAuthorName(FirebaseUser author) {
         tvAuthorName.setText(author.getFullName());
     }
 
@@ -79,7 +79,7 @@ public class CommentViewHolder extends RecyclerView.ViewHolder {
         tvCommentText.setText(mComment.getText());
     }
 
-    private void setAuthorAvatar(User user) {
+    private void setAuthorAvatar(FirebaseUser user) {
         StorageReference photoRef = FirebaseUtils
                 .getStorageRef()
                 .child(user.getAvatarURL());

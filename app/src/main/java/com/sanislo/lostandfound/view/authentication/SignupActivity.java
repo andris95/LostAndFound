@@ -288,7 +288,7 @@ public class SignupActivity extends BaseActivity implements SignupView {
                 loadAvatar(mAvatarUri);
                 Log.d(TAG, "onActivityResult: " + mAvatarUri.toString());
             } else {
-                makeToast("Failed to pick image...");
+                makeToast("Failed to ");
             }
         }
     }
@@ -301,7 +301,8 @@ public class SignupActivity extends BaseActivity implements SignupView {
     private void launchMainActivity() {
         Intent intent = new Intent(SignupActivity.this, ThingsActivity.class);
         intent.putExtra(ThingsActivity.EXTRA_USER, mUser);
-        startActivity(new Intent(SignupActivity.this, ThingsActivity.class));
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
         finish();
     }
 
