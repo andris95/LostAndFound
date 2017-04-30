@@ -117,6 +117,10 @@ public abstract class BaseActivity extends AppCompatActivity
         Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
     }
 
+    protected void makeToast(int textRes) {
+        Toast.makeText(getApplicationContext(), textRes, Toast.LENGTH_SHORT).show();
+    }
+
     protected String getAuthenticatedUserUID() {
         return mUID;
     }

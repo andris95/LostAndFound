@@ -82,10 +82,6 @@ public class AddThingActivity extends AppCompatActivity implements AddThingView 
     private final int RP_READ_EXTERNAL_FOR_DESCRIPTION_PHOTOS = 444;
     private final int RP_FINE_LOCATION = 555;
 
-    /*@BindView(R.id.root_add_thing)
-    CoordinatorLayout mRoot;
-*/
-
     @BindView(R.id.root_add_thing)
     RelativeLayout mRoot;
 

@@ -158,8 +158,8 @@ public class ProfileActivity extends BaseActivity implements ProfileView {
     @OnClick(R.id.iv_avatar)
     public void onClickAvatar() {
         new MaterialDialog.Builder(this)
-                .title(R.string.select_profile_image)
-                .items(R.array.select_profile_image_list)
+                .title(R.string.select_avatar_image)
+                .items(R.array.select_avatar_array)
                 .itemsCallback(new MaterialDialog.ListCallback() {
                     @Override
                     public void onSelection(MaterialDialog dialog, View itemView, int position, CharSequence text) {
@@ -193,7 +193,7 @@ public class ProfileActivity extends BaseActivity implements ProfileView {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.setType("image/*");
         intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, false);
-        Intent сhooserIntent = Intent.createChooser(intent, getString(R.string.select_profile_image));
+        Intent сhooserIntent = Intent.createChooser(intent, getString(R.string.select_avatar_image));
         startActivityForResult(сhooserIntent, PICK_PROFILE_IMAGE);
     }
 

@@ -14,7 +14,6 @@ import com.google.firebase.storage.UploadTask;
 import com.sanislo.lostandfound.model.User;
 import com.sanislo.lostandfound.model.api.ApiModel;
 import com.sanislo.lostandfound.model.api.ApiModelImpl;
-import com.sanislo.lostandfound.utils.FileUtils;
 import com.sanislo.lostandfound.utils.FirebaseConstants;
 import com.sanislo.lostandfound.utils.FirebaseUtils;
 
@@ -82,7 +81,8 @@ public class ProfilePresenterImpl implements ProfilePresenter {
                 .child(FirebaseConstants.USERS)
                 .child(uid)
                 .child(FirebaseConstants.AVATAR)
-                .child(FileUtils.getFileName(context, mProfileImageUri))
+                //.child(FileUtils.getFileName(context, mProfileImageUri))
+                .child("avatar")
                 .putFile(mProfileImageUri);
         uploadTask.addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
             @Override

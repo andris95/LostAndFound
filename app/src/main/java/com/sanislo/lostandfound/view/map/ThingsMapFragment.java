@@ -1,10 +1,14 @@
 package com.sanislo.lostandfound.view.map;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.location.Location;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -42,21 +46,27 @@ public class ThingsMapFragment extends SupportMapFragment implements MapView,
         ClusterManager.OnClusterItemClickListener<AbstractMarker>,
         ClusterManager.OnClusterClickListener<AbstractMarker> {
     private String TAG = ThingsMapFragment.class.getSimpleName();
+    private static final int RC_FINE_LOCATION = 789;
 
     private GoogleMap mGoogleMap;
-    private LatLngBounds.Builder mBoundsBuilder;
     private ClusterManager<AbstractMarker> mClusterManager;
     private MapPresenter mMapPresenter;
     private MarkerClickListener mMarkerClickListener;
-    private Location mLocation;
+
+    public ThingsMapFragment() {
+    }
 
     @Override
     public void onCreate(Bundle bundle) {
         super.onCreate(bundle);
-        mBoundsBuilder = new LatLngBounds.Builder();
         mMapPresenter = new MapPresenterImpl(this);
-        mMapPresenter.getCurrentLocation(getActivity());
-        getMapAsync(mOnMapReadyCallback);
+        int permissionResult = ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION);
+        if (permissionResult != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    RC_FINE_LOCATION);
+        } else {
+            getMapAsync(mOnMapReadyCallback);
+        }
     }
 
     @Override
@@ -80,6 +90,16 @@ public class ThingsMapFragment extends SupportMapFragment implements MapView,
         }
     };
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == RC_FINE_LOCATION) {
+            /*if (permissions.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                getMapAsync(mOnMapReadyCallback);
+            }*/
+            getMapAsync(mOnMapReadyCallback);
+        }
+    }
+
     private void setupClusterManager() {
         mClusterManager = new ClusterManager<AbstractMarker>(getActivity(), mGoogleMap);
         mClusterManager.setOnClusterClickListener(this);
@@ -95,21 +115,13 @@ public class ThingsMapFragment extends SupportMapFragment implements MapView,
     public void onThingsLoaded(List<Thing> thingList) {
         displayAllAvailableMarkers(thingList);
         mClusterManager.cluster();
-        mItemsClustered = true;
-        if (!mAnimatedToCurrentLocation) {
-            animateCamera(mLocation);
-        }
-        //animateCamera();
+        mMapPresenter.getCurrentLocation(getActivity());
     }
-
-    private boolean mItemsClustered;
-    private boolean mAnimatedToCurrentLocation;
+    
     @Override
     public void onLastKnownLocationFound(Location location) {
-        mLocation = location;
-        if (mGoogleMap != null && mItemsClustered) {
-            animateCamera(location);
-        }
+        Log.d(TAG, "onLastKnownLocationFound: ");
+        animateCamera(location);
     }
 
     private void displayAllAvailableMarkers(List<Thing> thingList) {
@@ -131,12 +143,12 @@ public class ThingsMapFragment extends SupportMapFragment implements MapView,
         mGoogleMap.animateCamera(cameraUpdate, new GoogleMap.CancelableCallback() {
             @Override
             public void onFinish() {
-                mAnimatedToCurrentLocation = true;
+                Log.d(TAG, "onFinish: ");
             }
 
             @Override
             public void onCancel() {
-
+                Log.d(TAG, "onCancel: ");
             }
         });
     }
@@ -149,6 +161,11 @@ public class ThingsMapFragment extends SupportMapFragment implements MapView,
 
     @Override
     public boolean onClusterClick(Cluster<AbstractMarker> cluster) {
+        zoomToClustersItem(cluster);
+        return true;
+    }
+
+    private void zoomToClustersItem(Cluster<AbstractMarker> cluster) {
         // Create the builder to collect all essential cluster items for the bounds.
         LatLngBounds.Builder builder = LatLngBounds.builder();
         for (ClusterItem item : cluster.getItems()) {
@@ -163,7 +180,6 @@ public class ThingsMapFragment extends SupportMapFragment implements MapView,
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return true;
     }
 
     public interface MarkerClickListener {
@@ -192,6 +208,10 @@ public class ThingsMapFragment extends SupportMapFragment implements MapView,
         @Override
         protected void onClusterItemRendered(AbstractMarker clusterItem, final Marker marker) {
             Log.d(TAG, "onClusterItemRendered: ");
+            loadClusterItemImage(marker, clusterItem);
+        }
+
+        private void loadClusterItemImage(final Marker marker, AbstractMarker clusterItem) {
             Glide.with(getActivity())
                     .load(clusterItem.getThing().getPhoto())
                     .asBitmap()

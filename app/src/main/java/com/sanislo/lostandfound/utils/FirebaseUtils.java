@@ -1,21 +1,19 @@
 package com.sanislo.lostandfound.utils;
 
-import android.content.Context;
 import android.text.TextUtils;
-import android.widget.Toast;
+import android.util.Log;
 
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import com.sanislo.lostandfound.R;
 
 /**
  * Created by root on 24.12.16.
  */
 
 public class FirebaseUtils {
+    public static final String TAG = FirebaseUtils.class.getSimpleName();
     private static FirebaseDatabase mDatabase;
 
     public static FirebaseDatabase getDatabase() {
@@ -34,51 +32,43 @@ public class FirebaseUtils {
         return storageRef;
     }
 
-    public static boolean validateEmailPwrd(Context context, String email, String password) {
+    public static final int validateUserInput(String email, String password) {
         if (!isValidEmail(email)) {
-            Toast.makeText(context, "Incorrect email address!", Toast.LENGTH_SHORT).show();
-            return false;
+            return R.string.invalid_email;
         }
-        if (TextUtils.isEmpty(password)) {
-            Toast.makeText(context, "Enter password!", Toast.LENGTH_SHORT).show();
-            return false;
+        if (!isValidPassword(password)) {
+            return R.string.invalid_password;
         }
-        if (password.length() < 6) {
-            Toast.makeText(context, "Password too short, enter minimum 6 characters!", Toast.LENGTH_SHORT).show();
-            return false;
-        }
-        return true;
+        return -1;
     }
 
-    public static boolean isValidEmail(CharSequence target) {
-        if (TextUtils.isEmpty(target)) {
+    public static boolean isValidEmail(CharSequence email) {
+        if (TextUtils.isEmpty(email)) {
             return false;
         } else {
-            return android.util.Patterns.EMAIL_ADDRESS.matcher(target).matches();
+            return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches();
         }
     }
 
-    public static boolean isValidName(Context context, String firstName, String lastName) {
+    public static boolean isValidPassword(String password) {
+        String passwordRegex = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=\\S+$).{8,}$";
+        Log.d(TAG, "isValidPassword: matches?: " + password.matches(passwordRegex));
+        return password.matches(passwordRegex);
+    }
+
+    public static int validateUserName(String firstName, String lastName) {
+        if (!isValidName(firstName)) {
+            return R.string.invalid_first_name;
+        }
+        if (!isValidName(lastName)) {
+            return R.string.invalid_last_name;
+        }
+        return -1;
+    }
+
+    public static boolean isValidName(String name) {
         String regx = "^[\\p{L}\\s.’\\-,]+$";
-        Pattern pattern = Pattern.compile(regx, Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(firstName);
-        if (TextUtils.isEmpty(firstName)) {
-            Toast.makeText(context, "First Name can't be empty", Toast.LENGTH_SHORT).show();
-            return false;
-        }
-        if (!matcher.find()) {
-            Toast.makeText(context, "Invalid First Name", Toast.LENGTH_SHORT).show();
-            return false;
-        }
-        if (TextUtils.isEmpty(lastName)) {
-            Toast.makeText(context, "Last Name can't be empty", Toast.LENGTH_SHORT).show();
-            return false;
-        }
-        matcher = pattern.matcher(lastName);
-        if (!matcher.find()) {
-            Toast.makeText(context, "Invalid Last Name", Toast.LENGTH_SHORT).show();
-            return false;
-        }
-        return true;
+        Log.d(TAG, "isValidName: " + name.matches(regx));
+        return name.matches(regx);
     }
 }

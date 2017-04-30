@@ -1,14 +1,18 @@
 package com.sanislo.lostandfound.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-
-import java.util.List;
 
 import javax.annotation.Generated;
 
 @Generated("com.robohorse.robopojogenerator")
-public class User{
+public class User implements Parcelable {
+
+	public User() {
+	}
 
 	@SerializedName("uid")
 	@Expose
@@ -30,14 +34,6 @@ public class User{
 	@Expose
 	private String emailAddress;
 
-	@SerializedName("phoneNumber")
-	@Expose
-	private String phoneNumber;
-
-	@SerializedName("gender")
-	@Expose
-	private int gender;
-
 	@SerializedName("city")
 	@Expose
 	private String city;
@@ -53,14 +49,6 @@ public class User{
 	@SerializedName("id")
 	@Expose
 	private int id;
-
-	@SerializedName("birthDate")
-	@Expose
-	private int birthDate;
-
-	@SerializedName("contacts")
-	@Expose
-	private List<String> contacts;
 
 	public void setUid(String uid){
 		this.uid = uid;
@@ -102,22 +90,6 @@ public class User{
 		return emailAddress;
 	}
 
-	public void setPhoneNumber(String phoneNumber){
-		this.phoneNumber = phoneNumber;
-	}
-
-	public String getPhoneNumber(){
-		return phoneNumber;
-	}
-
-	public void setGender(int gender){
-		this.gender = gender;
-	}
-
-	public int getGender(){
-		return gender;
-	}
-
 	public void setCity(String city){
 		this.city = city;
 	}
@@ -150,38 +122,60 @@ public class User{
 		return id;
 	}
 
-	public void setBirthDate(int birthDate){
-		this.birthDate = birthDate;
-	}
-
-	public int getBirthDate(){
-		return birthDate;
-	}
-
-	public List<String> getContacts() {
-		return contacts;
-	}
-
-	public void setContacts(List<String> contacts) {
-		this.contacts = contacts;
+	@Override
+	public String toString() {
+		return "User{" +
+				"uid='" + uid + '\'' +
+				", firstName='" + firstName + '\'' +
+				", lastName='" + lastName + '\'' +
+				", country='" + country + '\'' +
+				", emailAddress='" + emailAddress + '\'' +
+				", city='" + city + '\'' +
+				", avatarURL='" + avatarURL + '\'' +
+				", fullName='" + fullName + '\'' +
+				", id=" + id +
+				'}';
 	}
 
 	@Override
- 	public String toString(){
-		return 
-			"User{" + 
-			"uid = '" + uid + '\'' + 
-			",firstName = '" + firstName + '\'' + 
-			",lastName = '" + lastName + '\'' + 
-			",country = '" + country + '\'' + 
-			",emailAddress = '" + emailAddress + '\'' + 
-			",phoneNumber = '" + phoneNumber + '\'' + 
-			",gender = '" + gender + '\'' + 
-			",city = '" + city + '\'' + 
-			",avatarURL = '" + avatarURL + '\'' + 
-			",fullName = '" + fullName + '\'' + 
-			",id = '" + id + '\'' + 
-			",birthDate = '" + birthDate + '\'' + 
-			"}";
+	public int describeContents() {
+		return 0;
+	}
+
+	@Override
+	public void writeToParcel(Parcel dest, int flags) {
+		dest.writeString(uid);
+		dest.writeString(firstName);
+		dest.writeString(lastName);
+		dest.writeString(country);
+		dest.writeString(emailAddress);
+		dest.writeString(city);
+		dest.writeString(avatarURL);
+		dest.writeString(fullName);
+		dest.writeInt(id);
+	}
+
+	public static final Parcelable.Creator<User> CREATOR = new Parcelable.Creator<User>() {
+		// распаковываем объект из Parcel
+		public User createFromParcel(Parcel in) {
+			return new User(in);
 		}
+
+		public User[] newArray(int size) {
+			return new User[size];
+		}
+	};
+
+	// конструктор, считывающий данные из Parcel
+	private User(Parcel parcel) {
+		uid = parcel.readString();
+		firstName = parcel.readString();
+		lastName = parcel.readString();
+		country = parcel.readString();
+		emailAddress = parcel.readString();
+		city = parcel.readString();
+		avatarURL = parcel.readString();
+		fullName = parcel.readString();
+		id = parcel.readInt();
+	}
 }

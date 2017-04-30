@@ -82,6 +82,8 @@ dependencies {
 
     compile 'com.aurelhubert:ahbottomnavigation:2.0.6'
     compile 'com.google.maps.android:android-maps-utils:0.5+'
+
+    compile 'com.theartofdev.edmodo:android-image-cropper:2.4.+'
 }
 
 apply plugin: 'com.google.gms.google-services'

@@ -4,7 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:fitsSystemWindows="true"
+    android:orientation="vertical"
+    android:gravity="center_vertical"
     android:background="@drawable/background_gradient_2"
     tools:context=".view.authentication.SignupActivity">
 
@@ -12,51 +15,59 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="@dimen/activity_horizontal_margin"
-        android:layout_gravity="center_vertical"
         android:orientation="vertical">
 
-            <EditText
-                android:id="@+id/edt_email"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/hint_email"
-                android:inputType="textEmailAddress"
-                android:maxLines="1"
-                style="@style/AuthEditText"/>
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/iv_avatar"
+            android:layout_width="112dp"
+            android:layout_height="112dp"
+            android:layout_gravity="center_horizontal"
+            tools:src="@drawable/account_signup"
+            app:civ_border_width="4dp"
+            app:civ_border_color="@color/md_white_1000"/>
 
-            <EditText
-                android:id="@+id/edt_password"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:focusableInTouchMode="true"
-                android:hint="@string/hint_password"
-                android:imeActionId="@+id/edt_first_name"
-                android:imeOptions="actionUnspecified"
-                android:inputType="textPassword"
-                android:maxLines="1"
-                style="@style/AuthEditText"/>
+        <EditText
+            android:id="@+id/edt_email"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/hint_email"
+            android:inputType="textEmailAddress"
+            android:maxLines="1"
+            style="@style/AuthEditText"/>
 
-            <EditText
-                android:id="@+id/edt_first_name"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:focusableInTouchMode="true"
-                android:hint="@string/hint_first_name"
-                android:imeActionId="@+id/edt_last_name"
-                android:imeOptions="actionUnspecified"
-                android:maxLines="1"
-                style="@style/AuthEditText"/>
+        <EditText
+            android:id="@+id/edt_password"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:focusableInTouchMode="true"
+            android:hint="@string/hint_password"
+            android:imeActionId="@+id/edt_first_name"
+            android:imeOptions="actionUnspecified"
+            android:inputType="textPassword"
+            android:maxLines="1"
+            style="@style/AuthEditText"/>
 
-            <EditText
-                android:id="@+id/edt_last_name"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:focusableInTouchMode="true"
-                android:hint="@string/hint_last_name"
-                android:imeActionId="@+id/login"
-                android:imeOptions="actionUnspecified"
-                android:maxLines="1"
-                style="@style/AuthEditText"/>
+        <EditText
+            android:id="@+id/edt_first_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:focusableInTouchMode="true"
+            android:hint="@string/hint_first_name"
+            android:imeActionId="@+id/edt_last_name"
+            android:imeOptions="actionUnspecified"
+            android:maxLines="1"
+            style="@style/AuthEditText"/>
+
+        <EditText
+            android:id="@+id/edt_last_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:focusableInTouchMode="true"
+            android:hint="@string/hint_last_name"
+            android:imeActionId="@+id/login"
+            android:imeOptions="actionUnspecified"
+            android:maxLines="1"
+            style="@style/AuthEditText"/>
 
         <Button
             android:id="@+id/sign_up_button"

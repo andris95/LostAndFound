@@ -21,6 +21,7 @@ public interface ApiModel {
     Call<Void> updateUser(int userId, User user);
     Call<Void> postThing(Thing thing);
     Call<Void> saveUser(User user);
+    Call<Void> saveUser(String uid, User user);
     Call<User> getUser(int id);
     Call<User> getUserByUID(String uid);
     Call<List<User>> getUserListByUID(String uid);

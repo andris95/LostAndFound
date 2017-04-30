@@ -3,7 +3,6 @@ package com.sanislo.lostandfound.model.api;
 import com.sanislo.lostandfound.model.Category;
 import com.sanislo.lostandfound.model.Thing;
 import com.sanislo.lostandfound.model.User;
-import com.sanislo.lostandfound.model.UserAvatarUpdateRequest;
 
 import java.util.List;
 import java.util.Map;
@@ -48,10 +47,10 @@ public interface ApiInterface {
     Call<Void> saveUser(@Body User user);
 
     @PUT("users/{id}")
-    Call<Void> updateUserAvatar(@Path("id") int userId, @Body String avatarURL);
+    Call<Void> saveUser(@Path("id") String id, @Body User user);
 
-    @PUT("users/{id}/edit")
-    Call<Void> updateUserAvatar(@Path("id") int userId, @Body UserAvatarUpdateRequest userAvatarUpdateRequest);
+    @PUT("users/{id}")
+    Call<Void> updateUserAvatar(@Path("id") int userId, @Body String avatarURL);
 
     @PUT("things/{id}")
     Call<Void> updateThing(@Path("id") int thingId, @Body Thing thing);

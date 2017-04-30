@@ -1,8 +1,10 @@
 package com.sanislo.lostandfound.view.things;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.util.Pair;
 import android.support.v4.widget.DrawerLayout;
@@ -18,6 +20,8 @@ import android.view.View;
 import android.view.Window;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.firebase.auth.FirebaseAuth;
 import com.mikepenz.materialdrawer.AccountHeader;
 import com.mikepenz.materialdrawer.AccountHeaderBuilder;
@@ -50,6 +54,7 @@ import butterknife.ButterKnife;
 
 public class ThingsActivity extends BaseActivity implements ThingsView {
     public static final String TAG = ThingsActivity.class.getSimpleName();
+    public static final String EXTRA_USER = "EXTRA_USER";
 
     @BindView(R.id.rv_things)
     RecyclerView rvThings;
@@ -93,11 +98,17 @@ public class ThingsActivity extends BaseActivity implements ThingsView {
         mThingsPresenter = new ThingsPresenterImpl(this);
         initFirebase();
         initToolbar();
+        initCloseAppDialog();
         setupDrawer();
         initThingsAdapter();
         setupSwipeRefresh();
         mThingsPresenter.getThings();
-        mThingsPresenter.getProfile(ThingsActivity.this);
+        if (getIntent().getParcelableExtra(EXTRA_USER) != null) {
+            mUser = getIntent().getParcelableExtra(EXTRA_USER);
+            updateProfile();
+        } else {
+            mThingsPresenter.getProfile(ThingsActivity.this);
+        }
     }
 
     private void setupSwipeRefresh() {
@@ -322,13 +333,49 @@ public class ThingsActivity extends BaseActivity implements ThingsView {
         mAccountHeader.setActiveProfile(profileDrawerItem);
     }
 
+    private MaterialDialog mCloseAppDialog;
+    private void initCloseAppDialog() {
+        mCloseAppDialog = new MaterialDialog.Builder(ThingsActivity.this)
+                .title(R.string.close_app_title)
+                .content(R.string.close_app_content)
+                .positiveText("Yes")
+                .negativeText("No")
+                .onPositive(new MaterialDialog.SingleButtonCallback() {
+                    @Override
+                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                        onBackPressed();
+                    }
+                })
+                .onNegative(new MaterialDialog.SingleButtonCallback() {
+                    @Override
+                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                        mIsBackPressedOnce = false;
+                        mCloseAppDialog.dismiss();
+                    }
+                })
+                .dismissListener(new DialogInterface.OnDismissListener() {
+                    @Override
+                    public void onDismiss(DialogInterface dialog) {
+                        mIsBackPressedOnce = false;
+                    }
+                })
+                .build();
+    }
+
+    private boolean mIsBackPressedOnce;
     @Override
     public void onBackPressed() {
         //handle the back press :D close the drawer first and if the drawer is closed close the activity
         if (mDrawer != null && mDrawer.isDrawerOpen()) {
             mDrawer.closeDrawer();
         } else {
-            super.onBackPressed();
+            if (mIsBackPressedOnce) {
+                mCloseAppDialog.dismiss();
+                super.onBackPressed();
+            } else {
+                mIsBackPressedOnce = true;
+                mCloseAppDialog.show();
+            }
         }
     }
 }

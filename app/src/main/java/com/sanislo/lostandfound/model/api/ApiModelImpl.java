@@ -52,6 +52,11 @@ public class ApiModelImpl implements ApiModel {
     }
 
     @Override
+    public Call<Void> saveUser(String uid, User user) {
+        return mApiInterface.saveUser(uid, user);
+    }
+
+    @Override
     public Call<User> getUser(int id) {
         return mApiInterface.getUser(id);
     }
