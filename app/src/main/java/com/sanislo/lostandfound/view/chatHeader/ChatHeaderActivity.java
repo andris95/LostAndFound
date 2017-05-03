@@ -2,20 +2,17 @@ package com.sanislo.lostandfound.view.chatHeader;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.MenuItem;
 
-import com.bumptech.glide.Glide;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.sanislo.lostandfound.R;
 import com.sanislo.lostandfound.adapter.ChatHeaderAdapter;
-import com.sanislo.lostandfound.adapter.ChatMessageAdapter;
 import com.sanislo.lostandfound.model.ChatHeader;
-import com.sanislo.lostandfound.model.ChatMessage;
 import com.sanislo.lostandfound.utils.FirebaseConstants;
 import com.sanislo.lostandfound.view.BaseActivity;
 import com.sanislo.lostandfound.view.chatMessage.ChatActivity;
@@ -48,9 +45,13 @@ public class ChatHeaderActivity extends BaseActivity {
     }
 
     private void setupToolbar() {
+        mToolbar.setTitle(R.string.chats);
+        mToolbar.setTitleTextColor(ContextCompat.getColor(ChatHeaderActivity.this,
+                R.color.md_white_1000));
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
+        getSupportActionBar().setTitle(R.string.chats);
     }
 
     @Override

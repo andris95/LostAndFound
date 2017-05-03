@@ -91,6 +91,7 @@
     <string name="message">Message</string>
 
     <!-- ChatActivity -->
+    <string name="chats">Chats</string>
     <string name="chat_message_hint">New message here...</string>
 
     <!-- Search Screen -->
