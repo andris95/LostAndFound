@@ -4,7 +4,6 @@ import android.Manifest;
 import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -27,14 +26,12 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.aurelhubert.ahbottomnavigation.AHBottomNavigation;
-import com.aurelhubert.ahbottomnavigation.AHBottomNavigationItem;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.RequestListener;
@@ -66,6 +63,7 @@ import java.util.Collections;
 import java.util.List;
 
 import butterknife.BindView;
+import butterknife.BindViews;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
@@ -115,13 +113,14 @@ public class AddThingActivity extends AppCompatActivity implements AddThingView 
     @BindView(R.id.iv_remove)
     ImageView ivRemoveCoverPhoto;
 
-    @Nullable
-    @BindView(R.id.bottom_navigation)
-    AHBottomNavigation bottomNavigation;
-
     @BindView(R.id.fl_map_container)
-
     FrameLayout flMapContainer;
+
+    @BindViews({R.id.ll_location, R.id.ll_cover_photo, R.id.ll_desc_photos})
+    List<LinearLayout> mBottomBarItems;
+
+    @BindView(R.id.bottom_navigation)
+    LinearLayout llBottomNavigation;
 
     private GoogleMap mGoogleMap;
     private MapFragment mMapFragment;
@@ -174,6 +173,28 @@ public class AddThingActivity extends AppCompatActivity implements AddThingView 
         //initBottomNavigation();
         displayCoverPlaceholder();
         initMapView();
+        setBottomBarItemClickListeners();
+    }
+
+    private void setBottomBarItemClickListeners() {
+        for (LinearLayout linearLayout : mBottomBarItems) {
+            linearLayout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    switch (v.getId()) {
+                        case R.id.ll_location:
+                            onSelectPlace();
+                            break;
+                        case R.id.ll_cover_photo:
+                            onSelectThingCoverPhoto();
+                            break;
+                        case R.id.ll_desc_photos:
+                            onSelectThingDescriptionPhotos();
+                            break;
+                    }
+                }
+            });
+        }
     }
 
     @Override
@@ -260,54 +281,6 @@ public class AddThingActivity extends AppCompatActivity implements AddThingView 
         });
         ItemTouchHelper touchHelper = new ItemTouchHelper(dragCallback);
         touchHelper.attachToRecyclerView(rvDescriptionPhotos);
-    }
-
-    private void initBottomNavigation() {
-        int blackColor = ContextCompat.getColor(AddThingActivity.this, R.color.md_black_1000);
-        Drawable location = ContextCompat.getDrawable(AddThingActivity.this, R.drawable.map_marker);
-        Drawable image = ContextCompat.getDrawable(AddThingActivity.this, R.drawable.image);
-        Drawable multipleImage = ContextCompat.getDrawable(AddThingActivity.this, R.drawable.image_multiple);
-        Drawable contacts = ContextCompat.getDrawable(AddThingActivity.this, R.drawable.contacts);
-        AHBottomNavigationItem locationItem = new AHBottomNavigationItem(getString(R.string.location),
-                location);
-        AHBottomNavigationItem coverPhotoItem = new AHBottomNavigationItem(getString(R.string.cover),
-                image);
-        AHBottomNavigationItem descriptionPhotosItem = new AHBottomNavigationItem(
-                getString(R.string.description_photos),
-                multipleImage);
-        AHBottomNavigationItem contactsItem = new AHBottomNavigationItem(
-                getString(R.string.contact),
-                contacts);
-        bottomNavigation.setAccentColor(blackColor);
-        bottomNavigation.setInactiveColor(blackColor);
-        bottomNavigation.addItem(locationItem);
-        bottomNavigation.addItem(coverPhotoItem);
-        bottomNavigation.addItem(descriptionPhotosItem);
-        bottomNavigation.addItem(contactsItem);
-        bottomNavigation.setColored(false);
-        bottomNavigation.setUseElevation(true);
-        bottomNavigation.setBehaviorTranslationEnabled(false);
-        bottomNavigation.setTitleTextSize(20, 20);
-        bottomNavigation.setOnTabSelectedListener(new AHBottomNavigation.OnTabSelectedListener() {
-            @Override
-            public boolean onTabSelected(int position, boolean wasSelected) {
-                switch (position) {
-                    case 0:
-                        onSelectPlace();
-                        return true;
-                    case 1:
-                        onSelectThingCoverPhoto();
-                        return true;
-                    case 2:
-                        onSelectThingDescriptionPhotos();
-                        return true;
-                    case 3:
-                        Toast.makeText(getApplicationContext(), "TO be continued", Toast.LENGTH_SHORT).show();
-                    default:
-                        return false;
-                }
-            }
-        });
     }
 
     private void initMapView() {
@@ -458,7 +431,7 @@ public class AddThingActivity extends AppCompatActivity implements AddThingView 
     @Override
     public void onError(int errorMessageRes) {
         if (mErrorSnackbar == null || !mErrorSnackbar.isShownOrQueued()) {
-            mErrorSnackbar = Snackbar.make(mRoot, errorMessageRes, Snackbar.LENGTH_LONG);
+            mErrorSnackbar = Snackbar.make(llBottomNavigation, errorMessageRes, Snackbar.LENGTH_LONG);
             mErrorSnackbar.show();
         }
     }

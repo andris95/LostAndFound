@@ -2,8 +2,8 @@ package com.sanislo.lostandfound.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.text.TextUtils;
 import android.text.format.DateUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -142,10 +142,12 @@ public class ThingAdapter extends RecyclerView.Adapter<ThingAdapter.ViewHolder> 
                     : mContext.getString(R.string.type_found);
             return type;
         }
+
         private void setAuthorPhoto() {
+            Log.d(TAG, "setAuthorPhoto: " + mThing.getUserAvatar());
             Glide.with(itemView.getContext())
                     .load(mThing.getUserAvatar())
-                    .placeholder(R.drawable.avatar_placeholder)
+                    //.placeholder(R.drawable.avatar_placeholder)
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .listener(new RequestListener<String, GlideDrawable>() {
                         @Override
@@ -165,7 +167,7 @@ public class ThingAdapter extends RecyclerView.Adapter<ThingAdapter.ViewHolder> 
         private void setThingPhoto() {
             Glide.with(itemView.getContext())
                     .load(mThing.getPhoto())
-                    .placeholder(R.drawable.thing_cover_placeholder)
+                    //.placeholder(R.drawable.thing_cover_placeholder)
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .listener(new RequestListener<String, GlideDrawable>() {
                         @Override

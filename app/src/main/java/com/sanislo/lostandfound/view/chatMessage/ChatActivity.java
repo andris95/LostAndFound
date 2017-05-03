@@ -103,7 +103,7 @@ public class ChatActivity extends BaseActivity {
         tvUserName.setText(mChatPartnerName);
         Glide.with(this)
                 .load(mChatPartnerAvatarUrl)
-                .placeholder(R.drawable.avatar_placeholder)
+                //.placeholder(R.drawable.avatar_placeholder)
                 .into(ivChatPartnerAvatar);
     }
 

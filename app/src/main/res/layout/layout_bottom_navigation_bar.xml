@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="128dp"
+    android:background="@color/md_white_1000"
+    android:layout_alignParentBottom="true"
+    android:orientation="horizontal">
+
+    <!--<ImageButton
+        android:id="@+id/tab_home"
+        style="@style/BottomNavigationBarTab"
+        android:src="@drawable/home"/>
+
+    <ImageButton
+        android:id="@+id/tab_search"
+        style="@style/BottomNavigationBarTab"
+        android:src="@drawable/magnify"/>
+
+    <ImageButton
+        android:id="@+id/tab_list"
+        style="@style/BottomNavigationBarTab"
+        android:src="@drawable/format_list_bulleted"/>
+
+    <ImageButton
+        android:id="@+id/tab_marker"
+        style="@style/BottomNavigationBarTab"
+        android:src="@drawable/map_marker"/>
+
+    <ImageButton
+        android:id="@+id/tab_settings"
+        style="@style/BottomNavigationBarTab"
+        android:src="@drawable/settings"/>
+-->
+</LinearLayout>

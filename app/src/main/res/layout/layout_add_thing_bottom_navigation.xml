@@ -2,16 +2,21 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="horizontal"
+    android:id="@+id/bottom_navigation"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingTop="8dp"
+    android:paddingBottom="8dp"
     android:layout_alignParentBottom="true"
+    android:background="@color/md_grey_200"
     android:elevation="8dp"
-    android:weightSum="4">
+    android:weightSum="3">
 
     <LinearLayout
+        android:id="@+id/ll_location"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
         android:layout_weight="1">
 
         <RelativeLayout
@@ -22,6 +27,7 @@
                 android:id="@+id/iv_location"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="4dp"
                 android:layout_centerHorizontal="true"
                 android:src="@drawable/map_marker"/>
 
@@ -35,8 +41,10 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/ll_cover_photo"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
         android:layout_weight="1">
 
         <RelativeLayout
@@ -47,6 +55,7 @@
                 android:id="@+id/iv_image"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="4dp"
                 android:layout_centerHorizontal="true"
                 android:src="@drawable/image"/>
 
@@ -60,8 +69,10 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/ll_desc_photos"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
         android:layout_weight="1">
 
         <RelativeLayout
@@ -72,6 +83,7 @@
                 android:id="@+id/iv_image_multiple"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="4dp"
                 android:layout_centerHorizontal="true"
                 android:src="@drawable/image_multiple"/>
 
@@ -81,33 +93,8 @@
                 android:layout_below="@+id/iv_image_multiple"
                 android:layout_centerHorizontal="true"
                 android:gravity="center"
-                android:lines="2"
+                android:lines="1"
                 android:text="@string/description_photos"/>
-        </RelativeLayout>
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1">
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <ImageView
-                android:id="@+id/iv_contacts"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
-                android:src="@drawable/contacts"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/iv_contacts"
-                android:layout_centerHorizontal="true"
-                android:text="@string/contact"/>
         </RelativeLayout>
     </LinearLayout>
 </LinearLayout>

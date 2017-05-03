@@ -83,7 +83,7 @@ public class ChatHeaderAdapter extends FirebaseRecyclerAdapter<ChatHeader, ChatH
             setMessageDate();
             Glide.with(itemView.getContext())
                     .load(mChatHeader.getRecipientAvatarUrl())
-                    .placeholder(R.drawable.avatar_placeholder)
+                    //.placeholder(R.drawable.avatar_placeholder)
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .into(ivChatPartnerAvatar);
             checkLastMessageAuthor();
@@ -95,7 +95,7 @@ public class ChatHeaderAdapter extends FirebaseRecyclerAdapter<ChatHeader, ChatH
                 ivMe.setVisibility(View.VISIBLE);
                 Glide.with(itemView.getContext())
                         .load(mChatHeader.getLastMessageAuthorAvatarUrl())
-                        .placeholder(R.drawable.avatar_placeholder)
+                        //.placeholder(R.drawable.avatar_placeholder)
                         .diskCacheStrategy(DiskCacheStrategy.ALL)
                         .into(ivMe);
             } else {

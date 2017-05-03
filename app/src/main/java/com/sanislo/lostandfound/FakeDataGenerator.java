@@ -44,7 +44,7 @@ public class FakeDataGenerator {
     }
 
     public void postFakeThings() {
-        mFakeThingList = generateThings();
+        //mFakeThingList = generateThings();
         postThing(mFakeThingList.get(mCurrentUploadingThing));
     }
 
