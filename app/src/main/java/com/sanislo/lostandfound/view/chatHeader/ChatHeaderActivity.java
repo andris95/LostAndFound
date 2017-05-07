@@ -50,8 +50,10 @@ public class ChatHeaderActivity extends BaseActivity {
                 R.color.md_white_1000));
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
-        getSupportActionBar().setTitle(R.string.chats);
+        getSupportActionBar().setDisplayShowTitleEnabled(true);
+        getSupportActionBar().setHomeAsUpIndicator(R.drawable.arrow_left_white);
+        getSupportActionBar().setTitle(R.string.chat_conversations);
+        //getSupportActionBar().setIcon(R.drawable.arrow_left_white);
     }
 
     @Override

@@ -86,6 +86,7 @@ public class ChatActivity extends BaseActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        Log.d(TAG, "onOptionsItemSelected: " + item.getItemId());
         switch (item.getItemId()) {
             case android.R.id.home:
                 onBackPressed();
@@ -98,8 +99,7 @@ public class ChatActivity extends BaseActivity {
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
-        Log.d(TAG, "setupToolbar: " + mChatPartnerName);
-        Log.d(TAG, "setupToolbar: " + mChatPartnerAvatarUrl);
+        getSupportActionBar().setHomeAsUpIndicator(R.drawable.arrow_left_white);
         tvUserName.setText(mChatPartnerName);
         Glide.with(this)
                 .load(mChatPartnerAvatarUrl)
@@ -153,7 +153,7 @@ public class ChatActivity extends BaseActivity {
             message = getString(R.string.lorem_ipsum);
         }
         if (TextUtils.isEmpty(message) || mUser == null) return;
-
+        edtMessage.setText("");
         createNewChatMessage(message);
         getChatPartnerUser();
     }
@@ -239,7 +239,6 @@ public class ChatActivity extends BaseActivity {
                 if (databaseError != null) {
                     databaseError.toException().printStackTrace();
                 }
-                edtMessage.setText("");
             }
         });
     }

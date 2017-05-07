@@ -5,18 +5,32 @@
     android:orientation="vertical"
     android:layout_width="248dp"
     android:layout_height="wrap_content"
-    android:layout_marginStart="8dp"
-    android:layout_marginEnd="8dp"
-    android:layout_marginTop="4dp"
-    android:layout_marginBottom="4dp"
-    android:padding="4dp"
-    android:background="@drawable/chat_message_backgroun_left">
+    android:layout_marginStart="8dp">
+
+    <RelativeLayout
+        android:id="@+id/rv_chat_message_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="4dp"
+        android:padding="4dp"
+        android:background="@drawable/chat_message_backgroun_left">
+
+        <TextView
+            android:id="@+id/tv_chat_message"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:maxWidth="256dp"
+            tools:text="Hello Andras! I have found your keys!"
+            android:textColor="@color/md_black_1000"/>
+    </RelativeLayout>
 
     <TextView
-        android:id="@+id/tv_chat_message"
-        android:layout_width="match_parent"
+        android:id="@+id/tv_message_date"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:maxWidth="256dp"
-        tools:text="Hello Andras! I have found your keys!"
-        android:textColor="@color/md_black_1000"/>
+        android:layout_below="@+id/rv_chat_message_container"
+        tools:text="12:28"
+        android:textSize="10sp"/>
 </RelativeLayout>

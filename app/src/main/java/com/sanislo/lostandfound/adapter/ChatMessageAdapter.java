@@ -2,6 +2,7 @@ package com.sanislo.lostandfound.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -82,6 +83,9 @@ public class ChatMessageAdapter extends FirebaseRecyclerAdapter<ChatMessage, Cha
         @BindView(R.id.tv_chat_message)
         TextView tvChatMessage;
 
+        @BindView(R.id.tv_message_date)
+        TextView tvMessageDate;
+
         private ChatMessage mChatMessage;
 
         public ViewHolder(View itemView) {
@@ -92,6 +96,10 @@ public class ChatMessageAdapter extends FirebaseRecyclerAdapter<ChatMessage, Cha
         public void bind(ChatMessage chatMessage) {
             mChatMessage = chatMessage;
             tvChatMessage.setText(chatMessage.getMessage());
+            String date = DateUtils.getRelativeTimeSpanString(mChatMessage.getTimestamp(),
+                    System.currentTimeMillis(),
+                    DateUtils.SECOND_IN_MILLIS).toString();
+            tvMessageDate.setText(date);
         }
     }
 }

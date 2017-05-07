@@ -38,4 +38,7 @@
         <item name="android:gravity">center</item>
     </style>
 
+    <style name="ToolbarWhiteHomeIcon" parent="AppTheme">
+        <item name="android:textColorSecondary">@color/md_white_1000</item>
+    </style>
 </resources>
