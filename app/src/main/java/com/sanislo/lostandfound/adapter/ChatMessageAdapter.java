@@ -1,6 +1,7 @@
 package com.sanislo.lostandfound.adapter;
 
 import android.content.Context;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
@@ -102,6 +103,7 @@ public class ChatMessageAdapter extends FirebaseRecyclerAdapter<ChatMessage, Cha
         @BindView(R.id.tv_message_date)
         TextView tvMessageDate;
 
+        @Nullable
         @BindView(R.id.iv_dot)
         ImageView ivDot;
 
@@ -125,6 +127,9 @@ public class ChatMessageAdapter extends FirebaseRecyclerAdapter<ChatMessage, Cha
                     System.currentTimeMillis(),
                     DateUtils.SECOND_IN_MILLIS).toString();
             tvMessageDate.setText(date);
+            if (ivDot != null) {
+                checkIsRead();
+            }
         }
 
         private void checkIsRead() {
