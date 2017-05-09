@@ -8,15 +8,17 @@ public class ChatMessage {
     private String authorUid;
     private String authorName;
     private String message;
+    private boolean isReadByRecipient;
     private long timestamp;
 
     public ChatMessage() {
     }
 
-    public ChatMessage(String authorUid, String authorName, String message, long timestamp) {
+    public ChatMessage(String authorUid, String authorName, String message, boolean isReadByRecipient, long timestamp) {
         this.authorUid = authorUid;
         this.authorName = authorName;
         this.message = message;
+        this.isReadByRecipient = isReadByRecipient;
         this.timestamp = timestamp;
     }
 
@@ -56,12 +58,21 @@ public class ChatMessage {
         return authorUid.equals(uid);
     }
 
+    public boolean isReadByRecipient() {
+        return isReadByRecipient;
+    }
+
+    public void setReadByRecipient(boolean readByRecipient) {
+        isReadByRecipient = readByRecipient;
+    }
+
     @Override
     public String toString() {
         return "ChatMessage{" +
                 "authorUid='" + authorUid + '\'' +
                 ", authorName='" + authorName + '\'' +
                 ", message='" + message + '\'' +
+                ", isReadByRecipient=" + isReadByRecipient +
                 ", timestamp=" + timestamp +
                 '}';
     }

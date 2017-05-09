@@ -200,6 +200,7 @@ public class ChatActivity extends BaseActivity {
                 mChatPartnerUid,
                 mChatPartnerUser.getFullName(),
                 mChatPartnerUser.getAvatarURL(),
+                0,
                 mChatMessage.getTimestamp());
         return chatHeader;
     }
@@ -212,6 +213,7 @@ public class ChatActivity extends BaseActivity {
                 getAuthenticatedUserUID(),
                 mUser.getFullName(),
                 mUser.getAvatarURL(),
+                0,
                 mChatMessage.getTimestamp());
         return chatHeader;
     }

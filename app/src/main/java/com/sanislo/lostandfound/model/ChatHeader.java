@@ -12,12 +12,21 @@ public class ChatHeader {
     private String recipientUid;
     private String recipientName;
     private String recipientAvatarUrl;
+    private int unreadMessageCount;
     private long timestamp;
 
     public ChatHeader() {
     }
 
-    public ChatHeader(String lastMessageAuthorUid, String lastMessageAuthorName, String lastMessageAuthorAvatarUrl, String message, String recipientUid, String recipientName, String recipientAvatarUrl, long timestamp) {
+    public ChatHeader(String lastMessageAuthorUid,
+                      String lastMessageAuthorName,
+                      String lastMessageAuthorAvatarUrl,
+                      String message,
+                      String recipientUid,
+                      String recipientName,
+                      String recipientAvatarUrl,
+                      int unreadMessageCount,
+                      long timestamp) {
         this.lastMessageAuthorUid = lastMessageAuthorUid;
         this.lastMessageAuthorName = lastMessageAuthorName;
         this.lastMessageAuthorAvatarUrl = lastMessageAuthorAvatarUrl;
@@ -25,6 +34,7 @@ public class ChatHeader {
         this.recipientUid = recipientUid;
         this.recipientName = recipientName;
         this.recipientAvatarUrl = recipientAvatarUrl;
+        this.unreadMessageCount = unreadMessageCount;
         this.timestamp = timestamp;
     }
 
@@ -96,6 +106,14 @@ public class ChatHeader {
         return lastMessageAuthorUid.equals(uid);
     }
 
+    public int getUnreadMessageCount() {
+        return unreadMessageCount;
+    }
+
+    public void setUnreadMessageCount(int unreadMessageCount) {
+        this.unreadMessageCount = unreadMessageCount;
+    }
+
     @Override
     public String toString() {
         return "ChatHeader{" +
@@ -106,6 +124,7 @@ public class ChatHeader {
                 ", recipientUid='" + recipientUid + '\'' +
                 ", recipientName='" + recipientName + '\'' +
                 ", recipientAvatarUrl='" + recipientAvatarUrl + '\'' +
+                ", unreadMessageCount=" + unreadMessageCount +
                 ", timestamp=" + timestamp +
                 '}';
     }

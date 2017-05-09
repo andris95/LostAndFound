@@ -27,6 +27,14 @@
             android:textColor="@color/md_black_1000"/>
     </RelativeLayout>
 
+    <ImageView
+        android:id="@+id/iv_dot"
+        android:layout_width="8dp"
+        android:layout_height="8dp"
+        android:layout_toStartOf="@+id/rv_chat_message_container"
+        android:layout_alignBottom="@+id/rv_chat_message_container"
+        android:src="@drawable/dot"/>
+
     <TextView
         android:id="@+id/tv_message_date"
         android:layout_width="wrap_content"

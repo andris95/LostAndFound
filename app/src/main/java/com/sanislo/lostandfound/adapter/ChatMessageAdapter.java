@@ -6,13 +6,18 @@ import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.sanislo.lostandfound.R;
 import com.sanislo.lostandfound.model.ChatMessage;
+import com.sanislo.lostandfound.utils.FirebaseConstants;
+
+import java.util.HashMap;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -24,6 +29,17 @@ import butterknife.ButterKnife;
 public class ChatMessageAdapter extends FirebaseRecyclerAdapter<ChatMessage, ChatMessageAdapter.ViewHolder> {
     public static final String TAG = ChatMessageAdapter.class.getSimpleName();
     private String mUid;
+
+    //TODO check this
+    private String mChatPartnerUid;
+
+    public String getChatPartnerUid() {
+        return mChatPartnerUid;
+    }
+
+    public void setChatPartnerUid(String chatPartnerUid) {
+        mChatPartnerUid = chatPartnerUid;
+    }
 
     /**
      * @param modelClass      Firebase will marshall the data at a location into an instance of a class that you provide
@@ -74,7 +90,7 @@ public class ChatMessageAdapter extends FirebaseRecyclerAdapter<ChatMessage, Cha
 
     @Override
     protected void populateViewHolder(ViewHolder viewHolder, ChatMessage model, int position) {
-        viewHolder.bind(model);
+        viewHolder.bind(model, mUid, mChatPartnerUid);
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -86,20 +102,49 @@ public class ChatMessageAdapter extends FirebaseRecyclerAdapter<ChatMessage, Cha
         @BindView(R.id.tv_message_date)
         TextView tvMessageDate;
 
+        @BindView(R.id.iv_dot)
+        ImageView ivDot;
+
         private ChatMessage mChatMessage;
+        private String mChatPartnerUid;
+        private String mAuthenticatedUid;
 
         public ViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
         }
 
-        public void bind(ChatMessage chatMessage) {
+        public void bind(ChatMessage chatMessage, String authenticatedUid, String chatPartnerUid) {
             mChatMessage = chatMessage;
+            //TODO check this
+            mChatPartnerUid = chatPartnerUid;
+            mAuthenticatedUid = authenticatedUid;
+
             tvChatMessage.setText(chatMessage.getMessage());
             String date = DateUtils.getRelativeTimeSpanString(mChatMessage.getTimestamp(),
                     System.currentTimeMillis(),
                     DateUtils.SECOND_IN_MILLIS).toString();
             tvMessageDate.setText(date);
+        }
+
+        private void checkIsRead() {
+            if (mChatMessage.isReadByRecipient()) {
+                ivDot.setVisibility(View.GONE);
+            } else {
+                HashMap<String, Object> updateMap = new HashMap<>();
+                updateMap.put(FirebaseConstants.CHAT_MESSAGES
+                        + "/" + mAuthenticatedUid
+                        + "/" + mChatPartnerUid
+                        + "/" + mChatMessage.getTimestamp()
+                        + "/isReadByRecipient", true);
+                updateMap.put(FirebaseConstants.CHAT_MESSAGES
+                        + "/" + mChatPartnerUid
+                        + "/" + mAuthenticatedUid
+                        + "/" + mChatMessage.getTimestamp()
+                        + "/isReadByRecipient", true);
+                FirebaseDatabase.getInstance().getReference()
+                        .updateChildren(updateMap);
+            }
         }
     }
 }
