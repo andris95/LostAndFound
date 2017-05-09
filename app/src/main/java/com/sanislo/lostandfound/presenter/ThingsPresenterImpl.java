@@ -31,7 +31,7 @@ public class ThingsPresenterImpl implements ThingsPresenter {
         mView = view;
     }
 
-    @Override
+    /*@Override
     public void getThings() {
         Call<List<Thing>> call = mApiModel.getThings("_timestamp", "DESC");
         call.enqueue(new Callback<List<Thing>>() {
@@ -46,6 +46,25 @@ public class ThingsPresenterImpl implements ThingsPresenter {
             @Override
             public void onFailure(Call<List<Thing>> call, Throwable t) {
 
+            }
+        });
+    }*/
+
+    @Override
+    public void getThings(int page) {
+        Call<List<Thing>> call = mApiModel.getThings("_timestamp", "DESC", page);
+        call.enqueue(new Callback<List<Thing>>() {
+            @Override
+            public void onResponse(Call<List<Thing>> call, Response<List<Thing>> response) {
+                Log.d(TAG, "onResponse: " + response.body());
+                if (response.isSuccessful()) {
+                    mView.onThingsLoaded(response.body());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<Thing>> call, Throwable t) {
+                t.printStackTrace();
             }
         });
     }

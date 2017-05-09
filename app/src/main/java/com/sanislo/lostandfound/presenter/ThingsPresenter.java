@@ -7,7 +7,7 @@ import android.content.Context;
  */
 
 public interface ThingsPresenter {
-    void getThings();
+    //void getThings();
+    void getThings(int page);
     void getProfile(Context context);
-    //void addComment(Thing thing, String text);
 }

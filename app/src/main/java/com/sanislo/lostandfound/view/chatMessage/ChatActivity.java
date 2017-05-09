@@ -8,6 +8,7 @@ import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.animation.OvershootInterpolator;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -34,6 +35,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import jp.wasabeef.recyclerview.animators.SlideInUpAnimator;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -141,6 +143,7 @@ public class ChatActivity extends BaseActivity {
                 ChatMessageAdapter.ViewHolder.class,
                 query);
         rvChat.setLayoutManager(new LinearLayoutManager(ChatActivity.this));
+        rvChat.setItemAnimator(new SlideInUpAnimator(new OvershootInterpolator(2f)));
         rvChat.setAdapter(mChatMessageAdapter);
     }
 

@@ -31,8 +31,7 @@ public interface ApiInterface {
     @GET(ApiConstants.THINGS)
     Call<List<Thing>> getThings(@Query("_sort") String sort,
                                 @Query("_order") String order,
-                                @Query("title") List<String> titles,
-                                @Query("city") List<String> cities);
+                                @Query("_page") int page);
 
     @GET(ApiConstants.THINGS)
     Call<List<Thing>> getThings(@QueryMap Map<String, String> options);

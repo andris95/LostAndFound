@@ -16,6 +16,7 @@ import retrofit2.Call;
 public interface ApiModel {
     Call<List<Thing>> getThings();
     Call<List<Thing>> getThings(String sort, String order);
+    Call<List<Thing>> getThings(String sort, String order, int page);
     Call<List<Thing>> getThings(Map<String, String> options);
     Call<List<Category>> getCategories();
     Call<Void> updateUser(int userId, User user);

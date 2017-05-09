@@ -195,7 +195,7 @@ public class ThingsMapFragment extends SupportMapFragment implements MapView,
         public CircleClusterRenderer(Context context, GoogleMap map, ClusterManager<AbstractMarker> clusterManager) {
             super(context, map, clusterManager);
             mClusterItemImageView = new CircleImageView(context);
-            mClusterItemImageView.setLayoutParams(new ViewGroup.LayoutParams(112, 112));
+            mClusterItemImageView.setLayoutParams(new ViewGroup.LayoutParams(96, 96));
             mCircleIconGenerator = new CircleIconGenerator(getActivity().getApplicationContext());
         }
 
@@ -226,10 +226,8 @@ public class ThingsMapFragment extends SupportMapFragment implements MapView,
                         @Override
                         public boolean onResourceReady(Bitmap resource, String model, Target<Bitmap> target, boolean isFromMemoryCache, boolean isFirstResource) {
                             try {
-                                //mClusterItemImageView.setImageBitmap(resource);
                                 mCircleIconGenerator.setImage(resource);
                                 Bitmap icon = mCircleIconGenerator.makeIcon();
-                                //marker.setIcon(BitmapDescriptorFactory.fromBitmap(resource));
                                 marker.setIcon(BitmapDescriptorFactory.fromBitmap(icon));
                             } catch (Exception e) {
                                 e.printStackTrace();
@@ -237,7 +235,7 @@ public class ThingsMapFragment extends SupportMapFragment implements MapView,
                             return false;
                         }
                     })
-                    .into(128, 128);
+                    .into(96, 96);
         }
 
         @Override

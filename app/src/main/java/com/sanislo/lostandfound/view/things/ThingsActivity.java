@@ -70,6 +70,7 @@ public class ThingsActivity extends BaseActivity implements ThingsView {
     private ThingAdapter mThingAdapter;
 
     private ThingsPresenter mThingsPresenter;
+    private LinearLayoutManager mLinearLayoutManager;
     private Drawer mDrawer;
     private AccountHeader mAccountHeader;
     private User mUser = new User();
@@ -90,6 +91,39 @@ public class ThingsActivity extends BaseActivity implements ThingsView {
         }
     };
 
+    private boolean isLoading;
+    private boolean isLastPage;
+    private int mCurrentPage = 1;
+    private static final int PAGE_SIZE = 10;
+    private RecyclerView.OnScrollListener mOnScrollListener = new RecyclerView.OnScrollListener() {
+        @Override
+        public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+            super.onScrollStateChanged(recyclerView, newState);
+        }
+
+        @Override
+        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+            super.onScrolled(recyclerView, dx, dy);
+            int visibleItemCount = mLinearLayoutManager.getChildCount();
+            int totalItemCount = mLinearLayoutManager.getItemCount();
+            int firstVisibleItemPosition = mLinearLayoutManager.findFirstVisibleItemPosition();
+
+            if (!isLoading && !isLastPage) {
+                if ((visibleItemCount + firstVisibleItemPosition) >= totalItemCount
+                        && firstVisibleItemPosition >= 0
+                        && totalItemCount >= PAGE_SIZE) {
+                    loadMoreItems();
+                }
+            }
+        }
+    };
+
+    private void loadMoreItems() {
+        isLoading = true;
+        mCurrentPage++;
+        mThingsPresenter.getThings(mCurrentPage);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -103,7 +137,7 @@ public class ThingsActivity extends BaseActivity implements ThingsView {
         setupDrawer();
         initThingsAdapter();
         setupSwipeRefresh();
-        mThingsPresenter.getThings();
+        mThingsPresenter.getThings(mCurrentPage);
         if (getIntent().getParcelableExtra(EXTRA_USER) != null) {
             mUser = getIntent().getParcelableExtra(EXTRA_USER);
             updateProfile();
@@ -120,7 +154,8 @@ public class ThingsActivity extends BaseActivity implements ThingsView {
                     mThingAdapter.clear();
                     mThingAdapter.notifyDataSetChanged();
                 }
-                mThingsPresenter.getThings();
+                //TODO !!!
+                mThingsPresenter.getThings(1);
             }
         });
     }
@@ -291,10 +326,12 @@ public class ThingsActivity extends BaseActivity implements ThingsView {
     }
 
     private void initThingsAdapter() {
-        mThingAdapter = new ThingAdapter(ThingsActivity.this, null, null);
-        mThingAdapter.setOnClickListener(mThingClickListener);
-        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
-        rvThings.setLayoutManager(layoutManager);
+        mThingAdapter = new ThingAdapter(ThingsActivity.this,
+                mThingClickListener,
+                mThingList);
+        mLinearLayoutManager = new LinearLayoutManager(this);
+        rvThings.setLayoutManager(mLinearLayoutManager);
+        rvThings.addOnScrollListener(mOnScrollListener);
         rvThings.setAdapter(mThingAdapter);
     }
 
@@ -320,13 +357,16 @@ public class ThingsActivity extends BaseActivity implements ThingsView {
         startActivity(intent);
     }
 
+    private List<Thing> mThingList = new ArrayList<>();
     @Override
     public void onThingsLoaded(List<Thing> thingList) {
         if (swipeRefreshThings.isRefreshing()) {
             swipeRefreshThings.setRefreshing(false);
         }
-        mThingAdapter.setThingList(thingList);
+        //mThingAdapter.setThingList(thingList);
+        mThingList.addAll(thingList);
         mThingAdapter.notifyDataSetChanged();
+        isLoading = false;
     }
 
     @Override
