@@ -56,10 +56,6 @@ public class Thing implements Parcelable {
 	@Expose
 	private int type;
 
-	@SerializedName("commentCount")
-	@Expose
-	private int commentCount;
-
 	@SerializedName("timestamp")
 	@Expose
 	private long timestamp;
@@ -140,14 +136,6 @@ public class Thing implements Parcelable {
 		return userName;
 	}
 
-	public void setCommentCount(int commentCount){
-		this.commentCount = commentCount;
-	}
-
-	public int getCommentCount(){
-		return commentCount;
-	}
-
 	public void setTimestamp(long timestamp){
 		this.timestamp = timestamp;
 	}
@@ -201,7 +189,6 @@ public class Thing implements Parcelable {
 				", userName='" + userName + '\'' +
 				", userAvatar='" + userAvatar + '\'' +
 				", type='" + type + '\'' +
-				", commentCount=" + commentCount +
 				", timestamp=" + timestamp +
 				", userUID='" + userUID + '\'' +
 				'}';
@@ -225,7 +212,6 @@ public class Thing implements Parcelable {
 		dest.writeString(userName);
 		dest.writeString(userAvatar);
 		dest.writeInt(type);
-		dest.writeInt(commentCount);
 		dest.writeString(userUID);
 		dest.writeLong(timestamp);
 		dest.writeByte((byte) (returned ? 1 : 0));
@@ -254,7 +240,6 @@ public class Thing implements Parcelable {
 		userName = parcel.readString();
 		userAvatar = parcel.readString();
 		type = parcel.readInt();
-		commentCount = parcel.readInt();
 		userUID = parcel.readString();
 		timestamp = parcel.readLong();
 		returned = parcel.readByte() != 0;
