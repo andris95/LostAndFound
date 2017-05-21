@@ -22,6 +22,10 @@ public class LostAndFoundApplication extends Application {
     public void onCreate() {
         super.onCreate();
         //initialize and create the image loader logic
+        initDrawerImageLoader();
+    }
+
+    private void initDrawerImageLoader() {
         DrawerImageLoader.init(new AbstractDrawerImageLoader() {
             @Override
             public void set(ImageView imageView, Uri uri, Drawable placeholder, String tag) {
@@ -61,4 +65,5 @@ public class LostAndFoundApplication extends Application {
             }
         });
     }
+
 }

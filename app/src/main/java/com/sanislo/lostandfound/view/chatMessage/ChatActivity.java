@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.animation.OvershootInterpolator;
@@ -14,39 +13,28 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.sanislo.lostandfound.R;
-import com.sanislo.lostandfound.model.ChatHeader;
 import com.sanislo.lostandfound.model.ChatMessage;
-import com.sanislo.lostandfound.model.User;
-import com.sanislo.lostandfound.model.api.ApiModel;
-import com.sanislo.lostandfound.model.api.ApiModelImpl;
-import com.sanislo.lostandfound.model.api.FirebaseEndPoint;
-import com.sanislo.lostandfound.model.api.FirebaseEndPointImpl;
 import com.sanislo.lostandfound.utils.FirebaseConstants;
 import com.sanislo.lostandfound.view.BaseActivity;
 import com.sanislo.lostandfound.view.chatMessage.adapter.ChatMessageAdapter;
-
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
+import com.sanislo.lostandfound.view.chatMessage.presenter.ChatPresenter;
+import com.sanislo.lostandfound.view.chatMessage.presenter.ChatPresenterImpl;
+import com.sanislo.lostandfound.view.chatMessage.presenter.ChatView;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import jp.wasabeef.recyclerview.animators.SlideInUpAnimator;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 /**
  * Created by root on 30.04.17.
  */
 
-public class ChatActivity extends BaseActivity {
+public class ChatActivity extends BaseActivity implements ChatView {
     public static final String TAG = ChatActivity.class.getSimpleName();
     public static final String EXTRA_CHAT_PARTNER_UID = "EXTRA_CHAT_PARTNER_UID";
     public static final String EXTRA_CHAT_PARTNER_NAME = "EXTRA_CHAT_PARTNER_NAME";
@@ -68,13 +56,11 @@ public class ChatActivity extends BaseActivity {
     RecyclerView rvChat;
 
     private ChatMessageAdapter mChatMessageAdapter;
-    private User mUser;
     private String mChatPartnerUid;
     private String mChatPartnerName;
     private String mChatPartnerAvatarUrl;
     private DatabaseReference mDatabaseReference = FirebaseDatabase.getInstance().getReference();
-    private ChatMessage mChatMessage;
-    //private ChatPresenter mChatPresenter;
+    private ChatPresenter mChatPresenter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,10 +68,10 @@ public class ChatActivity extends BaseActivity {
         setContentView(R.layout.activity_chat);
         ButterKnife.bind(this);
         fetchIntent();
-        getUser();
         setupToolbar();
         setupChatMessageAdapter();
-        //mChatPresenter = new ChatPresenterImpl();
+
+        mChatPresenter = new ChatPresenterImpl(this, mChatPartnerUid);
     }
 
     @Override
@@ -107,7 +93,6 @@ public class ChatActivity extends BaseActivity {
         tvUserName.setText(mChatPartnerName);
         Glide.with(this)
                 .load(mChatPartnerAvatarUrl)
-                //.placeholder(R.drawable.avatar_placeholder)
                 .into(ivChatPartnerAvatar);
     }
 
@@ -115,25 +100,6 @@ public class ChatActivity extends BaseActivity {
         mChatPartnerUid = getIntent().getStringExtra(EXTRA_CHAT_PARTNER_UID);
         mChatPartnerName = getIntent().getStringExtra(EXTRA_CHAT_PARTNER_NAME);
         mChatPartnerAvatarUrl = getIntent().getStringExtra(EXTRA_CHAT_PARTNER_AVATAR_URL);
-    }
-
-    private void getUser() {
-        ApiModel apiModel = new ApiModelImpl();
-        Call<List<User>> userCall = apiModel.getUserListByUID(getAuthenticatedUserUID());
-        userCall.enqueue(new Callback<List<User>>() {
-            @Override
-            public void onResponse(Call<List<com.sanislo.lostandfound.model.User>> call, Response<List<User>> response) {
-                if (response.isSuccessful()) {
-                    mUser = response.body().get(0);
-                    Log.d(TAG, "onResponse: " + mUser);
-                }
-            }
-
-            @Override
-            public void onFailure(Call<List<com.sanislo.lostandfound.model.User>> call, Throwable t) {
-                t.printStackTrace();
-            }
-        });
     }
 
     private LinearLayoutManager mLinearLayoutManager;
@@ -151,9 +117,6 @@ public class ChatActivity extends BaseActivity {
                 super.onItemRangeInserted(positionStart, itemCount);
                 int messageCount = mChatMessageAdapter.getItemCount();
                 int lastVisiblePosition = mLinearLayoutManager.findLastCompletelyVisibleItemPosition();
-                // If the recycler view is initially being loaded or the
-                // user is at the bottom of the list, scroll to the bottom
-                // of the list to show the newly added message.
                 if (lastVisiblePosition == -1 ||
                         (positionStart >= (messageCount - 1) &&
                                 lastVisiblePosition == (positionStart - 1))) {
@@ -170,107 +133,16 @@ public class ChatActivity extends BaseActivity {
     @OnClick(R.id.iv_send)
     public void onClickSendMessage() {
         String message = edtMessage.getText().toString();
-        Log.d(TAG, "onClickSendMessage: " + message);
-        //TODO hardcode
-        if (TextUtils.isEmpty(message)) {
-            message = getString(R.string.lorem_ipsum);
-        }
-        if (TextUtils.isEmpty(message) || mUser == null) return;
+        mChatPresenter.sendMessage(message);
+    }
+
+    @Override
+    public void onMessageSent() {
         edtMessage.setText("");
-        createNewChatMessage(message);
-        getChatPartnerUser();
     }
 
-    private void createNewChatMessage(String message) {
-        mChatMessage = new ChatMessage();
-        mChatMessage.setAuthorName(mUser.getFullName());
-        mChatMessage.setAuthorUid(getAuthenticatedUserUID());
-        mChatMessage.setMessage(message);
-        long timestamp = new Date().getTime();
-        mChatMessage.setTimestamp(timestamp);
-    }
-
-    private User mChatPartnerUser;
-    private void getChatPartnerUser() {
-        ApiModel apiModel = new ApiModelImpl();
-        Call<List<User>> call = apiModel.getUserListByUID(mChatPartnerUid);
-        call.enqueue(new Callback<List<User>>() {
-            @Override
-            public void onResponse(Call<List<User>> call, Response<List<User>> response) {
-                if (response.isSuccessful()) {
-                    mChatPartnerUser = response.body().get(0);
-                    sendMessage();
-                } else {
-                    Log.d(TAG, "onResponse: fail");
-                }
-            }
-
-            @Override
-            public void onFailure(Call<List<User>> call, Throwable t) {
-                t.printStackTrace();
-            }
-        });
-    }
-
-    private ChatHeader getMyChatHeader() {
-        ChatHeader chatHeader = new ChatHeader(getAuthenticatedUserUID(),
-                mUser.getFullName(),
-                mUser.getAvatarURL(),
-                mChatMessage.getMessage(),
-                mChatPartnerUid,
-                mChatPartnerUser.getFullName(),
-                mChatPartnerUser.getAvatarURL(),
-                mChatMessage.getTimestamp());
-        return chatHeader;
-    }
-
-    private ChatHeader getPartnersChatHeader() {
-        ChatHeader chatHeader = new ChatHeader(getAuthenticatedUserUID(),
-                mUser.getFullName(),
-                mUser.getAvatarURL(),
-                mChatMessage.getMessage(),
-                getAuthenticatedUserUID(),
-                mUser.getFullName(),
-                mUser.getAvatarURL(),
-                mChatMessage.getTimestamp());
-        return chatHeader;
-    }
-
-    private FirebaseEndPoint mFirebaseEndPoint = new FirebaseEndPointImpl();
-
-    private void sendMessage() {
-        Log.d(TAG, "sendMessage: " + mChatMessage);
-        mDatabaseReference.updateChildren(getMessageUpdateMap(), new DatabaseReference.CompletionListener() {
-            @Override
-            public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
-                Log.d(TAG, "onComplete: ");
-                if (databaseError != null) {
-                    databaseError.toException().printStackTrace();
-                    makeToast(databaseError.getMessage());
-                }
-            }
-        });
-    }
-
-    private HashMap<String, Object> getMessageUpdateMap() {
-        HashMap<String, Object> updateMap = new HashMap<>();
-
-        String senderPath = mFirebaseEndPoint.getChatMessagePath(getAuthenticatedUserUID(),
-                mChatPartnerUid,
-                mChatMessage.getTimestamp());
-        updateMap.put(senderPath, mChatMessage);
-        String recepientPath = mFirebaseEndPoint.getChatMessagePath(mChatPartnerUid,
-                getAuthenticatedUserUID(),
-                mChatMessage.getTimestamp());
-        updateMap.put(recepientPath, mChatMessage);
-        updateMap.put(mFirebaseEndPoint.getChatHeaderPath(
-                getAuthenticatedUserUID(),
-                mChatPartnerUid
-        ), getMyChatHeader());
-        updateMap.put(mFirebaseEndPoint.getChatHeaderPath(
-                mChatPartnerUid,
-                getAuthenticatedUserUID()
-        ), getPartnersChatHeader());
-        return updateMap;
+    @Override
+    public void onError(String message) {
+        makeToast(message);
     }
 }
