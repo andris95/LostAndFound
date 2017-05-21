@@ -19,7 +19,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.sanislo.lostandfound.R;
-import com.sanislo.lostandfound.adapter.ChatMessageAdapter;
 import com.sanislo.lostandfound.model.ChatHeader;
 import com.sanislo.lostandfound.model.ChatMessage;
 import com.sanislo.lostandfound.model.User;
@@ -29,6 +28,7 @@ import com.sanislo.lostandfound.model.api.FirebaseEndPoint;
 import com.sanislo.lostandfound.model.api.FirebaseEndPointImpl;
 import com.sanislo.lostandfound.utils.FirebaseConstants;
 import com.sanislo.lostandfound.view.BaseActivity;
+import com.sanislo.lostandfound.view.chatMessage.adapter.ChatMessageAdapter;
 
 import java.util.Date;
 import java.util.HashMap;

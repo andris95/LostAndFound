@@ -1,4 +1,4 @@
-package com.sanislo.lostandfound.adapter;
+package com.sanislo.lostandfound.view.chatMessage.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;

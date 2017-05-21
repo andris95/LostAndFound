@@ -1,4 +1,4 @@
-package com.sanislo.lostandfound.adapter;
+package com.sanislo.lostandfound.view.chatHeader.adapter;
 
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;

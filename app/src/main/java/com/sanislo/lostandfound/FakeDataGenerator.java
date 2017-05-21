@@ -74,38 +74,6 @@ public class FakeDataGenerator {
         });
     }
 
-    private List<Thing> generateThings(User user) {
-        List<Thing> thingList = new ArrayList<>();
-        for (int i = 0; i < 500; i++) {
-            Thing thing = new Thing();
-            thing.setCategory("");
-            thing.setTitle("Thing NO_" + i);
-            thing.setDescription("Description NO_" + i);
-            thing.setType(i % 2 == 0 ? 1 : 2);
-            thing.setUserAvatar(user.getAvatarURL());
-            thing.setTimestamp(new Date().getTime());
-
-            int randomPhotoPosition = ThreadLocalRandom.current().nextInt(0, mTestPhotoURLs.length - 1);
-            thing.setPhoto(mTestPhotoURLs[randomPhotoPosition]);
-
-            thing.setUserName(mUser.getFullName());
-            thing.setUserAvatar(mUser.getAvatarURL());
-            thing.setUserUID(mUser.getUid());
-
-            double lat = ThreadLocalRandom.current().nextDouble(-90, 90);
-            double lng = ThreadLocalRandom.current().nextDouble(-180, 180);
-            Location location = new Location();
-            location.setLat(lat);
-            location.setLng(lng);
-            thing.setLocation(location);
-
-            thing.setDescriptionPhotos(Arrays.asList(mTestPhotoURLs));
-
-            thingList.add(thing);
-        }
-        return thingList;
-    }
-
     private List<Thing> generateCloseThings(Context context) {
         List<Thing> thingList = new ArrayList<>();
         for (int i = 0; i < 16; i++) {

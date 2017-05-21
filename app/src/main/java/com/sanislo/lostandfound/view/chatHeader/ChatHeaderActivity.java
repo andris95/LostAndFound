@@ -11,10 +11,10 @@ import android.view.MenuItem;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.sanislo.lostandfound.R;
-import com.sanislo.lostandfound.adapter.ChatHeaderAdapter;
 import com.sanislo.lostandfound.model.ChatHeader;
 import com.sanislo.lostandfound.utils.FirebaseConstants;
 import com.sanislo.lostandfound.view.BaseActivity;
+import com.sanislo.lostandfound.view.chatHeader.adapter.ChatHeaderAdapter;
 import com.sanislo.lostandfound.view.chatMessage.ChatActivity;
 
 import butterknife.BindView;
