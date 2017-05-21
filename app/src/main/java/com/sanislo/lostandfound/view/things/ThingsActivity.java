@@ -33,7 +33,6 @@ import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IProfile;
 import com.sanislo.lostandfound.FakeDataGenerator;
 import com.sanislo.lostandfound.R;
-import com.sanislo.lostandfound.adapter.ThingAdapter;
 import com.sanislo.lostandfound.interfaces.ThingsView;
 import com.sanislo.lostandfound.model.Thing;
 import com.sanislo.lostandfound.model.User;
@@ -46,6 +45,7 @@ import com.sanislo.lostandfound.view.map.MapActivity;
 import com.sanislo.lostandfound.view.profile.ProfileActivity;
 import com.sanislo.lostandfound.view.search.SearchActivity;
 import com.sanislo.lostandfound.view.thingDetails.ThingDetailsActivity;
+import com.sanislo.lostandfound.view.things.adapter.ThingAdapter;
 
 import java.util.ArrayList;
 import java.util.List;

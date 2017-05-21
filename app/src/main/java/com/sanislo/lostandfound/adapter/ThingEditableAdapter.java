@@ -20,6 +20,7 @@ import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.sanislo.lostandfound.R;
 import com.sanislo.lostandfound.model.Thing;
+import com.sanislo.lostandfound.view.things.adapter.ThingAdapter;
 
 import java.util.ArrayList;
 import java.util.List;

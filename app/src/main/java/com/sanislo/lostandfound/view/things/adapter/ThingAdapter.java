@@ -1,4 +1,4 @@
-package com.sanislo.lostandfound.adapter;
+package com.sanislo.lostandfound.view.things.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
@@ -97,6 +97,9 @@ public class ThingAdapter extends RecyclerView.Adapter<ThingAdapter.ViewHolder> 
         @BindView(R.id.tv_thing_description)
         TextView tvDescription;
 
+        @BindView(R.id.tv_thing_author)
+        TextView tvAuthor;
+
         View mRootView;
         private Thing mThing;
 
@@ -109,6 +112,7 @@ public class ThingAdapter extends RecyclerView.Adapter<ThingAdapter.ViewHolder> 
 
         public void populate(Thing thing) {
             mThing = thing;
+            tvAuthor.setText(thing.getUserName());
             setTitle();
             setAuthorPhoto();
             setTypeAndDate();

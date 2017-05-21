@@ -108,7 +108,7 @@ public class FakeDataGenerator {
 
     private List<Thing> generateCloseThings(Context context) {
         List<Thing> thingList = new ArrayList<>();
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 16; i++) {
             Thing thing = new Thing();
             thing.setCategory("");
             thing.setTitle("Thing NO_" + i);

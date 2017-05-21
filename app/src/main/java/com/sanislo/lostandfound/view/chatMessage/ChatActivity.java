@@ -240,6 +240,19 @@ public class ChatActivity extends BaseActivity {
 
     private void sendMessage() {
         Log.d(TAG, "sendMessage: " + mChatMessage);
+        mDatabaseReference.updateChildren(getMessageUpdateMap(), new DatabaseReference.CompletionListener() {
+            @Override
+            public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                Log.d(TAG, "onComplete: ");
+                if (databaseError != null) {
+                    databaseError.toException().printStackTrace();
+                    makeToast(databaseError.getMessage());
+                }
+            }
+        });
+    }
+
+    private HashMap<String, Object> getMessageUpdateMap() {
         HashMap<String, Object> updateMap = new HashMap<>();
 
         String senderPath = mFirebaseEndPoint.getChatMessagePath(getAuthenticatedUserUID(),
@@ -258,15 +271,6 @@ public class ChatActivity extends BaseActivity {
                 mChatPartnerUid,
                 getAuthenticatedUserUID()
         ), getPartnersChatHeader());
-        mDatabaseReference.updateChildren(updateMap, new DatabaseReference.CompletionListener() {
-            @Override
-            public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
-                Log.d(TAG, "onComplete: ");
-                if (databaseError != null) {
-                    databaseError.toException().printStackTrace();
-                    makeToast(databaseError.getMessage());
-                }
-            }
-        });
+        return updateMap;
     }
 }

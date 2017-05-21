@@ -11,9 +11,9 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.sanislo.lostandfound.R;
-import com.sanislo.lostandfound.adapter.ThingAdapter;
 import com.sanislo.lostandfound.model.Thing;
 import com.sanislo.lostandfound.utils.PreferencesManager;
+import com.sanislo.lostandfound.view.things.adapter.ThingAdapter;
 
 import java.util.List;
 

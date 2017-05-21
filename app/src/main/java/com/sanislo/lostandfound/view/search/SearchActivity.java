@@ -13,9 +13,9 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.sanislo.lostandfound.R;
-import com.sanislo.lostandfound.adapter.ThingAdapter;
 import com.sanislo.lostandfound.model.Thing;
 import com.sanislo.lostandfound.view.BaseActivity;
+import com.sanislo.lostandfound.view.things.adapter.ThingAdapter;
 
 import java.util.List;
 
