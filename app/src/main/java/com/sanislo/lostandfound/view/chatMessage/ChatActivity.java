@@ -25,6 +25,8 @@ import com.sanislo.lostandfound.model.ChatMessage;
 import com.sanislo.lostandfound.model.User;
 import com.sanislo.lostandfound.model.api.ApiModel;
 import com.sanislo.lostandfound.model.api.ApiModelImpl;
+import com.sanislo.lostandfound.model.api.FirebaseEndPoint;
+import com.sanislo.lostandfound.model.api.FirebaseEndPointImpl;
 import com.sanislo.lostandfound.utils.FirebaseConstants;
 import com.sanislo.lostandfound.view.BaseActivity;
 
@@ -134,6 +136,7 @@ public class ChatActivity extends BaseActivity {
         });
     }
 
+    private LinearLayoutManager mLinearLayoutManager;
     private void setupChatMessageAdapter() {
         Query query = mDatabaseReference.child(FirebaseConstants.CHAT_MESSAGES)
                 .child(getAuthenticatedUserUID())
@@ -142,7 +145,24 @@ public class ChatActivity extends BaseActivity {
                 R.layout.item_chat_message_left,
                 ChatMessageAdapter.ViewHolder.class,
                 query);
-        rvChat.setLayoutManager(new LinearLayoutManager(ChatActivity.this));
+        mChatMessageAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
+            @Override
+            public void onItemRangeInserted(int positionStart, int itemCount) {
+                super.onItemRangeInserted(positionStart, itemCount);
+                int messageCount = mChatMessageAdapter.getItemCount();
+                int lastVisiblePosition = mLinearLayoutManager.findLastCompletelyVisibleItemPosition();
+                // If the recycler view is initially being loaded or the
+                // user is at the bottom of the list, scroll to the bottom
+                // of the list to show the newly added message.
+                if (lastVisiblePosition == -1 ||
+                        (positionStart >= (messageCount - 1) &&
+                                lastVisiblePosition == (positionStart - 1))) {
+                    rvChat.scrollToPosition(positionStart);
+                }
+            }
+        });
+        mLinearLayoutManager = new LinearLayoutManager(ChatActivity.this);
+        rvChat.setLayoutManager(mLinearLayoutManager);
         rvChat.setItemAnimator(new SlideInUpAnimator(new OvershootInterpolator(2f)));
         rvChat.setAdapter(mChatMessageAdapter);
     }
@@ -216,31 +236,35 @@ public class ChatActivity extends BaseActivity {
         return chatHeader;
     }
 
+    private FirebaseEndPoint mFirebaseEndPoint = new FirebaseEndPointImpl();
+
     private void sendMessage() {
         Log.d(TAG, "sendMessage: " + mChatMessage);
         HashMap<String, Object> updateMap = new HashMap<>();
-        updateMap.put(FirebaseConstants.CHAT_MESSAGES
-                + "/" + getAuthenticatedUserUID()
-                + "/" + mChatPartnerUid
-                + "/" + mChatMessage.getTimestamp(), mChatMessage);
-        updateMap.put(FirebaseConstants.CHAT_MESSAGES
-                + "/" + mChatPartnerUid
-                + "/" + getAuthenticatedUserUID()
-                + "/" + mChatMessage.getTimestamp(), mChatMessage);
-        //TODO !!!
-        updateMap.put(FirebaseConstants.CHAT_HEADERS
-                + "/" + getAuthenticatedUserUID()
-                + "/" + mChatPartnerUid, getMyChatHeader());
-        //TODO !!!
-        updateMap.put(FirebaseConstants.CHAT_HEADERS
-                + "/" + mChatPartnerUid
-                + "/" + getAuthenticatedUserUID(), getPartnersChatHeader());
+
+        String senderPath = mFirebaseEndPoint.getChatMessagePath(getAuthenticatedUserUID(),
+                mChatPartnerUid,
+                mChatMessage.getTimestamp());
+        updateMap.put(senderPath, mChatMessage);
+        String recepientPath = mFirebaseEndPoint.getChatMessagePath(mChatPartnerUid,
+                getAuthenticatedUserUID(),
+                mChatMessage.getTimestamp());
+        updateMap.put(recepientPath, mChatMessage);
+        updateMap.put(mFirebaseEndPoint.getChatHeaderPath(
+                getAuthenticatedUserUID(),
+                mChatPartnerUid
+        ), getMyChatHeader());
+        updateMap.put(mFirebaseEndPoint.getChatHeaderPath(
+                mChatPartnerUid,
+                getAuthenticatedUserUID()
+        ), getPartnersChatHeader());
         mDatabaseReference.updateChildren(updateMap, new DatabaseReference.CompletionListener() {
             @Override
             public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
                 Log.d(TAG, "onComplete: ");
                 if (databaseError != null) {
                     databaseError.toException().printStackTrace();
+                    makeToast(databaseError.getMessage());
                 }
             }
         });

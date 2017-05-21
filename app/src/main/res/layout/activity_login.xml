@@ -31,6 +31,7 @@
             android:layout_marginTop="64dp"
             android:hint="@string/hint_email"
             android:inputType="textEmailAddress"
+            android:text="andras@gmail.com"
             style="@style/AuthEditText"/>
 
         <EditText

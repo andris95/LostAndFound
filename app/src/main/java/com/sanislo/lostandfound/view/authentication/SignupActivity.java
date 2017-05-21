@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.text.InputType;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
@@ -160,9 +159,7 @@ public class SignupActivity extends BaseActivity implements SignupView {
         mPassword = edtPassword.getText().toString().trim();
 
         int validatedUserInput = FirebaseUtils.validateUserInput(mEmail, mPassword);
-        Log.d(TAG, "onClickSignUp: validatedUserInput: " + validatedUserInput);
         int validatedUserName = FirebaseUtils.validateUserName(mFirstName, mLastName);
-        Log.d(TAG, "onClickSignUp: validatedUserName: " + validatedUserName);
         if (validatedUserInput != -1) {
             makeToast(validatedUserInput);
             mMaterialDialog.dismiss();
@@ -185,16 +182,6 @@ public class SignupActivity extends BaseActivity implements SignupView {
         }
     };
 
-    private void setEditable(boolean editable) {
-        if (!editable) {
-            edtEmail.setInputType(InputType.TYPE_NULL);
-            edtPassword.setInputType(InputType.TYPE_NULL);
-        } else {
-            edtEmail.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
-            edtPassword.setInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD);
-        }
-    }
-
     private OnCompleteListener mOnCreateUserCompleteListener = new OnCompleteListener() {
         @Override
         public void onComplete(@NonNull Task task) {
@@ -203,6 +190,12 @@ public class SignupActivity extends BaseActivity implements SignupView {
                     uploadAvatar();
                 } else {
                     saveUserData();
+                }
+            } else {
+                mMaterialDialog.dismiss();
+                Log.d(TAG, "onComplete: ERROR CREATING ACCOUNT");
+                if (task.getException() != null) {
+                    makeToast(task.getException().getMessage());
                 }
             }
         }
