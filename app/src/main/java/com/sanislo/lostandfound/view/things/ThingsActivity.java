@@ -53,7 +53,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class ThingsActivity extends BaseActivity implements ThingsView {
+public class ThingsActivity extends BaseActivity implements ThingsView, ThingsContract.View {
     public static final String TAG = ThingsActivity.class.getSimpleName();
     public static final String EXTRA_USER = "EXTRA_USER";
 
@@ -144,6 +144,7 @@ public class ThingsActivity extends BaseActivity implements ThingsView {
         } else {
             mThingsPresenter.getProfile(ThingsActivity.this);
         }
+        mThingsContractPresenter = new com.sanislo.lostandfound.view.things.ThingsPresenter(this);
     }
 
     private void setupSwipeRefresh() {
@@ -430,5 +431,27 @@ public class ThingsActivity extends BaseActivity implements ThingsView {
                 mCloseAppDialog.show();
             }
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mThingsContractPresenter.loadThings(0);
+    }
+
+    private ThingsContract.Presenter mThingsContractPresenter;
+    @Override
+    public void setPresenter(ThingsContract.Presenter presenter) {
+        mThingsContractPresenter = presenter;
+    }
+
+    @Override
+    public void showThings(List<Thing> thingList) {
+        makeToast("showThings");
+    }
+
+    @Override
+    public void showError() {
+        makeToast("showError");
     }
 }
