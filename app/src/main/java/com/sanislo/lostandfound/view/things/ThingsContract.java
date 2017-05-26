@@ -11,11 +11,11 @@ import java.util.List;
  */
 
 public interface ThingsContract {
+    interface Presenter extends BasePresenter {
+        void loadThings(int page);
+    }
     interface View extends BaseView<Presenter> {
         void showThings(List<Thing> thingList);
         void showError();
-    }
-    interface Presenter extends BasePresenter {
-        void loadThings(int page);
     }
 }

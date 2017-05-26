@@ -33,11 +33,8 @@ import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IProfile;
 import com.sanislo.lostandfound.FakeDataGenerator;
 import com.sanislo.lostandfound.R;
-import com.sanislo.lostandfound.interfaces.ThingsView;
 import com.sanislo.lostandfound.model.Thing;
 import com.sanislo.lostandfound.model.User;
-import com.sanislo.lostandfound.presenter.ThingsPresenter;
-import com.sanislo.lostandfound.presenter.ThingsPresenterImpl;
 import com.sanislo.lostandfound.view.BaseActivity;
 import com.sanislo.lostandfound.view.addThing.AddThingActivity;
 import com.sanislo.lostandfound.view.chatHeader.ChatHeaderActivity;
@@ -46,6 +43,8 @@ import com.sanislo.lostandfound.view.profile.ProfileActivity;
 import com.sanislo.lostandfound.view.search.SearchActivity;
 import com.sanislo.lostandfound.view.thingDetails.ThingDetailsActivity;
 import com.sanislo.lostandfound.view.things.adapter.ThingAdapter;
+import com.sanislo.lostandfound.view.things.profile.ProfileContract;
+import com.sanislo.lostandfound.view.things.profile.ProfilePresenter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,7 +52,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class ThingsActivity extends BaseActivity implements ThingsView, ThingsContract.View {
+public class ThingsActivity extends BaseActivity implements ThingsContract.View {
     public static final String TAG = ThingsActivity.class.getSimpleName();
     public static final String EXTRA_USER = "EXTRA_USER";
 
@@ -66,15 +65,33 @@ public class ThingsActivity extends BaseActivity implements ThingsView, ThingsCo
     @BindView(R.id.refresh_things)
     SwipeRefreshLayout swipeRefreshThings;
 
+    private ProfilePresenter mProfilePresenter;
     private FirebaseAuth mFirebaseAuth;
     private ThingAdapter mThingAdapter;
 
-    private ThingsPresenter mThingsPresenter;
     private LinearLayoutManager mLinearLayoutManager;
     private Drawer mDrawer;
     private AccountHeader mAccountHeader;
     private User mUser = new User();
     private int mClickedDrawerItemPos = -100;
+
+    private ProfileContract.View mProfileView = new ProfileContract.View() {
+        @Override
+        public void onProfileLoaded(User user) {
+            mUser = user;
+            updateProfile();
+        }
+
+        @Override
+        public void onError() {
+            makeToast("Error getting user profile");
+        }
+
+        @Override
+        public void setPresenter(ProfileContract.Presenter presenter) {
+
+        }
+    };
 
     private ThingAdapter.OnClickListener mThingClickListener = new ThingAdapter.OnClickListener() {
         @Override
@@ -121,7 +138,7 @@ public class ThingsActivity extends BaseActivity implements ThingsView, ThingsCo
     private void loadMoreItems() {
         isLoading = true;
         mCurrentPage++;
-        mThingsPresenter.getThings(mCurrentPage);
+        mThingsContractPresenter.loadThings(mCurrentPage);
     }
 
     @Override
@@ -130,19 +147,18 @@ public class ThingsActivity extends BaseActivity implements ThingsView, ThingsCo
         getWindow().requestFeature(Window.FEATURE_CONTENT_TRANSITIONS);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-        mThingsPresenter = new ThingsPresenterImpl(this);
         initFirebase();
         initToolbar();
         initCloseAppDialog();
         setupDrawer();
         initThingsAdapter();
         setupSwipeRefresh();
-        mThingsPresenter.getThings(mCurrentPage);
+        mProfilePresenter = new ProfilePresenter(mProfileView);
         if (getIntent().getParcelableExtra(EXTRA_USER) != null) {
             mUser = getIntent().getParcelableExtra(EXTRA_USER);
             updateProfile();
         } else {
-            mThingsPresenter.getProfile(ThingsActivity.this);
+            mProfilePresenter.loadProfile(getAuthenticatedUserUID());
         }
         mThingsContractPresenter = new com.sanislo.lostandfound.view.things.ThingsPresenter(this);
     }
@@ -156,7 +172,7 @@ public class ThingsActivity extends BaseActivity implements ThingsView, ThingsCo
                     mThingAdapter.notifyDataSetChanged();
                 }
                 //TODO !!!
-                mThingsPresenter.getThings(1);
+                mThingsContractPresenter.loadThings(1);
             }
         });
     }
@@ -358,24 +374,6 @@ public class ThingsActivity extends BaseActivity implements ThingsView, ThingsCo
         startActivity(intent);
     }
 
-    private List<Thing> mThingList = new ArrayList<>();
-    @Override
-    public void onThingsLoaded(List<Thing> thingList) {
-        if (swipeRefreshThings.isRefreshing()) {
-            swipeRefreshThings.setRefreshing(false);
-        }
-        //mThingAdapter.setThingList(thingList);
-        mThingList.addAll(thingList);
-        mThingAdapter.notifyDataSetChanged();
-        isLoading = false;
-    }
-
-    @Override
-    public void onProfileLoaded(User user) {
-        mUser = user;
-        updateProfile();
-    }
-
     private void updateProfile() {
         ProfileDrawerItem profileDrawerItem = new ProfileDrawerItem()
                 .withName(mUser.getFullName())
@@ -445,9 +443,18 @@ public class ThingsActivity extends BaseActivity implements ThingsView, ThingsCo
         mThingsContractPresenter = presenter;
     }
 
+    private List<Thing> mThingList = new ArrayList<>();
     @Override
     public void showThings(List<Thing> thingList) {
         makeToast("showThings");
+        if (swipeRefreshThings.isRefreshing()) {
+            swipeRefreshThings.setRefreshing(false);
+        }
+        //mThingAdapter.setThingList(thingList);
+        mThingList.addAll(thingList);
+        mThingAdapter.notifyDataSetChanged();
+        isLoading = false;
+
     }
 
     @Override

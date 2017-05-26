@@ -16,6 +16,10 @@ public interface ThingsDataSource {
         void onDataNotAvailable();
     }
     void loadThings(@NonNull LoadThingsCallback loadThingsCallback);
+    void loadThings(@NonNull String sort,
+                    @NonNull String order,
+                    @NonNull int page,
+                    @NonNull LoadThingsCallback loadThingsCallback);
     void loadThing(@NonNull String thingId, @NonNull LoadThingsCallback loadThingsCallback);
     void saveThing(@NonNull Thing thing);
 }

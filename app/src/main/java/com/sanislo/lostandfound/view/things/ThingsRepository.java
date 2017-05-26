@@ -40,6 +40,27 @@ public class ThingsRepository implements ThingsDataSource {
     }
 
     @Override
+    public void loadThings(@NonNull String sort, @NonNull String order, @NonNull int page, @NonNull final LoadThingsCallback loadThingsCallback) {
+        Call<List<Thing>> getThingsCall = mApiModel.getThings(sort, order, page);
+        getThingsCall.enqueue(new Callback<List<Thing>>() {
+            @Override
+            public void onResponse(Call<List<Thing>> call, Response<List<Thing>> response) {
+                if (response.isSuccessful()) {
+                    loadThingsCallback.onThingsLoaded(response.body());
+                } else {
+                    loadThingsCallback.onDataNotAvailable();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<Thing>> call, Throwable t) {
+                t.printStackTrace();
+                loadThingsCallback.onDataNotAvailable();
+            }
+        });
+    }
+
+    @Override
     public void loadThing(@NonNull String thingId, @NonNull LoadThingsCallback loadThingsCallback) {
 
     }
