@@ -108,6 +108,7 @@ public class ThingsActivity extends BaseActivity implements ThingsContract.View 
         }
     };
 
+    private boolean isLoadFromSwipeRefresh;
     private boolean isLoading;
     private boolean isLastPage;
     private int mCurrentPage = 1;
@@ -168,10 +169,10 @@ public class ThingsActivity extends BaseActivity implements ThingsContract.View 
             @Override
             public void onRefresh() {
                 if (mThingAdapter != null) {
+                    mThingList = null;
                     mThingAdapter.clear();
                     mThingAdapter.notifyDataSetChanged();
                 }
-                //TODO !!!
                 mThingsContractPresenter.loadThings(1);
             }
         });

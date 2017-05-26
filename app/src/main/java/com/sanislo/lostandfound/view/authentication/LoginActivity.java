@@ -63,30 +63,33 @@ public class LoginActivity extends BaseActivity {
         @Override
         public void onComplete(@NonNull Task task) {
             if (task.isSuccessful()) {
-                final String uid = mFirebaseAuth.getCurrentUser().getUid();
-                //TODO FIX THIS
-                ApiModel apiModel = new ApiModelImpl();
-                Call<List<com.sanislo.lostandfound.model.User>> userCall = apiModel.getUserListByUID(uid);
-                userCall.enqueue(new Callback<List<com.sanislo.lostandfound.model.User>>() {
-                    @Override
-                    public void onResponse(Call<List<com.sanislo.lostandfound.model.User>> call, Response<List<com.sanislo.lostandfound.model.User>> response) {
-                        if (response.isSuccessful()) {
-                            User user = response.body().get(0);
-                            updatePreferencesForLoggedInUser(user.getId(), uid);
-                            launchMainActivity(user);
-                        } else {
-                            Log.d(TAG, "onResponse: " + response.message());
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<List<com.sanislo.lostandfound.model.User>> call, Throwable t) {
-
-                    }
-                });
+                getUserByUid();
             }
         }
     };
+
+    private void getUserByUid() {
+        final String uid = mFirebaseAuth.getCurrentUser().getUid();
+        ApiModel apiModel = new ApiModelImpl();
+        Call<List<com.sanislo.lostandfound.model.User>> userCall = apiModel.getUserListByUID(uid);
+        userCall.enqueue(new Callback<List<com.sanislo.lostandfound.model.User>>() {
+            @Override
+            public void onResponse(Call<List<com.sanislo.lostandfound.model.User>> call, Response<List<com.sanislo.lostandfound.model.User>> response) {
+                if (response.isSuccessful()) {
+                    User user = response.body().get(0);
+                    updatePreferencesForLoggedInUser(user.getId(), uid);
+                    launchMainActivity(user);
+                } else {
+                    Log.d(TAG, "onResponse: " + response.message());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<com.sanislo.lostandfound.model.User>> call, Throwable t) {
+                t.printStackTrace();
+            }
+        });
+    }
 
     private void updatePreferencesForLoggedInUser(int id, String uid) {
         PreferencesManager.setUserUID(LoginActivity.this, uid);
@@ -172,9 +175,7 @@ public class LoginActivity extends BaseActivity {
                 GoogleSignInResult googleSignInResult = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
                 handeGoogleSignInResult(googleSignInResult);
             } else if (resultCode == RESULT_CANCELED) {
-                Log.d(TAG, "onActivityResult: canceled");
-                Log.d(TAG, "onActivityResult: " +  Auth.GoogleSignInApi.getSignInResultFromIntent(data).getStatus());
-                Log.d(TAG, "onActivityResult: " +  Auth.GoogleSignInApi.getSignInResultFromIntent(data).getStatus().toString());
+                makeToast("Could not sign in using Google+");
             }
         }
     }
@@ -204,12 +205,12 @@ public class LoginActivity extends BaseActivity {
         mFirebaseAuth.signInWithCredential(authCredential).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
-                createOrUpdateUser();
+                saveOrUpdateUser();
             }
         });
     }
 
-    private void createOrUpdateUser() {
+    private void saveOrUpdateUser() {
         FirebaseUtils.getDatabase().getReference()
                 .child(FirebaseConstants.USERS)
                 .child(mFirebaseAuth.getCurrentUser().getUid())

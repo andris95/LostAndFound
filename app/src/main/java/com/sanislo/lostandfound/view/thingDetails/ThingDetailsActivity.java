@@ -40,8 +40,6 @@ import com.sanislo.lostandfound.R;
 import com.sanislo.lostandfound.adapter.DescriptionPhotosAdapter;
 import com.sanislo.lostandfound.model.Location;
 import com.sanislo.lostandfound.model.Thing;
-import com.sanislo.lostandfound.presenter.ThingDetailsPresenter;
-import com.sanislo.lostandfound.presenter.ThingDetailsPresenterImpl;
 import com.sanislo.lostandfound.view.BaseActivity;
 import com.sanislo.lostandfound.view.chatMessage.ChatActivity;
 
@@ -104,7 +102,6 @@ public class ThingDetailsActivity extends BaseActivity implements ThingDetailsVi
     private MapFragment mMapFragment;
 
     private DescriptionPhotosAdapter mDescriptionPhotosAdapter;
-    private ThingDetailsPresenter mThingDetailsPresenter;
     private Bundle mTmpReenterState;
 
     private final SharedElementCallback mCallback = new SharedElementCallback() {
@@ -161,7 +158,6 @@ public class ThingDetailsActivity extends BaseActivity implements ThingDetailsVi
         setupToolbar();
         ivThingPhoto.setTransitionName(getString(R.string.transition_description_photo));
         ivAuthorAvatar.setTransitionName(getString(R.string.transition_avatar));
-        mThingDetailsPresenter = new ThingDetailsPresenterImpl(this);
 
         mThing = getIntent().getParcelableExtra(EXTRA_THING);
         displayThing();
@@ -184,7 +180,6 @@ public class ThingDetailsActivity extends BaseActivity implements ThingDetailsVi
     @Override
     protected void onResume() {
         super.onResume();
-        mThingDetailsPresenter.onResume();
         if (mMapFragment != null) {
             mMapFragment.onResume();
         }
@@ -193,7 +188,6 @@ public class ThingDetailsActivity extends BaseActivity implements ThingDetailsVi
     @Override
     protected void onPause() {
         super.onPause();
-        mThingDetailsPresenter.onPause();
         if (mMapFragment != null) mMapFragment.onPause();
     }
 
