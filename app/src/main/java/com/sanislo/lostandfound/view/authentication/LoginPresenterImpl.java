@@ -150,8 +150,13 @@ public class LoginPresenterImpl implements LoginPresenter {
             @Override
             public void onResponse(Call<List<com.sanislo.lostandfound.model.User>> call, Response<List<User>> response) {
                 if (response.isSuccessful()) {
-                    User user = response.body().get(0);
-                    mView.onUserSignedIn(user);
+                    if (response.body().size() != 0) {
+                        User user = response.body().get(0);
+                        mView.onUserSignedIn(user);
+                    } else {
+                        mFirebaseAuth.signOut();
+                        mView.onError("User not found!");
+                    }
                 } else {
                     Log.d(TAG, "onResponse: " + response.message());
                     mFirebaseAuth.signOut();
@@ -161,6 +166,7 @@ public class LoginPresenterImpl implements LoginPresenter {
             @Override
             public void onFailure(Call<List<com.sanislo.lostandfound.model.User>> call, Throwable t) {
                 t.printStackTrace();
+                mView.onError(t.getMessage());
             }
         });
     }

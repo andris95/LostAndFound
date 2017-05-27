@@ -219,7 +219,9 @@ public class ThingsMapFragment extends SupportMapFragment implements MapView,
                     .listener(new RequestListener<String, Bitmap>() {
                         @Override
                         public boolean onException(Exception e, String model, Target<Bitmap> target, boolean isFirstResource) {
-                            e.printStackTrace();
+                            if (e != null) {
+                                e.printStackTrace();
+                            }
                             return false;
                         }
 
@@ -235,7 +237,7 @@ public class ThingsMapFragment extends SupportMapFragment implements MapView,
                             return false;
                         }
                     })
-                    .into(96, 96);
+                    .into(64, 64);
         }
 
         @Override

@@ -169,7 +169,6 @@ public class ThingsActivity extends BaseActivity implements ThingsContract.View 
             @Override
             public void onRefresh() {
                 if (mThingAdapter != null) {
-                    mThingList = null;
                     mThingAdapter.clear();
                     mThingAdapter.notifyDataSetChanged();
                 }
@@ -447,19 +446,16 @@ public class ThingsActivity extends BaseActivity implements ThingsContract.View 
     private List<Thing> mThingList = new ArrayList<>();
     @Override
     public void showThings(List<Thing> thingList) {
-        makeToast("showThings");
         if (swipeRefreshThings.isRefreshing()) {
             swipeRefreshThings.setRefreshing(false);
         }
-        //mThingAdapter.setThingList(thingList);
         mThingList.addAll(thingList);
         mThingAdapter.notifyDataSetChanged();
         isLoading = false;
-
     }
 
     @Override
     public void showError() {
-        makeToast("showError");
+        makeToast("Oops! Something went wrong...");
     }
 }

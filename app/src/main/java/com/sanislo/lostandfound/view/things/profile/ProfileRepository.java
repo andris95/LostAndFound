@@ -8,6 +8,8 @@ import com.sanislo.lostandfound.model.api.ApiModel;
 import com.sanislo.lostandfound.model.api.ApiModelImpl;
 import com.sanislo.lostandfound.view.things.profile.data.source.ProfileDataSource;
 
+import java.util.List;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -22,19 +24,24 @@ public class ProfileRepository implements ProfileDataSource {
 
     @Override
     public void loadProfile(String userId, @NonNull final LoadProfileCallback loadProfileCallback) {
-        Call<User> userCall = mApiModel.getUserByUID(userId);
-        userCall.enqueue(new Callback<User>() {
+        Call<List<User>> userCall = mApiModel.getUserListByUID(userId);
+        userCall.enqueue(new Callback<List<User>>() {
             @Override
-            public void onResponse(Call<User> call, Response<User> response) {
+            public void onResponse(Call<List<User>> call, Response<List<User>> response) {
                 if (response.isSuccessful()) {
-                    loadProfileCallback.onProfileLoaded(response.body());
+                    List<User> userList = response.body();
+                    if (userList != null && userList.size() != 0) {
+                        loadProfileCallback.onProfileLoaded(userList.get(0));
+                    } else {
+                        loadProfileCallback.onError();
+                    }
                 } else {
                     loadProfileCallback.onError();
                 }
             }
 
             @Override
-            public void onFailure(Call<User> call, Throwable t) {
+            public void onFailure(Call<List<User>> call, Throwable t) {
                 Log.d(TAG, "onFailure: " + t.toString());
                 t.printStackTrace();
                 loadProfileCallback.onError();

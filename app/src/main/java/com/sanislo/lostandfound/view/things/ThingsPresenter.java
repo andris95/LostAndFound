@@ -29,7 +29,10 @@ public class ThingsPresenter implements ThingsContract.Presenter {
 
     @Override
     public void loadThings(int page) {
-        mThingsRepository.loadThings(new ThingsDataSource.LoadThingsCallback() {
+        mThingsRepository.loadThings("timestamp",
+                "DESC",
+                page,
+                new ThingsDataSource.LoadThingsCallback() {
             @Override
             public void onThingsLoaded(List<Thing> thingList) {
                 Log.d(TAG, "onThingsLoaded: " + thingList);
