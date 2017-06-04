@@ -25,4 +25,5 @@ public interface ApiModel {
     Call<List<User>> getUserListByUID(String uid);
     Call<List<Thing>> getUsersThingsByType(String uid, int type);
     Call<Void> removeThing(int id);
+    Call<Void> updateThing(int id, boolean returned);
 }

@@ -82,6 +82,27 @@ public class ThingsRepository implements ThingsDataSource {
     }
 
     @Override
+    public void updateThing(@NonNull int id, @NonNull boolean returned, @NonNull final UpdateThingCallback updateThingCallback) {
+        Call<Void> call = mApiModel.updateThing(id, returned);
+        call.enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if (response.isSuccessful()) {
+                    updateThingCallback.onUpdated();
+                } else {
+                    updateThingCallback.onError();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                t.printStackTrace();
+                updateThingCallback.onError();
+            }
+        });
+    }
+
+    @Override
     public void loadThing(@NonNull String thingId, @NonNull LoadThingsCallback loadThingsCallback) {
 
     }

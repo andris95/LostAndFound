@@ -52,12 +52,27 @@ public class ThingsPresenter implements ThingsContract.Presenter {
         mThingsRepository.removeThing(id, new ThingsDataSource.RemoveThingCallback() {
             @Override
             public void onThingRemoved() {
-
+                Log.d(TAG, "onThingRemoved: ");
             }
 
             @Override
             public void onError() {
+                Log.d(TAG, "onError: ");
+            }
+        });
+    }
 
+    @Override
+    public void updateThing(int id, boolean returned) {
+        mThingsRepository.updateThing(id, returned, new ThingsDataSource.UpdateThingCallback() {
+            @Override
+            public void onUpdated() {
+                Log.d(TAG, "onUpdated: ");
+            }
+
+            @Override
+            public void onError() {
+                Log.d(TAG, "onError: ");
             }
         });
     }

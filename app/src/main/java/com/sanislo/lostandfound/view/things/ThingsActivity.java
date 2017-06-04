@@ -393,7 +393,8 @@ public class ThingsActivity extends BaseActivity implements ThingsContract.View 
                 mThingAdapter.removeItem(position);
                 makeToast("DELETE pos" + position + " / " + id);
             } else {
-                makeToast("EDIT");
+                Thing thing = mThingAdapter.getItem(position);
+                mThingsContractPresenter.updateThing(thing.getId(), true);
             }
         }
 

@@ -19,12 +19,17 @@ public interface ThingsDataSource {
         void onThingRemoved();
         void onError();
     }
+    interface UpdateThingCallback {
+        void onUpdated();
+        void onError();
+    }
     void loadThings(@NonNull LoadThingsCallback loadThingsCallback);
     void loadThings(@NonNull String sort,
                     @NonNull String order,
                     @NonNull int page,
                     @NonNull LoadThingsCallback loadThingsCallback);
     void removeThing(@NonNull int id, @NonNull RemoveThingCallback removeThingCallback);
+    void updateThing(@NonNull int id, @NonNull boolean returned, @NonNull UpdateThingCallback updateThingCallback);
     void loadThing(@NonNull String thingId, @NonNull LoadThingsCallback loadThingsCallback);
     void saveThing(@NonNull Thing thing);
 }

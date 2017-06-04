@@ -14,6 +14,7 @@ public interface ThingsContract {
     interface Presenter extends BasePresenter {
         void loadThings(int page);
         void removeThing(int id);
+        void updateThing(int id, boolean returned);
     }
     interface View extends BaseView<Presenter> {
         void showThings(List<Thing> thingList);
