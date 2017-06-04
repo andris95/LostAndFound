@@ -57,9 +57,19 @@ public class ThingAdapter extends RecyclerView.Adapter<ThingAdapter.ViewHolder> 
         }
     }
 
+    public void removeItem(int position) {
+        mThingList.remove(position);
+        notifyItemRemoved(position);
+        notifyItemRangeChanged(position, mThingList.size());
+    }
+
+    public Thing getItem(int position) {
+        return mThingList.get(position);
+    }
+
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = mLayoutInflater.inflate(R.layout.item_thing_simple, null);
+        View view = mLayoutInflater.inflate(R.layout.item_thing_swipeable, null);
         ViewHolder viewHolder = new ViewHolder(view);
         return viewHolder;
     }

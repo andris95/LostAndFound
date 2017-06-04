@@ -61,6 +61,27 @@ public class ThingsRepository implements ThingsDataSource {
     }
 
     @Override
+    public void removeThing(@NonNull int id, @NonNull final RemoveThingCallback removeThingCallback) {
+        Call<Void> call = mApiModel.removeThing(id);
+        call.enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if (response.isSuccessful()) {
+                    removeThingCallback.onThingRemoved();
+                } else {
+                    removeThingCallback.onError();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                t.printStackTrace();
+                removeThingCallback.onError();
+            }
+        });
+    }
+
+    @Override
     public void loadThing(@NonNull String thingId, @NonNull LoadThingsCallback loadThingsCallback) {
 
     }

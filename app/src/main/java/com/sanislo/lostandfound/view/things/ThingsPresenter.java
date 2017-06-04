@@ -46,4 +46,19 @@ public class ThingsPresenter implements ThingsContract.Presenter {
             }
         });
     }
+
+    @Override
+    public void removeThing(int id) {
+        mThingsRepository.removeThing(id, new ThingsDataSource.RemoveThingCallback() {
+            @Override
+            public void onThingRemoved() {
+
+            }
+
+            @Override
+            public void onError() {
+
+            }
+        });
+    }
 }

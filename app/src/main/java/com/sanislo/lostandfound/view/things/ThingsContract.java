@@ -13,6 +13,7 @@ import java.util.List;
 public interface ThingsContract {
     interface Presenter extends BasePresenter {
         void loadThings(int page);
+        void removeThing(int id);
     }
     interface View extends BaseView<Presenter> {
         void showThings(List<Thing> thingList);

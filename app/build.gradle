@@ -85,6 +85,7 @@ dependencies {
     compile 'com.google.maps.android:android-maps-utils:0.5+'
 
     compile 'com.theartofdev.edmodo:android-image-cropper:2.4.+'
+    compile 'com.hudomju:swipe-to-dismiss-undo:1.0'
 }
 
 apply plugin: 'com.google.gms.google-services'

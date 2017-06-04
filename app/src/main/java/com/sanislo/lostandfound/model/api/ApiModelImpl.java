@@ -57,21 +57,6 @@ public class ApiModelImpl implements ApiModel {
     }
 
     @Override
-    public Call<Void> saveUser(String uid, User user) {
-        return mApiInterface.saveUser(uid, user);
-    }
-
-    @Override
-    public Call<User> getUser(int id) {
-        return mApiInterface.getUser(id);
-    }
-
-    @Override
-    public Call<User> getUserByUID(String uid) {
-        return mApiInterface.getUserByUID(uid);
-    }
-
-    @Override
     public Call<List<User>> getUserListByUID(String uid) {
         return mApiInterface.getUserByUIDList(uid);
     }
@@ -79,5 +64,10 @@ public class ApiModelImpl implements ApiModel {
     @Override
     public Call<List<Thing>> getUsersThingsByType(String uid, int type) {
         return mApiInterface.getUsersThingsByType(uid, type);
+    }
+
+    @Override
+    public Call<Void> removeThing(int id) {
+        return mApiInterface.removeThing(id);
     }
 }

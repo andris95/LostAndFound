@@ -9,6 +9,7 @@ import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
@@ -46,26 +47,14 @@ public interface ApiInterface {
     Call<Void> saveUser(@Body User user);
 
     @PUT("users/{id}")
-    Call<Void> saveUser(@Path("id") String id, @Body User user);
-
-    @PUT("users/{id}")
-    Call<Void> updateUserAvatar(@Path("id") int userId, @Body String avatarURL);
-
-    @PUT("things/{id}")
-    Call<Void> updateThing(@Path("id") int thingId, @Body Thing thing);
-
-    @PUT("users/{id}")
     Call<Void> updateUser(@Path("id") int userId, @Body User user);
-
-    @GET(ApiConstants.USERS + "/{id}")
-    Call<User> getUser(@Path("id") int id);
-
-    @GET(ApiConstants.USERS)
-    Call<User> getUserByUID(@Query("uid") String uid);
 
     @GET(ApiConstants.USERS)
     Call<List<User>> getUserByUIDList(@Query("uid") String uid);
 
     @GET(ApiConstants.THINGS)
     Call<List<Thing>> getUsersThingsByType(@Query("uid") String uid, @Query("type") int type);
+
+    @DELETE(ApiConstants.THINGS + "/{id}")
+    Call<Void> removeThing(@Path("id") int id);
 }
