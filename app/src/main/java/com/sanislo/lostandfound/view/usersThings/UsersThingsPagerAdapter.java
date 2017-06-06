@@ -1,4 +1,4 @@
-package com.sanislo.lostandfound.view.profile;
+package com.sanislo.lostandfound.view.usersThings;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;

@@ -1,40 +1,26 @@
 package com.sanislo.lostandfound.view.profile;
 
-import android.Manifest;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.design.widget.CollapsingToolbarLayout;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.TabLayout;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.view.ViewPager;
-import android.support.v7.graphics.Palette;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.ImageView;
-import android.widget.Toast;
 
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.sanislo.lostandfound.R;
 import com.sanislo.lostandfound.model.User;
+import com.sanislo.lostandfound.presenter.ProfilePresenter;
+import com.sanislo.lostandfound.presenter.ProfilePresenterImpl;
 import com.sanislo.lostandfound.utils.PreferencesManager;
 import com.sanislo.lostandfound.view.BaseActivity;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 
 /**
  * Created by root on 30.03.17.
@@ -48,17 +34,8 @@ public class ProfileActivity extends BaseActivity implements ProfileView {
     @BindView(R.id.toolbar)
     Toolbar mToolbar;
 
-    @BindView(R.id.collapsing_toolbar)
-    CollapsingToolbarLayout mCollapsingToolbarLayout;
-
     @BindView(R.id.iv_avatar)
     ImageView ivAvatar;
-
-    @BindView(R.id.vp_things)
-    ViewPager vpThings;
-
-    @BindView(R.id.tab_things)
-    TabLayout tabThings;
 
     private ProfilePresenter mProfilePresenter;
 
@@ -72,14 +49,12 @@ public class ProfileActivity extends BaseActivity implements ProfileView {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         int transparentColor = ContextCompat.getColor(ProfileActivity.this, android.R.color.transparent);
-        mCollapsingToolbarLayout.setExpandedTitleColor(transparentColor);
+        //mCollapsingToolbarLayout.setExpandedTitleColor(transparentColor);
 
         mProfilePresenter = new ProfilePresenterImpl(this);
         //TODO UPDATE USERS UID ON LOGIN!!!!!
         String userUID = PreferencesManager.getUserUID(ProfileActivity.this);
         mProfilePresenter.getProfile(userUID);
-
-        setupUsersThingsPager();
     }
 
     @Override
@@ -97,7 +72,7 @@ public class ProfileActivity extends BaseActivity implements ProfileView {
 
     @Override
     public void onProfileLoaded(User user) {
-        mCollapsingToolbarLayout.setTitle(user.getFullName());
+        //mCollapsingToolbarLayout.setTitle(user.getFullName());
         displayUserAvatar(user.getAvatarURL());
     }
 
@@ -118,11 +93,11 @@ public class ProfileActivity extends BaseActivity implements ProfileView {
 
                     @Override
                     public boolean onResourceReady(Bitmap resource, String model, Target<Bitmap> target, boolean isFromMemoryCache, boolean isFirstResource) {
-                        Palette.from(resource).generate(new Palette.PaletteAsyncListener() {
+                        /*Palette.from(resource).generate(new Palette.PaletteAsyncListener() {
                             public void onGenerated(Palette palette) {
                                 applyPalette(palette);
                             }
-                        });
+                        });*/
                         return false;
                     }
                 })
@@ -132,7 +107,7 @@ public class ProfileActivity extends BaseActivity implements ProfileView {
                 .into(ivAvatar);
     }
 
-    private void applyPalette(Palette palette) {
+   /* private void applyPalette(Palette palette) {
         int primaryDark = getResources().getColor(R.color.primary_dark);
         int primary = getResources().getColor(R.color.primary);
         mCollapsingToolbarLayout.setContentScrimColor(palette.getMutedColor(primary));
@@ -191,7 +166,7 @@ public class ProfileActivity extends BaseActivity implements ProfileView {
 
     private void pickProfileImageFromGallery() {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-        intent.setType("image/*");
+        intent.setType("image*//*");
         intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, false);
         Intent сhooserIntent = Intent.createChooser(intent, getString(R.string.select_avatar_image));
         startActivityForResult(сhooserIntent, PICK_PROFILE_IMAGE);
@@ -218,5 +193,5 @@ public class ProfileActivity extends BaseActivity implements ProfileView {
         //TODO FIX THIS
         mProfilePresenter.updateUserAvatar(ProfileActivity.this,
                 PreferencesManager.getUserID(ProfileActivity.this));
-    }
+    }*/
 }

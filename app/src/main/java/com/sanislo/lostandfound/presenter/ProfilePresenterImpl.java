@@ -1,4 +1,4 @@
-package com.sanislo.lostandfound.view.profile;
+package com.sanislo.lostandfound.presenter;
 
 import android.content.Context;
 import android.content.Intent;
@@ -16,6 +16,8 @@ import com.sanislo.lostandfound.model.api.ApiModel;
 import com.sanislo.lostandfound.model.api.ApiModelImpl;
 import com.sanislo.lostandfound.utils.FirebaseConstants;
 import com.sanislo.lostandfound.utils.FirebaseUtils;
+import com.sanislo.lostandfound.view.profile.ProfileActivity;
+import com.sanislo.lostandfound.view.profile.ProfileView;
 
 import java.util.List;
 

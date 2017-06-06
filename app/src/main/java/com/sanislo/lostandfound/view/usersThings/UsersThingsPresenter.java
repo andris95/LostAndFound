@@ -1,4 +1,4 @@
-package com.sanislo.lostandfound.view.profile;
+package com.sanislo.lostandfound.view.usersThings;
 
 /**
  * Created by root on 30.03.17.
