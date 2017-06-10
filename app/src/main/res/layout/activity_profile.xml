@@ -1,20 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
-  ~ Copyright (C) 2015 Antonio Leiva
-  ~
-  ~ Licensed under the Apache License, Version 2.0 (the "License");
-  ~ you may not use this file except in compliance with the License.
-  ~ You may obtain a copy of the License at
-  ~
-  ~       http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~ Unless required by applicable law or agreed to in writing, software
-  ~ distributed under the License is distributed on an "AS IS" BASIS,
-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~ See the License for the specific language governing permissions and
-  ~ limitations under the License.
-  -->
-
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -29,41 +13,81 @@
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:background="@color/colorPrimaryDark"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-        app:layout_collapseMode="pin" />
+        app:title="@string/profile"
+        app:titleTextColor="@color/md_white_1000"
+        app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"/>
 
-    <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/iv_avatar"
-        android:layout_width="168dp"
-        android:layout_height="168dp"
-        android:layout_below="@+id/toolbar"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="52dp"
-        app:civ_border_color="@color/md_white_1000"
-        app:civ_border_width="4dp"
-        tools:src="@drawable/aletta"/>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/background_gradient_2"
+        android:layout_below="@+id/toolbar">
 
-    <EditText
-        android:id="@+id/edt_full_name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_below="@+id/iv_avatar"
-        android:layout_marginTop="32dp"
-        android:lines="1"
-        android:textColor="@color/md_white_1000"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        tools:text="Andras Sanislo"/>
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/iv_avatar"
+            android:layout_width="168dp"
+            android:layout_height="168dp"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="52dp"
+            app:civ_border_color="@color/md_white_1000"
+            app:civ_border_width="4dp"
+            tools:src="@drawable/aletta"/>
 
-    <android.support.design.widget.FloatingActionButton
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_below="@+id/edt_full_name"
-        android:layout_marginTop="32dp"
-        android:backgroundTint="@color/md_white_1000"
-        android:src="@drawable/check_black"
-        app:fabSize="normal"/>
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/til_first_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_centerHorizontal="true"
+            android:textColor="@color/md_white_1000"
+            android:textColorHint="@color/md_white_1000"
+            android:layout_below="@+id/iv_avatar">
+
+            <EditText android:id="@+id/edt_first_name"
+                      android:layout_width="match_parent"
+                      android:layout_height="wrap_content"
+                      android:inputType="textCapWords"
+                      android:textColor="@color/md_white_1000"
+                      android:textColorHint="@color/md_white_1000"
+                      android:hint="@string/hint_first_name" />
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/til_last_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@+id/til_first_name"
+            android:textColor="@color/md_white_1000"
+            android:textColorHint="@color/md_white_1000">
+
+            <EditText
+                android:id="@+id/edt_last_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textCapWords"
+                android:hint="@string/hint_last_name"
+                android:textColor="@color/md_white_1000"
+                android:textColorHint="@color/md_white_1000"/>
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fab_update_user"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@+id/til_last_name"
+            android:layout_marginTop="32dp"
+            android:backgroundTint="@color/md_white_1000"
+            android:src="@drawable/check_black"
+            app:fabSize="normal"/>
+    </RelativeLayout>
 
 </RelativeLayout>

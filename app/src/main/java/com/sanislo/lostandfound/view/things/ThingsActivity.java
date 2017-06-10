@@ -48,11 +48,11 @@ import com.sanislo.lostandfound.view.addThing.AddThingActivity;
 import com.sanislo.lostandfound.view.chatHeader.ChatHeaderActivity;
 import com.sanislo.lostandfound.view.map.MapActivity;
 import com.sanislo.lostandfound.view.profile.ProfileActivity;
+import com.sanislo.lostandfound.view.profile.ProfileContract;
+import com.sanislo.lostandfound.view.profile.ProfilePresenter;
 import com.sanislo.lostandfound.view.search.SearchActivity;
 import com.sanislo.lostandfound.view.thingDetails.ThingDetailsActivity;
 import com.sanislo.lostandfound.view.things.adapter.ThingAdapter;
-import com.sanislo.lostandfound.view.things.profile.ProfileContract;
-import com.sanislo.lostandfound.view.things.profile.ProfilePresenter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -99,6 +99,11 @@ public class ThingsActivity extends BaseActivity implements ThingsContract.View 
         public void onProfileLoaded(User user) {
             mUser = user;
             updateProfile();
+        }
+
+        @Override
+        public void onProfileUpdated() {
+            //ignore
         }
 
         @Override

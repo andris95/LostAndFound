@@ -1,32 +1,45 @@
 package com.sanislo.lostandfound.view.profile;
 
+import android.Manifest;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.EditText;
 import android.widget.ImageView;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.sanislo.lostandfound.R;
 import com.sanislo.lostandfound.model.User;
-import com.sanislo.lostandfound.presenter.ProfilePresenter;
-import com.sanislo.lostandfound.presenter.ProfilePresenterImpl;
+import com.sanislo.lostandfound.utils.FirebaseConstants;
+import com.sanislo.lostandfound.utils.FirebaseUtils;
 import com.sanislo.lostandfound.utils.PreferencesManager;
 import com.sanislo.lostandfound.view.BaseActivity;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 /**
  * Created by root on 30.03.17.
  */
 
-public class ProfileActivity extends BaseActivity implements ProfileView {
+public class ProfileActivity extends BaseActivity implements ProfileContract.View {
     private String TAG = ProfileActivity.class.getSimpleName();
     private static final int RP_READ_EXTERNAL_FOR_COVER = 666;
     public static final int PICK_PROFILE_IMAGE = 777;
@@ -37,29 +50,35 @@ public class ProfileActivity extends BaseActivity implements ProfileView {
     @BindView(R.id.iv_avatar)
     ImageView ivAvatar;
 
+    @BindView(R.id.edt_last_name)
+    EditText edtLastName;
+
+    @BindView(R.id.edt_first_name)
+    EditText edtFirstName;
+
     private ProfilePresenter mProfilePresenter;
+    private MaterialDialog mProgressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
         ButterKnife.bind(this);
-
+        initProgressDialog();
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        int transparentColor = ContextCompat.getColor(ProfileActivity.this, android.R.color.transparent);
-        //mCollapsingToolbarLayout.setExpandedTitleColor(transparentColor);
-
-        mProfilePresenter = new ProfilePresenterImpl(this);
-        //TODO UPDATE USERS UID ON LOGIN!!!!!
+        mProfilePresenter = new ProfilePresenter(this);
         String userUID = PreferencesManager.getUserUID(ProfileActivity.this);
-        mProfilePresenter.getProfile(userUID);
+        mProfilePresenter.loadProfile(userUID);
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        return super.onCreateOptionsMenu(menu);
+    private void initProgressDialog() {
+        mProgressDialog = new MaterialDialog.Builder(this)
+                .title(R.string.updating_profile_title)
+                .content(R.string.updating_profile_content)
+                .progress(true, 0)
+                .build();
     }
 
     @Override
@@ -70,15 +89,24 @@ public class ProfileActivity extends BaseActivity implements ProfileView {
         return super.onOptionsItemSelected(menuItem);
     }
 
+    private User mUser;
     @Override
     public void onProfileLoaded(User user) {
-        //mCollapsingToolbarLayout.setTitle(user.getFullName());
+        mUser = user;
         displayUserAvatar(user.getAvatarURL());
+        edtFirstName.setText(user.getFirstName());
+        edtLastName.setText(user.getLastName());
     }
 
     @Override
-    public void onAvatarUpdated(String avatarURL) {
-        displayUserAvatar(avatarURL);
+    public void onProfileUpdated() {
+        mProgressDialog.dismiss();
+        makeToast("onProfileUpdated");
+    }
+
+    @Override
+    public void onError() {
+        makeToast("onError");
     }
 
     private void displayUserAvatar(String url) {
@@ -93,11 +121,6 @@ public class ProfileActivity extends BaseActivity implements ProfileView {
 
                     @Override
                     public boolean onResourceReady(Bitmap resource, String model, Target<Bitmap> target, boolean isFromMemoryCache, boolean isFirstResource) {
-                        /*Palette.from(resource).generate(new Palette.PaletteAsyncListener() {
-                            public void onGenerated(Palette palette) {
-                                applyPalette(palette);
-                            }
-                        });*/
                         return false;
                     }
                 })
@@ -107,54 +130,40 @@ public class ProfileActivity extends BaseActivity implements ProfileView {
                 .into(ivAvatar);
     }
 
-   /* private void applyPalette(Palette palette) {
-        int primaryDark = getResources().getColor(R.color.primary_dark);
-        int primary = getResources().getColor(R.color.primary);
-        mCollapsingToolbarLayout.setContentScrimColor(palette.getMutedColor(primary));
-        mCollapsingToolbarLayout.setStatusBarScrimColor(palette.getDarkMutedColor(primaryDark));
-        updateBackground((FloatingActionButton) findViewById(R.id.fab), palette);
-        //supportStartPostponedEnterTransition();
+    private void displayUserAvatar(Uri avatarUri) {
+        Glide.with(this)
+                .load(avatarUri)
+                .asBitmap()
+                .placeholder(R.drawable.account)
+                .error(R.drawable.account)
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .listener(new RequestListener<Uri, Bitmap>() {
+                    @Override
+                    public boolean onException(Exception e, Uri model, Target<Bitmap> target, boolean isFirstResource) {
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onResourceReady(Bitmap resource, Uri model, Target<Bitmap> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                        ivAvatar.setImageBitmap(resource);
+                        return false;
+                    }
+                })
+                .into(ivAvatar);
     }
 
-    private void updateBackground(FloatingActionButton fab, Palette palette) {
-        int lightVibrantColor = palette.getLightVibrantColor(getResources().getColor(android.R.color.white));
-        int vibrantColor = palette.getVibrantColor(getResources().getColor(R.color.accent));
+    @Override
+    public void setPresenter(ProfileContract.Presenter presenter) {
 
-        fab.setRippleColor(lightVibrantColor);
-        fab.setBackgroundTintList(ColorStateList.valueOf(vibrantColor));
-    }
-
-    private void setupUsersThingsPager() {
-        UsersThingsPagerAdapter adapter = new UsersThingsPagerAdapter(getSupportFragmentManager());
-        vpThings.setAdapter(adapter);
-        tabThings.setupWithViewPager(vpThings);
     }
 
     @OnClick(R.id.iv_avatar)
     public void onClickAvatar() {
-        new MaterialDialog.Builder(this)
-                .title(R.string.select_avatar_image)
-                .items(R.array.select_avatar_array)
-                .itemsCallback(new MaterialDialog.ListCallback() {
-                    @Override
-                    public void onSelection(MaterialDialog dialog, View itemView, int position, CharSequence text) {
-                        Log.d(TAG, "onSelection: position: " + position);
-                        switch (position) {
-                            case 0:
-                                checkGalleryPermission();
-                                break;
-                            case 1:
-                                //TODO implement this
-                                takeProfileImage();
-                                break;
-                        }
-                    }
-                })
-                .show();
+        checkGalleryPermission();
     }
 
     private void checkGalleryPermission() {
-        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_EXTERNAL_STORAGE)
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
                 == PackageManager.PERMISSION_GRANTED) {
             pickProfileImageFromGallery();
         } else {
@@ -166,14 +175,10 @@ public class ProfileActivity extends BaseActivity implements ProfileView {
 
     private void pickProfileImageFromGallery() {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-        intent.setType("image*//*");
+        intent.setType("image/*");
         intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, false);
         Intent сhooserIntent = Intent.createChooser(intent, getString(R.string.select_avatar_image));
         startActivityForResult(сhooserIntent, PICK_PROFILE_IMAGE);
-    }
-
-    private void takeProfileImage() {
-        Toast.makeText(this, "To be continued", Toast.LENGTH_LONG).show();
     }
 
     @Override
@@ -186,12 +191,59 @@ public class ProfileActivity extends BaseActivity implements ProfileView {
         }
     }
 
+    private Uri mProfileImageUri;
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        mProfilePresenter.onActivityResult(requestCode, resultCode, data);
-        //TODO FIX THIS
-        mProfilePresenter.updateUserAvatar(ProfileActivity.this,
-                PreferencesManager.getUserID(ProfileActivity.this));
-    }*/
+        if (resultCode == RESULT_OK && requestCode == ProfileActivity.PICK_PROFILE_IMAGE) {
+            if (data != null) {
+                mProfileImageUri = data.getData();
+                displayUserAvatar(mProfileImageUri);
+            }
+        }
+    }
+
+    @OnClick(R.id.fab_update_user)
+    public void onClickUpdateUser() {
+        String firstName = edtFirstName.getText().toString().trim();
+        String lastName = edtLastName.getText().toString().trim();
+        int validatedUserName = FirebaseUtils.validateUserName(firstName, lastName);
+        if (validatedUserName != -1) {
+            makeToast(validatedUserName);
+        } else {
+            mProgressDialog.show();
+            mUser.setFirstName(firstName);
+            mUser.setLastName(lastName);
+            mUser.setFullName(firstName + " " + lastName);
+            if (mProfileImageUri != null) {
+                uploadUserAvatar();
+            } else {
+                mProfilePresenter.updateProfile(mUser);
+            }
+        }
+    }
+
+    private void uploadUserAvatar() {
+        StorageReference storageReference = FirebaseUtils.getStorageRef();
+        String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        UploadTask uploadTask = storageReference
+                .child(FirebaseConstants.USERS)
+                .child(uid)
+                .child(FirebaseConstants.AVATAR)
+                .child("avatar")
+                .putFile(mProfileImageUri);
+        uploadTask.addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+                if (task.isComplete() && task.isSuccessful()) {
+                    String avatarURL = task.getResult().getDownloadUrl().toString();
+                    mUser.setAvatarURL(avatarURL);
+                } else {
+                    onError();
+                    mProgressDialog.dismiss();
+                }
+                mProfilePresenter.updateProfile(mUser);
+            }
+        });
+    }
 }

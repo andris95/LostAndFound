@@ -1,4 +1,4 @@
-package com.sanislo.lostandfound.view.things.profile.data.source;
+package com.sanislo.lostandfound.view.profile.source;
 
 import android.support.annotation.NonNull;
 
@@ -13,5 +13,10 @@ public interface ProfileDataSource {
         void onProfileLoaded(User user);
         void onError();
     }
+    interface UpdateProfileCallback {
+        void onProfileUpdated();
+        void onError();
+    }
     void loadProfile(String userId, @NonNull LoadProfileCallback loadProfileCallback);
+    void updateProfile(@NonNull User user, @NonNull UpdateProfileCallback updateProfileCallback);
 }

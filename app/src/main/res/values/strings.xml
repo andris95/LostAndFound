@@ -20,6 +20,10 @@
     <string name="close_app_content">Do You really want to close this application?</string>
 
     <!-- Edit Profile Screen -->
+    <string name="profile">Profile</string>
+    <string name="updating_profile_title">Updating profile</string>
+    <string name="updating_profile_content">Hold on, updating profile...</string>
+
     <!-- Select avatar text -->
     <string name="select_avatar_image">Select avatar image</string>
     <string name="choose_from_gallery">Choose from Gallery</string>
