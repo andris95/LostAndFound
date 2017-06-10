@@ -28,6 +28,7 @@ public interface ThingsDataSource {
                     @NonNull String order,
                     @NonNull int page,
                     @NonNull LoadThingsCallback loadThingsCallback);
+    void loadMyThings(@NonNull String userUid, @NonNull LoadThingsCallback loadThingsCallback);
     void removeThing(@NonNull int id, @NonNull RemoveThingCallback removeThingCallback);
     void updateThing(@NonNull int id, @NonNull boolean returned, @NonNull UpdateThingCallback updateThingCallback);
     void loadThing(@NonNull String thingId, @NonNull LoadThingsCallback loadThingsCallback);

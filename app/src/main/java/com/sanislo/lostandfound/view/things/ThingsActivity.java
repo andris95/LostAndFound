@@ -2,23 +2,16 @@ package com.sanislo.lostandfound.view.things;
 
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.RectF;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityOptionsCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.util.Pair;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.support.v7.widget.helper.ItemTouchHelper;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
@@ -42,7 +35,6 @@ import com.sanislo.lostandfound.FakeDataGenerator;
 import com.sanislo.lostandfound.R;
 import com.sanislo.lostandfound.model.Thing;
 import com.sanislo.lostandfound.model.User;
-import com.sanislo.lostandfound.utils.ImageUtils;
 import com.sanislo.lostandfound.view.BaseActivity;
 import com.sanislo.lostandfound.view.addThing.AddThingActivity;
 import com.sanislo.lostandfound.view.chatHeader.ChatHeaderActivity;
@@ -53,6 +45,7 @@ import com.sanislo.lostandfound.view.profile.ProfilePresenter;
 import com.sanislo.lostandfound.view.search.SearchActivity;
 import com.sanislo.lostandfound.view.thingDetails.ThingDetailsActivity;
 import com.sanislo.lostandfound.view.things.adapter.ThingAdapter;
+import com.sanislo.lostandfound.view.usersThings.MyThingsActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -82,17 +75,6 @@ public class ThingsActivity extends BaseActivity implements ThingsContract.View 
     private AccountHeader mAccountHeader;
     private User mUser = new User();
     private int mClickedDrawerItemPos = -100;
-
-    private Bitmap mLeftBitmap;
-    private Bitmap mRightBitmap;
-
-    private void initBitmapsForSwipe() {
-        Drawable drawable = ContextCompat.getDrawable(ThingsActivity.this, R.drawable.bookmark_check);
-        mLeftBitmap = ImageUtils.drawableToBitmap(drawable);
-
-        drawable = ContextCompat.getDrawable(ThingsActivity.this, R.drawable.delete);
-        mRightBitmap = ImageUtils.drawableToBitmap(drawable);
-    }
 
     private ProfileContract.View mProfileView = new ProfileContract.View() {
         @Override
@@ -132,9 +114,7 @@ public class ThingsActivity extends BaseActivity implements ThingsContract.View 
         }
     };
 
-    private boolean isLoadFromSwipeRefresh;
     private boolean isLoading;
-    private boolean isLastPage;
     private int mCurrentPage = 1;
     private static final int PAGE_SIZE = 10;
     private RecyclerView.OnScrollListener mOnScrollListener = new RecyclerView.OnScrollListener() {
@@ -150,7 +130,7 @@ public class ThingsActivity extends BaseActivity implements ThingsContract.View 
             int totalItemCount = mLinearLayoutManager.getItemCount();
             int firstVisibleItemPosition = mLinearLayoutManager.findFirstVisibleItemPosition();
 
-            if (!isLoading && !isLastPage) {
+            if (!isLoading) {
                 if ((visibleItemCount + firstVisibleItemPosition) >= totalItemCount
                         && firstVisibleItemPosition >= 0
                         && totalItemCount >= PAGE_SIZE) {
@@ -172,7 +152,6 @@ public class ThingsActivity extends BaseActivity implements ThingsContract.View 
         getWindow().requestFeature(Window.FEATURE_CONTENT_TRANSITIONS);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-        initBitmapsForSwipe();
         initFirebase();
         initToolbar();
         initCloseAppDialog();
@@ -186,7 +165,7 @@ public class ThingsActivity extends BaseActivity implements ThingsContract.View 
         } else {
             mProfilePresenter.loadProfile(getAuthenticatedUserUID());
         }
-        mThingsContractPresenter = new com.sanislo.lostandfound.view.things.ThingsPresenter(this);
+        mThingsContractPresenter = new ThingsPresenter(this);
         mThingsContractPresenter.loadThings(0);
     }
 
@@ -274,17 +253,20 @@ public class ThingsActivity extends BaseActivity implements ThingsContract.View 
             public void onDrawerClosed(View drawerView) {
                 switch (mClickedDrawerItemPos) {
                     case 1:
-                        startAddThingActivity();
+                        startMyThingsActivity();
                         break;
                     case 2:
-                        openSearchActivity();
+                        startAddThingActivity();
                         break;
                     case 3:
-                        openMapsActivity();
+                        openSearchActivity();
                         break;
                     case 4:
-                        openChatHeaders();
+                        openMapsActivity();
                     case 5:
+                        openChatHeaders();
+                        break;
+                    case 6:
                         FakeDataGenerator fakeDataGenerator = new FakeDataGenerator(ThingsActivity.this, mUser);
                         fakeDataGenerator.postCloseFakeThings(ThingsActivity.this);
                         break;
@@ -332,6 +314,10 @@ public class ThingsActivity extends BaseActivity implements ThingsContract.View 
 
     private List<IDrawerItem> getDrawerItems() {
         List<IDrawerItem> drawerItems = new ArrayList<>();
+        PrimaryDrawerItem myThings = new PrimaryDrawerItem()
+                .withName(R.string.my_things)
+                .withIcon(R.drawable.account)
+                .withSelectable(false);
         PrimaryDrawerItem addThing = new PrimaryDrawerItem()
                 .withName(R.string.add_thing)
                 .withIcon(R.drawable.plus)
@@ -350,6 +336,7 @@ public class ThingsActivity extends BaseActivity implements ThingsContract.View 
                 .withSelectable(false);
         PrimaryDrawerItem fakeThings = new PrimaryDrawerItem()
                 .withName("Create 500 fake things");
+        drawerItems.add(myThings);
         drawerItems.add(addThing);
         drawerItems.add(search);
         drawerItems.add(nearbyThings);
@@ -365,7 +352,7 @@ public class ThingsActivity extends BaseActivity implements ThingsContract.View 
 
     private void initToolbar() {
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle(TAG);
+        getSupportActionBar().setTitle(R.string.all_things);
     }
 
     private void initThingsAdapter() {
@@ -376,87 +363,6 @@ public class ThingsActivity extends BaseActivity implements ThingsContract.View 
         rvThings.setLayoutManager(mLinearLayoutManager);
         rvThings.addOnScrollListener(mOnScrollListener);
         rvThings.setAdapter(mThingAdapter);
-        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(mItemTouchHelperCallback);
-        itemTouchHelper.attachToRecyclerView(rvThings);
-    }
-
-    private ItemTouchHelper.SimpleCallback mItemTouchHelperCallback =
-            new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
-        @Override
-        public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
-            return false;
-        }
-
-        @Override
-        public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
-            int position = viewHolder.getAdapterPosition();
-
-            if (direction == ItemTouchHelper.LEFT){
-                //mThingAdapter.removeItem(position);
-                int id = mThingAdapter.getItem(position).getId();
-                mThingsContractPresenter.removeThing(id);
-                mThingAdapter.removeItem(position);
-                makeToast("DELETE pos" + position + " / " + id);
-            } else {
-                Thing thing = mThingAdapter.getItem(position);
-                mThingsContractPresenter.updateThing(thing.getId(), true);
-            }
-        }
-
-        @Override
-        public void onChildDraw(Canvas c, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
-            ThingsActivity.this.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
-            super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
-        }
-    };
-
-    private void onChildDraw(Canvas c,
-                             RecyclerView recyclerView,
-                             RecyclerView.ViewHolder viewHolder,
-                             float dX,
-                             float dY,
-                             int actionState,
-                             boolean isCurrentlyActive) {
-        Paint p = new Paint();
-        //right positive, left negative
-        Log.d(TAG, "onChildDraw: dX: " + dX);
-        if(actionState == ItemTouchHelper.ACTION_STATE_SWIPE){
-
-            View itemView = viewHolder.itemView;
-            float height = (float) itemView.getBottom() - (float) itemView.getTop();
-            //float width = height / 3;
-            float width = mRightBitmap.getWidth();
-            Log.d(TAG, "onChildDraw: width: " + width);
-
-            if(dX > 0){
-                p.setColor(Color.parseColor("#388E3C"));
-                RectF background = new RectF((float) itemView.getLeft(),
-                        (float) itemView.getTop(),
-                        dX,
-                        (float) itemView.getBottom());
-                c.drawRect(background,p);
-                RectF iconDest = new RectF(
-                        (float) itemView.getLeft() + width,
-                        (float) itemView.getTop() + width,
-                        (float) itemView.getLeft()+ 2*width,
-                        (float)itemView.getBottom() - width);
-                c.drawBitmap(mLeftBitmap, null, iconDest, p);
-            } else {
-                p.setColor(Color.parseColor("#D32F2F"));
-                RectF background = new RectF(
-                        (float) itemView.getRight() + dX,
-                        (float) itemView.getTop(),
-                        (float) itemView.getRight(),
-                        (float) itemView.getBottom());
-                c.drawRect(background, p);
-                RectF iconDest = new RectF(
-                        (float) itemView.getRight() - 2*width,
-                        (float) itemView.getTop() + width,
-                        (float) itemView.getRight() - width,
-                        (float)itemView.getBottom() - width);
-                c.drawBitmap(mRightBitmap, null, iconDest, p);
-            }
-        }
     }
 
     @Override
@@ -474,6 +380,11 @@ public class ThingsActivity extends BaseActivity implements ThingsContract.View 
                 break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void startMyThingsActivity() {
+        Intent intent = new Intent(ThingsActivity.this, MyThingsActivity.class);
+        startActivity(intent);
     }
 
     private void startAddThingActivity() {

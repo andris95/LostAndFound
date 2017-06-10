@@ -3,6 +3,7 @@ package com.sanislo.lostandfound.view.search;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.sanislo.lostandfound.model.Thing;
 
 import java.util.HashMap;
@@ -25,14 +26,17 @@ public class QueryManager {
     public static final String ORDER_ASC = "ASC";
     public static final String ORDER_DESC = "DESC";
     public static final String RETURNED = "returned";
+    public static final String USER_UID = "userUID";
 
     private FilterQuery mFilterQuery;
     private Set<String> mTitles = new HashSet<>();
+    private String mUserUID;
     private String title;
     private int type;
     private String category;
     private String order = ORDER_DESC;
     private String sort = "timestamp";
+    private boolean mIsOnlyMyThings;
 
     public static final int STATUS_ANY = 0;
     public static final int STATUS_RETURNED_TRUE = 1;
@@ -42,10 +46,21 @@ public class QueryManager {
     public QueryManager() {
     }
 
+    public boolean isOnlyMyThings() {
+        return mIsOnlyMyThings;
+    }
+
+    public void setOnlyMyThings(boolean onlyMyThings) {
+        mIsOnlyMyThings = onlyMyThings;
+    }
+
     public Map<String, String> toQueryOptions() {
         Map<String, String> queryOptions = new HashMap<>();
         queryOptions.put(_SORT, sort);
         queryOptions.put(_ORDER, order);
+        if (mIsOnlyMyThings) {
+            queryOptions.put(USER_UID, FirebaseAuth.getInstance().getCurrentUser().getUid());
+        }
         if (!isTitleEmpty()) queryOptions.put(TITLE_LIKE, title);
         if (!isAnyType()) {
             queryOptions.put(TYPE, getTypeOption());

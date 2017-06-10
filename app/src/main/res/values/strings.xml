@@ -2,8 +2,8 @@
     <string name="app_name">Lost &amp; Found</string>
     <string name="about">About</string>
 
-    <!-- Main screen - things list screen -->
-    <!-- toolbar options -->
+    <string name="all_things">All Things</string>
+    <string name="my_things">My Things</string>
     <string name="add_thing">Add Thing</string>
     <string name="find_thing">Find Thing</string>
     <string name="thing_posted_in">Posted in %1$s</string>
@@ -15,6 +15,7 @@
     <string name="drawer_search">Search</string>
     <string name="drawer_nearby_things">Nearby things</string>
     <string name="drawer_chats">Chats</string>
+    <string name="drawer_my_things">My Things</string>
     <string name="share">Share</string>
     <string name="close_app_title">Close application</string>
     <string name="close_app_content">Do You really want to close this application?</string>

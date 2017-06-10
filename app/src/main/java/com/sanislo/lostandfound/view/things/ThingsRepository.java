@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import com.sanislo.lostandfound.model.Thing;
 import com.sanislo.lostandfound.model.api.ApiModel;
 import com.sanislo.lostandfound.model.api.ApiModelImpl;
+import com.sanislo.lostandfound.view.search.QueryManager;
 import com.sanislo.lostandfound.view.things.data.source.ThingsDataSource;
 
 import java.util.List;
@@ -42,6 +43,29 @@ public class ThingsRepository implements ThingsDataSource {
     @Override
     public void loadThings(@NonNull String sort, @NonNull String order, @NonNull int page, @NonNull final LoadThingsCallback loadThingsCallback) {
         Call<List<Thing>> getThingsCall = mApiModel.getThings(sort, order, page);
+        getThingsCall.enqueue(new Callback<List<Thing>>() {
+            @Override
+            public void onResponse(Call<List<Thing>> call, Response<List<Thing>> response) {
+                if (response.isSuccessful()) {
+                    loadThingsCallback.onThingsLoaded(response.body());
+                } else {
+                    loadThingsCallback.onDataNotAvailable();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<Thing>> call, Throwable t) {
+                t.printStackTrace();
+                loadThingsCallback.onDataNotAvailable();
+            }
+        });
+    }
+
+    @Override
+    public void loadMyThings(@NonNull String userUid, @NonNull final LoadThingsCallback loadThingsCallback) {
+        QueryManager queryManager = new QueryManager();
+        queryManager.setOnlyMyThings(true);
+        Call<List<Thing>> getThingsCall = mApiModel.getThings(queryManager.toQueryOptions());
         getThingsCall.enqueue(new Callback<List<Thing>>() {
             @Override
             public void onResponse(Call<List<Thing>> call, Response<List<Thing>> response) {

@@ -48,6 +48,21 @@ public class ThingsPresenter implements ThingsContract.Presenter {
     }
 
     @Override
+    public void loadMyThings(String userUid) {
+        mThingsRepository.loadMyThings(userUid, new ThingsDataSource.LoadThingsCallback() {
+            @Override
+            public void onThingsLoaded(List<Thing> thingList) {
+                mView.showThings(thingList);
+            }
+
+            @Override
+            public void onDataNotAvailable() {
+                mView.showError();
+            }
+        });
+    }
+
+    @Override
     public void removeThing(int id) {
         mThingsRepository.removeThing(id, new ThingsDataSource.RemoveThingCallback() {
             @Override

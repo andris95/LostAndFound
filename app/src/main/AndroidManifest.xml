@@ -47,6 +47,7 @@
         <activity android:name=".view.map.MapActivity" />
         <activity android:name=".view.chatMessage.ChatActivity" />
         <activity android:name=".view.chatHeader.ChatHeaderActivity" />
+        <activity android:name=".view.usersThings.MyThingsActivity" />
 
         <activity android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
                   android:theme="@style/Base.Theme.AppCompat"/> <!-- optional (needed if default theme has no action bar) -->
