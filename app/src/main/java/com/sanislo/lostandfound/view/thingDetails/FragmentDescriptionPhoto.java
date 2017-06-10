@@ -17,6 +17,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
+import com.github.chrisbanes.photoview.PhotoView;
 import com.sanislo.lostandfound.R;
 
 import butterknife.BindView;
@@ -32,7 +33,7 @@ public class FragmentDescriptionPhoto extends Fragment {
     public static final String KEY_POSITION = "KEY_POSITION";
 
     @BindView(R.id.iv_description_photo)
-    ImageView ivDescriptionPhoto;
+    PhotoView ivDescriptionPhoto;
 
     private int mPosition;
     private String mPhotoPath;

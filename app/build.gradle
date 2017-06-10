@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 25
-    buildToolsVersion "25.0.2"
+    buildToolsVersion "25.0.3"
     defaultConfig {
         applicationId "com.sanislo.lostandfound"
         minSdkVersion 21
@@ -86,6 +86,8 @@ dependencies {
 
     compile 'com.theartofdev.edmodo:android-image-cropper:2.4.+'
     compile 'com.hudomju:swipe-to-dismiss-undo:1.0'
+
+    compile 'com.github.chrisbanes:PhotoView:2.0.0'
 }
 
 apply plugin: 'com.google.gms.google-services'
