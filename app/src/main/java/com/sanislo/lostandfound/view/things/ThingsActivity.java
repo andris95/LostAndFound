@@ -31,7 +31,6 @@ import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IProfile;
-import com.sanislo.lostandfound.FakeDataGenerator;
 import com.sanislo.lostandfound.R;
 import com.sanislo.lostandfound.model.Thing;
 import com.sanislo.lostandfound.model.User;
@@ -143,7 +142,7 @@ public class ThingsActivity extends BaseActivity implements ThingsContract.View 
     private void loadMoreItems() {
         isLoading = true;
         mCurrentPage++;
-        mThingsContractPresenter.loadThings(mCurrentPage);
+        mThingsPresenter.loadThings(mCurrentPage);
     }
 
     @Override
@@ -165,8 +164,14 @@ public class ThingsActivity extends BaseActivity implements ThingsContract.View 
         } else {
             mProfilePresenter.loadProfile(getAuthenticatedUserUID());
         }
-        mThingsContractPresenter = new ThingsPresenter(this);
-        mThingsContractPresenter.loadThings(0);
+        mThingsPresenter = new ThingsPresenter(this);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mThingList.clear();
+        mThingsPresenter.loadThings(0);
     }
 
     private void setupSwipeRefresh() {
@@ -177,7 +182,7 @@ public class ThingsActivity extends BaseActivity implements ThingsContract.View 
                     mThingAdapter.clear();
                     mThingAdapter.notifyDataSetChanged();
                 }
-                mThingsContractPresenter.loadThings(1);
+                mThingsPresenter.loadThings(1);
             }
         });
     }
@@ -266,10 +271,6 @@ public class ThingsActivity extends BaseActivity implements ThingsContract.View 
                     case 5:
                         openChatHeaders();
                         break;
-                    case 6:
-                        FakeDataGenerator fakeDataGenerator = new FakeDataGenerator(ThingsActivity.this, mUser);
-                        fakeDataGenerator.postCloseFakeThings(ThingsActivity.this);
-                        break;
                     case -1:
                         mFirebaseAuth.signOut();
                         break;
@@ -334,15 +335,11 @@ public class ThingsActivity extends BaseActivity implements ThingsContract.View 
                 .withName(R.string.drawer_chats)
                 .withIcon(R.drawable.message_black)
                 .withSelectable(false);
-        PrimaryDrawerItem fakeThings = new PrimaryDrawerItem()
-                .withName("Create 500 fake things");
         drawerItems.add(myThings);
         drawerItems.add(addThing);
         drawerItems.add(search);
         drawerItems.add(nearbyThings);
         drawerItems.add(chatHeaders);
-        drawerItems.add(fakeThings);
-        //drawerItems.add(logout);
         return drawerItems;
     }
 
@@ -449,10 +446,10 @@ public class ThingsActivity extends BaseActivity implements ThingsContract.View 
         }
     }
 
-    private ThingsContract.Presenter mThingsContractPresenter;
+    private ThingsContract.Presenter mThingsPresenter;
     @Override
     public void setPresenter(ThingsContract.Presenter presenter) {
-        mThingsContractPresenter = presenter;
+        mThingsPresenter = presenter;
     }
 
     private List<Thing> mThingList = new ArrayList<>();
