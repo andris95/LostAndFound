@@ -5,12 +5,11 @@ import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -20,6 +19,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -28,13 +28,11 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.aurelhubert.ahbottomnavigation.AHBottomNavigation;
-import com.aurelhubert.ahbottomnavigation.AHBottomNavigationItem;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.RequestListener;
@@ -62,11 +60,20 @@ import com.sanislo.lostandfound.model.DescriptionPhotoItem;
 import com.sanislo.lostandfound.model.Thing;
 import com.sanislo.lostandfound.presenter.AddThingPresenter;
 import com.sanislo.lostandfound.presenter.AddThingPresenterImpl;
+import com.sanislo.lostandfound.utils.FileUtils;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.Collections;
 import java.util.List;
 
 import butterknife.BindView;
+import butterknife.BindViews;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
@@ -82,9 +89,6 @@ public class AddThingEditableActivity extends AppCompatActivity implements AddTh
     private final int RP_READ_EXTERNAL_FOR_COVER = 666;
     private final int RP_READ_EXTERNAL_FOR_DESCRIPTION_PHOTOS = 444;
     private final int RP_FINE_LOCATION = 555;
-
-    @BindView(R.id.root_add_thing)
-    CoordinatorLayout mRoot;
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
@@ -113,8 +117,11 @@ public class AddThingEditableActivity extends AppCompatActivity implements AddTh
     @BindView(R.id.iv_remove)
     ImageView ivRemoveCoverPhoto;
 
+    @BindViews({R.id.ll_location, R.id.ll_cover_photo, R.id.ll_desc_photos})
+    List<LinearLayout> mBottomBarItems;
+
     @BindView(R.id.bottom_navigation)
-    AHBottomNavigation bottomNavigation;
+    LinearLayout llBottomNavigation;
 
     private GoogleMap mGoogleMap;
     private MapFragment mMapFragment;
@@ -163,7 +170,7 @@ public class AddThingEditableActivity extends AppCompatActivity implements AddTh
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add_thing);
+        setContentView(R.layout.activity_add_thing_custom_bottom_bar);
         ButterKnife.bind(this);
         supportPostponeEnterTransition();
         mPresenter = new AddThingPresenterImpl(this);
@@ -176,8 +183,29 @@ public class AddThingEditableActivity extends AppCompatActivity implements AddTh
         initCategories();
         initTypeSpinner();
         initDescriptionPhotosAdapter();
-        initBottomNavigation();
         initMapView();
+        setBottomBarItemClickListeners();
+    }
+
+    private void setBottomBarItemClickListeners() {
+        for (LinearLayout linearLayout : mBottomBarItems) {
+            linearLayout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    switch (v.getId()) {
+                        case R.id.ll_location:
+                            onSelectPlace();
+                            break;
+                        case R.id.ll_cover_photo:
+                            onSelectThingCoverPhoto();
+                            break;
+                        case R.id.ll_desc_photos:
+                            onSelectThingDescriptionPhotos();
+                            break;
+                    }
+                }
+            });
+        }
     }
 
     private void fetchIntent() {
@@ -205,6 +233,7 @@ public class AddThingEditableActivity extends AppCompatActivity implements AddTh
                 })
                 .into(ivCoverPhoto);
         displayThingMarker(mThing.getLocation().getLatLng());
+        downloadDescriptionPhotos();
     }
 
     @Override
@@ -241,6 +270,7 @@ public class AddThingEditableActivity extends AppCompatActivity implements AddTh
         mTypeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spType.setAdapter(mTypeAdapter);
         spType.setOnItemSelectedListener(mTypeSelectedListener);
+        spType.setSelection(mThing.getType());
     }
 
     private ClickEventHook<DescriptionPhotoItem> mRemovePhotoClick = new ClickEventHook<DescriptionPhotoItem>() {
@@ -291,54 +321,6 @@ public class AddThingEditableActivity extends AppCompatActivity implements AddTh
         });
         ItemTouchHelper touchHelper = new ItemTouchHelper(dragCallback);
         touchHelper.attachToRecyclerView(rvDescriptionPhotos);
-    }
-
-    private void initBottomNavigation() {
-        int blackColor = ContextCompat.getColor(AddThingEditableActivity.this, R.color.md_black_1000);
-        Drawable location = ContextCompat.getDrawable(AddThingEditableActivity.this, R.drawable.map_marker);
-        Drawable image = ContextCompat.getDrawable(AddThingEditableActivity.this, R.drawable.image);
-        Drawable multipleImage = ContextCompat.getDrawable(AddThingEditableActivity.this, R.drawable.image_multiple);
-        Drawable contacts = ContextCompat.getDrawable(AddThingEditableActivity.this, R.drawable.contacts);
-        AHBottomNavigationItem locationItem = new AHBottomNavigationItem(getString(R.string.location),
-                location);
-        AHBottomNavigationItem coverPhotoItem = new AHBottomNavigationItem(getString(R.string.cover),
-                image);
-        AHBottomNavigationItem descriptionPhotosItem = new AHBottomNavigationItem(
-                getString(R.string.description_photos),
-                multipleImage);
-        AHBottomNavigationItem contactsItem = new AHBottomNavigationItem(
-                getString(R.string.contact),
-                contacts);
-        bottomNavigation.setAccentColor(blackColor);
-        bottomNavigation.setInactiveColor(blackColor);
-        bottomNavigation.addItem(locationItem);
-        bottomNavigation.addItem(coverPhotoItem);
-        bottomNavigation.addItem(descriptionPhotosItem);
-        bottomNavigation.addItem(contactsItem);
-        bottomNavigation.setColored(false);
-        bottomNavigation.setUseElevation(true);
-        bottomNavigation.setBehaviorTranslationEnabled(false);
-        bottomNavigation.setTitleTextSize(20, 20);
-        bottomNavigation.setOnTabSelectedListener(new AHBottomNavigation.OnTabSelectedListener() {
-            @Override
-            public boolean onTabSelected(int position, boolean wasSelected) {
-                switch (position) {
-                    case 0:
-                        onSelectPlace();
-                        return true;
-                    case 1:
-                        onSelectThingCoverPhoto();
-                        return true;
-                    case 2:
-                        onSelectThingDescriptionPhotos();
-                        return true;
-                    case 3:
-                        Toast.makeText(getApplicationContext(), "TO be continued", Toast.LENGTH_SHORT).show();
-                    default:
-                        return false;
-                }
-            }
-        });
     }
 
     private void initMapView() {
@@ -502,7 +484,7 @@ public class AddThingEditableActivity extends AppCompatActivity implements AddTh
     @Override
     public void onError(int errorMessageRes) {
         if (mErrorSnackbar == null || !mErrorSnackbar.isShownOrQueued()) {
-            mErrorSnackbar = Snackbar.make(mRoot, errorMessageRes, Snackbar.LENGTH_LONG);
+            mErrorSnackbar = Snackbar.make(llBottomNavigation, errorMessageRes, Snackbar.LENGTH_LONG);
             mErrorSnackbar.show();
         }
     }
@@ -589,6 +571,126 @@ public class AddThingEditableActivity extends AppCompatActivity implements AddTh
             e.printStackTrace();
         } catch (GooglePlayServicesRepairableException e2) {
             e2.printStackTrace();
+        }
+    }
+
+    private void downloadDescriptionPhotos() {
+        List<String> descriptionPhotosList = mThing.getDescriptionPhotos();
+        if (descriptionPhotosList == null) return;
+        int descriptionPhotosCount = descriptionPhotosList.size();
+        String[] descriptionPhotos = descriptionPhotosList.toArray(new String[descriptionPhotosCount]);
+        for (String s : descriptionPhotos) {
+            Log.d(TAG, "downloadDescriptionPhotos: s :" + s);
+        }
+        DownloadTask downloadTask = new DownloadTask(this);
+        downloadTask.execute(descriptionPhotos);
+    }
+
+    private void addDescriptionPhoto(Uri photoUri) {
+        mDescriptionPhotosAdapter.add(new DescriptionPhotoItem(photoUri));
+        mDescriptionPhotosAdapter.notifyDataSetChanged();
+        setTvSelectDescriptionPhotosVisibility(false);
+    }
+
+    private class DownloadTask extends AsyncTask<String, File, Void> {
+        public final String TAG = DownloadTask.class.getSimpleName();
+
+        private Context mContext;
+        private File mTempDirectory;
+        private int mCounter = 0;
+
+        public DownloadTask(Context context) {
+            this.mContext = context;
+            initTempDirectory();
+        }
+
+        private void initTempDirectory() {
+            File cacheDir = mContext.getCacheDir();
+            mTempDirectory = new File(cacheDir, "temp_thing_photos");
+            if (!mTempDirectory.exists()) {
+                mTempDirectory.mkdir();
+            }
+        }
+
+        @Override
+        protected Void doInBackground(String... sUrl) {
+            clearCacheDir(mTempDirectory);
+            for (String fileUrl : sUrl) {
+                downloadFile(fileUrl);
+                mCounter++;
+            }
+            return null;
+        }
+
+        private void clearCacheDir(File cacheDir) {
+            String[] children = cacheDir.list();
+            if (children != null)
+            for (String s : children) {
+                Log.d(TAG, "clearCacheDir: children: " + s);
+                new File(s).delete();
+            }
+        }
+
+        private void downloadFile(String fileUrl) {
+            Log.d(TAG, "downloadFile: fileUrl: " + fileUrl);
+            InputStream input = null;
+            OutputStream output = null;
+            HttpURLConnection connection = null;
+            try {
+                URL url = new URL(fileUrl);
+                connection = (HttpURLConnection) url.openConnection();
+                connection.connect();
+
+                // this will be useful to display download percentage
+                // might be -1: server did not report the length
+                int fileLength = connection.getContentLength();
+
+                // download the file
+                input = connection.getInputStream();
+                String fileName = FileUtils.getFileNameFromUrl(fileUrl);
+                File file;
+                if (!TextUtils.isEmpty(fileName)) {
+                    file = new File(mTempDirectory, fileName + ".jpg");
+                } else {
+                    file = new File(mTempDirectory, mCounter + ".jpg");
+                }
+                Log.d(TAG, "downloadFile: " + fileName);
+                Log.d(TAG, "downloadFile: " + file.getAbsolutePath());
+                mCounter++;
+                output = new FileOutputStream(file);
+
+                byte data[] = new byte[4096];
+                int count;
+                while ((count = input.read(data)) != -1) {
+                    // allow canceling with back button
+                    if (isCancelled()) {
+                        input.close();
+                    }
+                    output.write(data, 0, count);
+                }
+                publishProgress(file);
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    if (output != null)
+                        output.close();
+                    if (input != null)
+                        input.close();
+                } catch (IOException ignored) {
+                    ignored.printStackTrace();
+                }
+                if (connection != null)
+                    connection.disconnect();
+            }
+        }
+
+        @Override
+        protected void onProgressUpdate(File... values) {
+            super.onProgressUpdate(values);
+            Log.d(TAG, "onProgressUpdate: " + values[0].getAbsolutePath());
+            Uri uri = Uri.fromFile(values[0]);
+            addDescriptionPhoto(uri);
         }
     }
 }

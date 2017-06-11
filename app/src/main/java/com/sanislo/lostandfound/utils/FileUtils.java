@@ -8,6 +8,7 @@ import android.os.Build;
 import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
+import android.util.Log;
 
 import java.io.File;
 
@@ -16,7 +17,7 @@ import java.io.File;
  */
 
 public class FileUtils {
-    public final String TAG = FileUtils.class.getSimpleName();
+    public static final String TAG = FileUtils.class.getSimpleName();
 
     public static String getFileName(String filePath) {
         String fileName = null;
@@ -180,5 +181,16 @@ public class FileUtils {
             return true;
         }
         return false;
+    }
+
+    public static final String getFileNameFromUrl(String url) {
+        int indexOfLastSlash = url.lastIndexOf("/");
+        Log.d(TAG, "getFileNameFromUrl: indexOfLastSlash: " + indexOfLastSlash);
+        if (indexOfLastSlash != -1) {
+            // + 1 because of "inclusive"
+            return url.substring(indexOfLastSlash + 1);
+        } else {
+            return null;
+        }
     }
 }
