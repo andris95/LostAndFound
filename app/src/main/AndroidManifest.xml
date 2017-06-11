@@ -38,6 +38,10 @@
             android:name=".view.addThing.AddThingActivity"
             android:windowSoftInputMode="adjustPan|stateHidden">
         </activity>
+        <activity
+            android:name=".view.addThing.AddThingEditableActivity"
+            android:windowSoftInputMode="adjustPan|stateHidden">
+        </activity>
         <activity android:name=".view.thingDetails.DescriptionPhotosActivity" />
         <activity android:name=".view.profile.ProfileActivity" />
         <activity android:name=".view.search.SearchActivity">

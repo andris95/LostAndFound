@@ -2,6 +2,7 @@ package com.sanislo.lostandfound.view.addThing;
 
 import android.Manifest;
 import android.app.FragmentTransaction;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
@@ -26,7 +27,6 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -59,7 +59,9 @@ import com.mikepenz.fastadapter_extensions.drag.SimpleDragCallback;
 import com.sanislo.lostandfound.R;
 import com.sanislo.lostandfound.interfaces.AddThingView;
 import com.sanislo.lostandfound.model.DescriptionPhotoItem;
+import com.sanislo.lostandfound.model.Thing;
 import com.sanislo.lostandfound.presenter.AddThingPresenter;
+import com.sanislo.lostandfound.presenter.AddThingPresenterImpl;
 
 import java.util.Collections;
 import java.util.List;
@@ -105,9 +107,6 @@ public class AddThingEditableActivity extends AppCompatActivity implements AddTh
     @BindView(R.id.rv_description_photos_preview)
     RecyclerView rvDescriptionPhotos;
 
-    @BindView(R.id.rv_contacts)
-    RecyclerView rvContacts;
-
     @BindView(R.id.iv_cover_photo)
     ImageView ivCoverPhoto;
 
@@ -116,9 +115,6 @@ public class AddThingEditableActivity extends AppCompatActivity implements AddTh
 
     @BindView(R.id.bottom_navigation)
     AHBottomNavigation bottomNavigation;
-
-    @BindView(R.id.fl_map_container)
-    FrameLayout flMapContainer;
 
     private GoogleMap mGoogleMap;
     private MapFragment mMapFragment;
@@ -129,6 +125,7 @@ public class AddThingEditableActivity extends AppCompatActivity implements AddTh
     private ArrayAdapter<String> mCategoriesAdapter;
     private MaterialDialog mProgressDialog;
     private Snackbar mErrorSnackbar;
+    private Thing mThing;
 
     private FastItemAdapter<DescriptionPhotoItem> mDescriptionPhotosAdapter;
 
@@ -156,21 +153,58 @@ public class AddThingEditableActivity extends AppCompatActivity implements AddTh
         }
     };
 
+    public static final String EXTRA_THING = "EXTRA_THING";
+    public static final Intent buildLaunchIntent(Context context, Thing thing) {
+        Intent intent = new Intent(context, AddThingEditableActivity.class);
+        intent.putExtra(EXTRA_THING, thing);
+        return intent;
+    }
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_thing);
         ButterKnife.bind(this);
+        supportPostponeEnterTransition();
+        mPresenter = new AddThingPresenterImpl(this);
+        fetchIntent();
+        showThing(mThing);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle(R.string.new_thing);
+        getSupportActionBar().setTitle(R.string.edit_thing);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         //mPresenter = new AddThingPresenterImpl(this);
         initCategories();
         initTypeSpinner();
         initDescriptionPhotosAdapter();
         initBottomNavigation();
-        displayCoverPlaceholder();
         initMapView();
+    }
+
+    private void fetchIntent() {
+        mThing = getIntent().getParcelableExtra(EXTRA_THING);
+    }
+
+    private void showThing(Thing thing) {
+        edtTitle.setText(thing.getTitle());
+        edtDescription.setText(thing.getDescription());
+        Glide.with(this)
+                .load(thing.getPhoto())
+                .listener(new RequestListener<String, GlideDrawable>() {
+                    @Override
+                    public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
+                        if (e != null) e.printStackTrace();
+                        supportStartPostponedEnterTransition();
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                        supportStartPostponedEnterTransition();
+                        return false;
+                    }
+                })
+                .into(ivCoverPhoto);
+        displayThingMarker(mThing.getLocation().getLatLng());
     }
 
     @Override
@@ -326,6 +360,7 @@ public class AddThingEditableActivity extends AppCompatActivity implements AddTh
             if (mGoogleMap == null) {
                 mGoogleMap = googleMap;
             }
+            displayThingMarker(mThing.getLocation().getLatLng());
         }
     };
 
@@ -445,6 +480,18 @@ public class AddThingEditableActivity extends AppCompatActivity implements AddTh
         categories.add(0, getString(R.string.select_category));
         mCategoriesAdapter.addAll(categories);
         mCategoriesAdapter.notifyDataSetChanged();
+        setCategory(categories);
+    }
+
+    private void setCategory(List<String> categories) {
+        String thingCategory = mThing.getCategory();
+        Log.d(TAG, "setCategory: " + categories);
+        Log.d(TAG, "setCategory: thingCategory: " + thingCategory);
+        int indexOfThingCategory = categories.indexOf(thingCategory);
+        Log.d(TAG, "setCategory: indexOfThingCategory: " + indexOfThingCategory);
+        if (indexOfThingCategory != -1) {
+            spCategory.setSelection(indexOfThingCategory);
+        }
     }
 
     @Override
@@ -503,6 +550,7 @@ public class AddThingEditableActivity extends AppCompatActivity implements AddTh
         mGoogleMap.addMarker(markerOptions);
         CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 10f);
         mGoogleMap.moveCamera(cameraUpdate);
+        Log.d(TAG, "displayThingMarker: " + latLng);
     }
 
     private void setTvSelectDescriptionPhotosVisibility(boolean visible) {

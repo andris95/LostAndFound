@@ -38,6 +38,7 @@ import com.sanislo.lostandfound.utils.FirebaseConstants;
 import com.sanislo.lostandfound.utils.FirebaseUtils;
 import com.sanislo.lostandfound.utils.PreferencesManager;
 import com.sanislo.lostandfound.view.addThing.AddThingActivity;
+import com.sanislo.lostandfound.view.addThing.AddThingEditableActivity;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -106,6 +107,14 @@ public class AddThingPresenterImpl implements AddThingPresenter {
     }
 
     public AddThingPresenterImpl(AddThingActivity context) {
+        mContext = context;
+        mView = context;
+        getUser();
+        initFirebase();
+        getCategories();
+    }
+
+    public AddThingPresenterImpl(AddThingEditableActivity context) {
         mContext = context;
         mView = context;
         getUser();

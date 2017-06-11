@@ -23,6 +23,7 @@ import com.sanislo.lostandfound.R;
 import com.sanislo.lostandfound.model.Thing;
 import com.sanislo.lostandfound.utils.ImageUtils;
 import com.sanislo.lostandfound.view.BaseActivity;
+import com.sanislo.lostandfound.view.addThing.AddThingEditableActivity;
 import com.sanislo.lostandfound.view.thingDetails.ThingDetailsActivity;
 import com.sanislo.lostandfound.view.things.ThingsContract;
 import com.sanislo.lostandfound.view.things.ThingsPresenter;
@@ -57,13 +58,12 @@ public class MyThingsActivity extends BaseActivity implements ThingsContract.Vie
     private ThingAdapter.OnClickListener mThingClickListener = new ThingAdapter.OnClickListener() {
         @Override
         public void onClickRootView(View view, Thing thing) {
-            Intent intent = new Intent(MyThingsActivity.this, ThingDetailsActivity.class);
+            Intent intent = AddThingEditableActivity.buildLaunchIntent(MyThingsActivity.this, thing);
             View ivThingPhoto = ButterKnife.findById(view, R.id.iv_thing_photo);
             View ivAvatar = ButterKnife.findById(view, R.id.iv_thing_author_avatar);
-            Pair<View, String> p1 = Pair.create(ivAvatar, getString(R.string.transition_avatar));
             Pair<View, String> p2 = Pair.create(ivThingPhoto, getString(R.string.transition_description_photo));
             ActivityOptionsCompat options = ActivityOptionsCompat.
-                    makeSceneTransitionAnimation(MyThingsActivity.this, p1, p2);
+                    makeSceneTransitionAnimation(MyThingsActivity.this, p2);
             intent.putExtra(ThingDetailsActivity.EXTRA_THING, thing);
             startActivity(intent, options.toBundle());
         }

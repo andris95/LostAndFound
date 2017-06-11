@@ -93,6 +93,9 @@
     <string name="type_found">Found</string>
     <string name="type_any">Any</string>
 
+    <!-- -->
+    <string name="edit_thing">Edit Thing</string>
+
     <!-- Thing description screen -->
     <string name="message">Message</string>
 
