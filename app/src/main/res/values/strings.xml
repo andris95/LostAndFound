@@ -24,6 +24,7 @@
     <string name="profile">Profile</string>
     <string name="updating_profile_title">Updating profile</string>
     <string name="updating_profile_content">Hold on, updating profile...</string>
+    <string name="profile_updated">Your profile has been updated successfully!</string>
 
     <!-- Select avatar text -->
     <string name="select_avatar_image">Select avatar image</string>

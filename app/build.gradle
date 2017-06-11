@@ -88,6 +88,7 @@ dependencies {
     compile 'com.hudomju:swipe-to-dismiss-undo:1.0'
 
     compile 'com.github.chrisbanes:PhotoView:2.0.0'
+    compile 'com.birbit:android-priority-jobqueue:2.0.1'
 }
 
 apply plugin: 'com.google.gms.google-services'

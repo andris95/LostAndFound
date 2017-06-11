@@ -24,12 +24,16 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.sanislo.lostandfound.LostAndFoundApplication;
 import com.sanislo.lostandfound.R;
+import com.sanislo.lostandfound.jobs.UpdateThingsJob;
 import com.sanislo.lostandfound.model.User;
 import com.sanislo.lostandfound.utils.FirebaseConstants;
 import com.sanislo.lostandfound.utils.FirebaseUtils;
 import com.sanislo.lostandfound.utils.PreferencesManager;
 import com.sanislo.lostandfound.view.BaseActivity;
+import com.theartofdev.edmodo.cropper.CropImage;
+import com.theartofdev.edmodo.cropper.CropImageView;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -101,7 +105,10 @@ public class ProfileActivity extends BaseActivity implements ProfileContract.Vie
     @Override
     public void onProfileUpdated() {
         mProgressDialog.dismiss();
-        makeToast("onProfileUpdated");
+        makeToast(R.string.profile_updated);
+        LostAndFoundApplication.getInstance()
+                .getJobManager()
+                .addJobInBackground(new UpdateThingsJob(mUser));
     }
 
     @Override
@@ -165,7 +172,7 @@ public class ProfileActivity extends BaseActivity implements ProfileContract.Vie
     private void checkGalleryPermission() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
                 == PackageManager.PERMISSION_GRANTED) {
-            pickProfileImageFromGallery();
+            startCropImageActivity();
         } else {
             ActivityCompat.requestPermissions(this,
                     new String[] {Manifest.permission.READ_EXTERNAL_STORAGE},
@@ -173,12 +180,11 @@ public class ProfileActivity extends BaseActivity implements ProfileContract.Vie
         }
     }
 
-    private void pickProfileImageFromGallery() {
-        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-        intent.setType("image/*");
-        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, false);
-        Intent сhooserIntent = Intent.createChooser(intent, getString(R.string.select_avatar_image));
-        startActivityForResult(сhooserIntent, PICK_PROFILE_IMAGE);
+    private void startCropImageActivity() {
+        // start picker to get image for cropping and then use the image in cropping activity
+        CropImage.activity(null)
+                .setGuidelines(CropImageView.Guidelines.ON)
+                .start(this);
     }
 
     @Override
@@ -186,7 +192,8 @@ public class ProfileActivity extends BaseActivity implements ProfileContract.Vie
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == RP_READ_EXTERNAL_FOR_COVER) {
             if (permissions.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                pickProfileImageFromGallery();
+                //pickProfileImageFromGallery();
+                startCropImageActivity();
             }
         }
     }
@@ -199,6 +206,17 @@ public class ProfileActivity extends BaseActivity implements ProfileContract.Vie
             if (data != null) {
                 mProfileImageUri = data.getData();
                 displayUserAvatar(mProfileImageUri);
+            }
+        }
+        if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
+            CropImage.ActivityResult result = CropImage.getActivityResult(data);
+            if (resultCode == RESULT_OK) {
+                mProfileImageUri = result.getUri();
+                displayUserAvatar(mProfileImageUri);
+            } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
+                Exception error = result.getError();
+                error.printStackTrace();
+                makeToast(error.getMessage());
             }
         }
     }

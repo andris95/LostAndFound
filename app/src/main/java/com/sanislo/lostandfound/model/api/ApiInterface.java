@@ -64,4 +64,7 @@ public interface ApiInterface {
     @FormUrlEncoded
     @PATCH(ApiConstants.THINGS + "/{id}")
     Call<Void> updateThing(@Path("id") int id, @Field("returned") boolean returned);
+
+    @PUT(ApiConstants.THINGS + "/{id}")
+    Call<Void> updateThing(@Path("id") int id, @Body Thing thing);
 }

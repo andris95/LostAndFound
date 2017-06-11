@@ -74,12 +74,14 @@ public class ThingsActivity extends BaseActivity implements ThingsContract.View 
     private AccountHeader mAccountHeader;
     private User mUser = new User();
     private int mClickedDrawerItemPos = -100;
+    private boolean mNeedToLoadProfile;
 
     private ProfileContract.View mProfileView = new ProfileContract.View() {
         @Override
         public void onProfileLoaded(User user) {
             mUser = user;
             updateProfile();
+            mNeedToLoadProfile = false;
         }
 
         @Override
@@ -172,6 +174,15 @@ public class ThingsActivity extends BaseActivity implements ThingsContract.View 
         super.onResume();
         mThingList.clear();
         mThingsPresenter.loadThings(0);
+        if (mNeedToLoadProfile) {
+            mProfilePresenter.loadProfile(getAuthenticatedUserUID());
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mNeedToLoadProfile = true;
     }
 
     private void setupSwipeRefresh() {
@@ -268,6 +279,7 @@ public class ThingsActivity extends BaseActivity implements ThingsContract.View 
                         break;
                     case 4:
                         openMapsActivity();
+                        break;
                     case 5:
                         openChatHeaders();
                         break;

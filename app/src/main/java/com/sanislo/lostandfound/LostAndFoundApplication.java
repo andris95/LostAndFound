@@ -6,6 +6,8 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.widget.ImageView;
 
+import com.birbit.android.jobqueue.JobManager;
+import com.birbit.android.jobqueue.config.Configuration;
 import com.bumptech.glide.Glide;
 import com.mikepenz.iconics.IconicsDrawable;
 import com.mikepenz.materialdrawer.util.AbstractDrawerImageLoader;
@@ -17,12 +19,16 @@ import com.mikepenz.materialdrawer.util.DrawerUIUtils;
  */
 
 public class LostAndFoundApplication extends Application {
+    private static LostAndFoundApplication mApplication;
+    private JobManager mJobManager;
 
     @Override
     public void onCreate() {
         super.onCreate();
         //initialize and create the image loader logic
         initDrawerImageLoader();
+        configureJobManager();
+        mApplication = this;
     }
 
     private void initDrawerImageLoader() {
@@ -66,4 +72,18 @@ public class LostAndFoundApplication extends Application {
         });
     }
 
+    private void configureJobManager() {
+        Configuration configuration = new Configuration.Builder(getApplicationContext())
+                .build();
+        mJobManager = new JobManager(configuration);
+        mJobManager.start();
+    }
+
+    public JobManager getJobManager() {
+        return mJobManager;
+    }
+
+    public static LostAndFoundApplication getInstance() {
+        return mApplication;
+    }
 }
