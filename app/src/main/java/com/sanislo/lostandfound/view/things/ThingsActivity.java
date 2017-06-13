@@ -202,7 +202,6 @@ public class ThingsActivity extends BaseActivity implements ThingsContract.View 
         @Override
         public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
             Log.d(TAG, "onItemClick: position: " + position);
-            Toast.makeText(getApplicationContext(), String.valueOf(position), Toast.LENGTH_SHORT).show();
             mClickedDrawerItemPos = position;
             mDrawer.closeDrawer();
             return true;

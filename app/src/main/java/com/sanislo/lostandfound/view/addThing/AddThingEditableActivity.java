@@ -179,7 +179,6 @@ public class AddThingEditableActivity extends AppCompatActivity implements AddTh
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle(R.string.edit_thing);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        //mPresenter = new AddThingPresenterImpl(this);
         initCategories();
         initTypeSpinner();
         initDescriptionPhotosAdapter();
@@ -246,7 +245,7 @@ public class AddThingEditableActivity extends AppCompatActivity implements AddTh
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_add_thing:
-                addThing();
+                updateThing();
                 return true;
             case android.R.id.home:
                 onBackPressed();
@@ -346,11 +345,12 @@ public class AddThingEditableActivity extends AppCompatActivity implements AddTh
         }
     };
 
-    private void addThing() {
+    private void updateThing() {
         String title = edtTitle.getText().toString();
         String description = edtDescription.getText().toString();
-        mPresenter.updateDescriptionPhotosList(mDescriptionPhotosAdapter.getAdapterItems());
-        mPresenter.addThing(title, description);
+        mThing.setTitle(title);
+        mThing.setDescription(description);
+        mPresenter.updateThing(mThing, mDescriptionPhotosAdapter.getAdapterItems());
     }
 
     private void onSelectThingCoverPhoto() {

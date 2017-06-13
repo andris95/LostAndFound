@@ -71,42 +71,6 @@
             android:textAllCaps="false"/>
     </LinearLayout>
 
-    <!--<LinearLayout
-        android:id="@+id/ll_separator"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_above="@id/btn_signup"
-        android:weightSum="3"
-        xmlns:android="http://schemas.android.com/apk/res/android">
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_gravity="center_vertical"
-            android:background="@color/md_white_1000"
-            android:layout_weight="1"/>
-
-        <TextView
-            android:id="@+id/btn_sign_in_anonymous"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:paddingEnd="5dp"
-            android:paddingStart="5dp"
-            android:text="@string/or"
-            android:textColor="@color/md_white_1000" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_gravity="center_vertical"
-            android:background="@color/md_white_1000"
-            android:layout_weight="1"/>
-    </LinearLayout>-->
-
     <TextView
         android:layout_width="match_parent"
         android:layout_height="1dp"

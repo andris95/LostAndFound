@@ -4,21 +4,11 @@ import android.content.ClipData;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.PendingResult;
-import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.location.places.Place;
-import com.google.android.gms.location.places.PlaceLikelihood;
-import com.google.android.gms.location.places.PlaceLikelihoodBuffer;
-import com.google.android.gms.location.places.Places;
 import com.google.android.gms.location.places.ui.PlacePicker;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -69,7 +59,6 @@ public class AddThingPresenterImpl implements AddThingPresenter {
     private User mUser;
     private StorageReference mStorageReference;
 
-    private GoogleApiClient mGoogleApiClient;
     private Place mThingPlace;
     private Thing mThing;
 
@@ -85,7 +74,6 @@ public class AddThingPresenterImpl implements AddThingPresenter {
     private void getUser() {
         String userUID = PreferencesManager.getUserUID(mContext);
         Log.d(TAG, "getUser: userUID: " + userUID);
-        //Call<FirebaseUser> userCall = mApiModel.getUser(userUID);
         Call<List<User>> userCall = mApiModel.getUserListByUID(userUID);
         userCall.enqueue(new Callback<List<User>>() {
             @Override
@@ -178,6 +166,28 @@ public class AddThingPresenterImpl implements AddThingPresenter {
         }
     }
 
+    @Override
+    public void updateThing(Thing thing, List<DescriptionPhotoItem> descriptionPhotoItemList) {
+        mTypePosition = thing.getType();
+        mThing = thing;
+
+    }
+
+    private void updateThing(Thing thing) {
+        Call<Void> call = mApiModel.updateThing(thing.getId(), thing);
+        call.enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                t.printStackTrace();
+            }
+        });
+    }
+
     private boolean isTypeSelected() {
         return mTypePosition > 0;
     }
@@ -220,8 +230,6 @@ public class AddThingPresenterImpl implements AddThingPresenter {
             String category = mCategories.get(mCategoryPosition);
             mThing.setCategory(category);
             mThing.setType(mTypePosition);
-        } else {
-            throw new RuntimeException("FirebaseUser is not yet downloaded");
         }
     }
 
@@ -238,7 +246,6 @@ public class AddThingPresenterImpl implements AddThingPresenter {
 
     private void notifyUploadStart() {
         if (mCoverPhotoUri != null || hasDescriptionPhotos()) {
-            //mView.onUploadStarted(UploadType.WITH_PHOTOS);
             Log.d(TAG, "notifyUploadStart: getPhotoFileCountToUpload: " + getPhotoFileCountToUpload());
             mView.onUploadStartedWithPhotos(getPhotoFileCountToUpload());
         } else {
@@ -339,40 +346,8 @@ public class AddThingPresenterImpl implements AddThingPresenter {
         });
     }
 
-    private void initGoogleApiClient(Context context) {
-        mGoogleApiClient = new GoogleApiClient
-                .Builder(context)
-                .addApi(Places.GEO_DATA_API)
-                .addApi(Places.PLACE_DETECTION_API)
-                .addConnectionCallbacks(mCallback)
-                .addOnConnectionFailedListener(mOnConnectionFailedListener)
-                .build();
-    }
-
-    GoogleApiClient.ConnectionCallbacks mCallback = new GoogleApiClient.ConnectionCallbacks() {
-        @Override
-        public void onConnected(@Nullable Bundle bundle) {
-            Log.d(TAG, "onConnected: ");
-        }
-
-        @Override
-        public void onConnectionSuspended(int i) {
-            Log.d(TAG, "onConnectionSuspended: ");
-        }
-    };
-
-    GoogleApiClient.OnConnectionFailedListener mOnConnectionFailedListener = new GoogleApiClient.OnConnectionFailedListener() {
-        @Override
-        public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-            Log.d(TAG, "onConnectionFailed: ");
-        }
-    };
-
     private void setLocation() {
         if (mThingPlace != null) {
-            Log.d(TAG, "setLocation: address: " + mThingPlace.getAddress());
-            Log.d(TAG, "setLocation: name: " + mThingPlace.getName());
-            Log.d(TAG, "setLocation: " + mThingPlace.getId());
             LatLng latLng = mThingPlace.getLatLng();
             Location location = new Location();
             location.setLat(latLng.latitude);
@@ -380,28 +355,6 @@ public class AddThingPresenterImpl implements AddThingPresenter {
             location.setPlaceId(mThingPlace.getId());
             mThing.setLocation(location);
         }
-    }
-
-    private void getCurrentPlace() {
-        if (isGoogleApiClientOK()) {
-            PendingResult<PlaceLikelihoodBuffer> result = Places.PlaceDetectionApi
-                    .getCurrentPlace(mGoogleApiClient, null);
-            result.setResultCallback(new ResultCallback<PlaceLikelihoodBuffer>() {
-                @Override
-                public void onResult(PlaceLikelihoodBuffer likelyPlaces) {
-                    for (PlaceLikelihood placeLikelihood : likelyPlaces) {
-                        Log.i(TAG, String.format("Place '%s' has likelihood: %g",
-                                placeLikelihood.getPlace().getName(),
-                                placeLikelihood.getLikelihood()));
-                    }
-                    likelyPlaces.release();
-                }
-            });
-        }
-    }
-
-    private boolean isGoogleApiClientOK() {
-        return mGoogleApiClient != null && !mGoogleApiClient.isConnecting() && mGoogleApiClient.isConnected();
     }
 
     @Override

@@ -3,6 +3,7 @@ package com.sanislo.lostandfound.presenter;
 import android.content.Intent;
 
 import com.sanislo.lostandfound.model.DescriptionPhotoItem;
+import com.sanislo.lostandfound.model.Thing;
 
 import java.util.List;
 
@@ -12,6 +13,7 @@ import java.util.List;
 
 public interface AddThingPresenter {
     void addThing(String title, String description);
+    void updateThing(Thing thing, List<DescriptionPhotoItem> descriptionPhotoItemList);
     void updateDescriptionPhotosList(List<DescriptionPhotoItem> descriptionPhotoItemList);
     void removeCoverPhoto();
     void onCategoryChanged(int position);

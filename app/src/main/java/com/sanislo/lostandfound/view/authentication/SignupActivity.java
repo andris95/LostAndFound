@@ -8,7 +8,9 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -65,6 +67,9 @@ public class SignupActivity extends BaseActivity implements SignupView {
     @BindView(R.id.iv_avatar)
     ImageView ivAvatar;
 
+    @BindView(R.id.toolbar)
+    Toolbar mToolbar;
+
     private FirebaseAuth mFirebaseAuth;
     private SignupPresenter mSignupPresenter;
 
@@ -88,6 +93,22 @@ public class SignupActivity extends BaseActivity implements SignupView {
         initMaterialDialog();
         initSelectAvatarDialog();
         loadAvatar(null);
+        setupToolbar();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem menuItem) {
+        switch (menuItem.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+        }
+        return super.onOptionsItemSelected(menuItem);
+    }
+
+    private void setupToolbar() {
+        setSupportActionBar(mToolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
     private void initMaterialDialog() {
