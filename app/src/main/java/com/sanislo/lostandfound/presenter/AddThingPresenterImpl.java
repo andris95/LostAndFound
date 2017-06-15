@@ -4,6 +4,7 @@ import android.content.ClipData;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
@@ -11,6 +12,7 @@ import android.widget.Toast;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlacePicker;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -170,7 +172,107 @@ public class AddThingPresenterImpl implements AddThingPresenter {
     public void updateThing(Thing thing, List<DescriptionPhotoItem> descriptionPhotoItemList) {
         mTypePosition = thing.getType();
         mThing = thing;
+        if (TextUtils.isEmpty(mThing.getTitle())) {
+            mView.onError(R.string.error_empty_title);
+        } else if (TextUtils.isEmpty(mThing.getDescription())) {
+            mView.onError(R.string.error_empty_description);
+        } else if (!isTypeSelected()) {
+            mView.onError(R.string.error_select_type);
+        } else if (!isCategorySelected()) {
+            mView.onError(R.string.error_select_category);
+        } else {
+            configureDescriptionUrisForUpdate(descriptionPhotoItemList);
+            configureThingForUpdate();
+            startThingDataUploadForUpdate();
+        }
+    }
 
+    private void configureDescriptionUrisForUpdate(List<DescriptionPhotoItem> descriptionPhotoItemList) {
+        mDescriptionPhotoUris = new LinkedList<>();
+        for (DescriptionPhotoItem item : descriptionPhotoItemList) {
+            mDescriptionPhotoUris.add(item.getUri());
+        }
+    }
+
+    private void configureThingForUpdate() {
+        mThing.setType(mTypePosition);
+        Log.d(TAG, "configureThingForUpdate: " + mCategoryPosition);
+        String category = mCategories.get(mCategoryPosition);
+        mThing.setCategory(category);
+    }
+
+    private void startThingDataUploadForUpdate() {
+        mView.onUploadStartedSimple();
+        if (mCoverPhotoUri != null) {
+            uploadCoverPhotoForUpdate();
+        } else if (hasDescriptionPhotos()) {
+            uploadDescriptionPhotosForUpdate();
+        } else {
+            //TODO final update
+            updateThing(mThing);
+        }
+    }
+
+    private void uploadCoverPhotoForUpdate() {
+        UploadTask uploadCoverPhotoTask = mStorageReference
+                .child(mUser.getUid())
+                .child(FirebaseConstants.THINGS)
+                .child(String.valueOf(mTimestamp))
+                .child(FirebaseConstants.THING_COVER_PHOTO)
+                .child(FileUtils.getFileName(mContext, mCoverPhotoUri))
+                .putFile(mCoverPhotoUri);
+        uploadCoverPhotoTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                String coverPhotoDownloadURL = taskSnapshot.getDownloadUrl().toString();
+                Log.d(TAG, "onSuccess: coverPhotoDownloadURL: " + coverPhotoDownloadURL);
+                mThing.setPhoto(coverPhotoDownloadURL);
+                if (mDescriptionPhotoUris != null && !mDescriptionPhotoUris.isEmpty()) {
+                    uploadDescriptionPhotos();
+                } else {
+                    //TODO final update
+                    updateThing(mThing);
+                }
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.d(TAG, "onFailure: ONFAILURE");
+                e.printStackTrace();
+            }
+        });
+    }
+
+    private void uploadDescriptionPhotosForUpdate() {
+        Uri uri = mDescriptionPhotoUris.remove();
+        UploadTask descriptionPhotoUploadTask = mStorageReference
+                .child(mUser.getUid())
+                .child(FirebaseConstants.THINGS)
+                .child(String.valueOf(mTimestamp))
+                .child(FirebaseConstants.THING_DESCRIPTION_PHOTOS)
+                .child(FileUtils.getFileName(mContext, uri))
+                .putFile(uri);
+        descriptionPhotoUploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                String descriptionPhotoURL = taskSnapshot.getDownloadUrl().toString();
+                Log.d(TAG, "onSuccess: descriptionPhotoURL: " + descriptionPhotoURL);
+                mDescriptionPhotoPaths.add(descriptionPhotoURL);
+                if (!mDescriptionPhotoUris.isEmpty()) {
+                    uploadDescriptionPhotos();
+                } else {
+                    mThing.setDescriptionPhotos(mDescriptionPhotoPaths);
+                    //TODO final update
+                    updateThing(mThing);
+                }
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.d(TAG, "onFailure: ONFAILURE");
+                e.printStackTrace();
+            }
+        });
     }
 
     private void updateThing(Thing thing) {
@@ -178,7 +280,7 @@ public class AddThingPresenterImpl implements AddThingPresenter {
         call.enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
-
+                mView.onThingAdded();
             }
 
             @Override

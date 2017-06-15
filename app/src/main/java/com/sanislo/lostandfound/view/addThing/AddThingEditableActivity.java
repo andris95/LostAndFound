@@ -13,7 +13,6 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatSpinner;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -61,6 +60,7 @@ import com.sanislo.lostandfound.model.Thing;
 import com.sanislo.lostandfound.presenter.AddThingPresenter;
 import com.sanislo.lostandfound.presenter.AddThingPresenterImpl;
 import com.sanislo.lostandfound.utils.FileUtils;
+import com.sanislo.lostandfound.view.BaseActivity;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -81,7 +81,7 @@ import butterknife.OnClick;
  * Created by root on 24.12.16.
  */
 
-public class AddThingEditableActivity extends AppCompatActivity implements AddThingView {
+public class AddThingEditableActivity extends BaseActivity implements AddThingView {
     public final String TAG = AddThingActivity.class.getSimpleName();
     private final int PICK_THING_COVER_PHOTO = 111;
     private final int PICK_THING_DESCRIPTION_PHOTOS = 222;
@@ -473,6 +473,8 @@ public class AddThingEditableActivity extends AppCompatActivity implements AddTh
         Log.d(TAG, "setCategory: indexOfThingCategory: " + indexOfThingCategory);
         if (indexOfThingCategory != -1) {
             spCategory.setSelection(indexOfThingCategory);
+            //TODO!!!
+            mPresenter.onCategoryChanged(indexOfThingCategory);
         }
     }
 
@@ -492,6 +494,7 @@ public class AddThingEditableActivity extends AppCompatActivity implements AddTh
     @Override
     public void onThingAdded() {
         mProgressDialog.dismiss();
+        makeToast("Your thing is updated! :)");
         this.finish();
     }
 
