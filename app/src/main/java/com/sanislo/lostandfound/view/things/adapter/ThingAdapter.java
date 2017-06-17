@@ -29,12 +29,14 @@ import butterknife.OnClick;
  * Created by root on 25.12.16.
  */
 
-public class ThingAdapter extends RecyclerView.Adapter<ThingAdapter.ViewHolder> {
+public class ThingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private String TAG = ThingAdapter.class.getSimpleName();
     private Context mContext;
     private OnClickListener mOnClickListener;
+    private OnEditListener mOnEditListener;
     private List<Thing> mThingList = new ArrayList<>();
     private LayoutInflater mLayoutInflater;
+    private boolean mIsEditableLayout;
 
     public ThingAdapter(Context context, OnClickListener onClickListener, List<Thing> thingList) {
         mContext = context;
@@ -45,6 +47,14 @@ public class ThingAdapter extends RecyclerView.Adapter<ThingAdapter.ViewHolder> 
 
     public void setOnClickListener(OnClickListener onClickListener) {
         mOnClickListener = onClickListener;
+    }
+
+    public void setOnEditListener(OnEditListener onEditListener) {
+        mOnEditListener = onEditListener;
+    }
+
+    public void setEditableLayout(boolean editableLayout) {
+        mIsEditableLayout = editableLayout;
     }
 
     public void setThingList(List<Thing> thingList) {
@@ -68,16 +78,46 @@ public class ThingAdapter extends RecyclerView.Adapter<ThingAdapter.ViewHolder> 
     }
 
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = mLayoutInflater.inflate(R.layout.item_thing_swipeable, null);
-        ViewHolder viewHolder = new ViewHolder(view);
-        return viewHolder;
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        //View view = mLayoutInflater.inflate(R.layout.item_thing_swipeable, null);
+        View view;
+        switch (viewType) {
+            case R.layout.item_thing_simple:
+                view = mLayoutInflater.inflate(R.layout.item_thing_simple, null);
+                return new BaseThingViewHolder(view);
+            case R.layout.item_thing_editable:
+                view = mLayoutInflater.inflate(R.layout.item_thing_editable, null);
+                return new ThingEditableThingViewHolder(view);
+            default:
+                view = mLayoutInflater.inflate(R.layout.item_thing_simple, null);
+                return new BaseThingViewHolder(view);
+        }
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         Thing thing = mThingList.get(position);
-        holder.populate(thing);
+        if (holder instanceof BaseThingViewHolder) {
+            ((BaseThingViewHolder) holder).populate(thing);
+        } else if (holder instanceof ThingEditableThingViewHolder) {
+            ((ThingEditableThingViewHolder) holder).populate(thing);
+        }
+        /*int viewType = getItemViewType(position);
+        switch (viewType) {
+            case R.layout.item_thing_simple:
+                ((BaseThingViewHolder) holder).populate(thing);
+            case R.layout.item_thing_editable:
+                ((ThingEditableThingViewHolder) holder).populate(thing);
+        }*/
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        if (mIsEditableLayout) {
+            return R.layout.item_thing_editable;
+        } else {
+            return R.layout.item_thing_simple;
+        }
     }
 
     @Override
@@ -89,7 +129,11 @@ public class ThingAdapter extends RecyclerView.Adapter<ThingAdapter.ViewHolder> 
         void onClickRootView(View view, Thing thing);
     }
 
-    class ViewHolder extends RecyclerView.ViewHolder {
+    public interface OnEditListener {
+        void onClickEdit(Thing thing, int position);
+    }
+
+    class BaseThingViewHolder extends RecyclerView.ViewHolder {
         public final String TAG = "ThingViewHolder";
 
         @BindView(R.id.iv_thing_author_avatar)
@@ -110,7 +154,7 @@ public class ThingAdapter extends RecyclerView.Adapter<ThingAdapter.ViewHolder> 
         View mRootView;
         private Thing mThing;
 
-        public ViewHolder(View itemView) {
+        public BaseThingViewHolder(View itemView) {
             super(itemView);
             mRootView = itemView;
             ButterKnife.bind(this, mRootView);
@@ -198,6 +242,25 @@ public class ThingAdapter extends RecyclerView.Adapter<ThingAdapter.ViewHolder> 
         public void onClickRootView() {
             if (mOnClickListener == null) return;
             mOnClickListener.onClickRootView(mRootView, mThingList.get(getAdapterPosition()));
+        }
+    }
+
+    class ThingEditableThingViewHolder extends BaseThingViewHolder {
+
+        public ThingEditableThingViewHolder(View itemView) {
+            super(itemView);
+            ButterKnife.bind(this, itemView);
+        }
+
+        @Override
+        public void populate(Thing thing) {
+            super.populate(thing);
+        }
+
+        @OnClick(R.id.iv_edit)
+        public void onClickEdit() {
+            if (mOnEditListener != null) mOnEditListener.onClickEdit(
+                    mThingList.get(getAdapterPosition()), getAdapterPosition());
         }
     }
 }

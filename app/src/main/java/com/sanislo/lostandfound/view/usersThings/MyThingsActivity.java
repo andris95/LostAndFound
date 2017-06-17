@@ -20,6 +20,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.sanislo.lostandfound.R;
 import com.sanislo.lostandfound.model.Thing;
 import com.sanislo.lostandfound.utils.ImageUtils;
@@ -111,12 +112,46 @@ public class MyThingsActivity extends BaseActivity implements ThingsContract.Vie
         mThingAdapter = new ThingAdapter(MyThingsActivity.this,
                 mThingClickListener,
                 mThingList);
+        mThingAdapter.setEditableLayout(true);
+        mThingAdapter.setOnEditListener(new ThingAdapter.OnEditListener() {
+            @Override
+            public void onClickEdit(Thing thing, int position) {
+                showActionDialog(thing, position);
+            }
+        });
         mLinearLayoutManager = new LinearLayoutManager(this);
         rvThings.setLayoutManager(mLinearLayoutManager);
         rvThings.setAdapter(mThingAdapter);
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(mItemTouchHelperCallback);
         //TODO attach this or not?
         //itemTouchHelper.attachToRecyclerView(rvThings);
+    }
+
+    private void showActionDialog(final Thing thing, final int position) {
+        new MaterialDialog.Builder(this)
+                .items(R.array.my_things_actions)
+                .itemsCallback(new MaterialDialog.ListCallback() {
+                    @Override
+                    public void onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
+                        switch (which) {
+                            case 0:
+                                Intent intent = AddThingEditableActivity.buildLaunchIntent(MyThingsActivity.this, thing);
+                                intent.putExtra(ThingDetailsActivity.EXTRA_THING, thing);
+                                startActivity(intent);
+                                break;
+                            case 1:
+                                deleteThing(thing, position);
+                                break;
+                        }
+                    }
+                })
+                .show();
+    }
+
+    private void deleteThing(Thing thing, int position) {
+        int id = thing.getId();
+        mThingsPresenter.removeThing(id);
+        mThingAdapter.removeItem(position);
     }
 
     private ItemTouchHelper.SimpleCallback mItemTouchHelperCallback =

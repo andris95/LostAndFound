@@ -95,6 +95,11 @@
 
     <!-- -->
     <string name="edit_thing">Edit Thing</string>
+    <string name="delete_thing">Delete Thing</string>
+    <array name="my_things_actions">
+        <item>@string/edit_thing</item>
+        <item>@string/delete_thing</item>
+    </array>
 
     <!-- Thing description screen -->
     <string name="message">Message</string>
