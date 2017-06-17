@@ -11,7 +11,7 @@ import java.util.List;
  * Created by root on 24.12.16.
  */
 
-public interface AddThingPresenter {
+public interface AddEditThingPresenter {
     void addThing(String title, String description);
     void updateThing(Thing thing, List<DescriptionPhotoItem> descriptionPhotoItemList);
     void updateDescriptionPhotosList(List<DescriptionPhotoItem> descriptionPhotoItemList);

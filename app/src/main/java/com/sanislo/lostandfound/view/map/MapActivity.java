@@ -23,6 +23,7 @@ import com.sanislo.lostandfound.adapter.DescriptionPhotosAdapter;
 import com.sanislo.lostandfound.model.Thing;
 import com.sanislo.lostandfound.view.BaseActivity;
 import com.sanislo.lostandfound.view.thingDetails.DescriptionPhotosActivity;
+import com.sanislo.lostandfound.view.thingDetails.ThingDetailsActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -63,8 +64,6 @@ public class MapActivity extends BaseActivity implements ThingsMapFragment.Marke
     RecyclerView rvDescriptionPhotos;
 
     public static final String EXTRA_START_POSITION = "EXTRA_START_POSITION";
-    public static final String EXTRA_UPDATED_POSITION = "EXTRA_UPDATED_POSITION";
-    public static final String EXTRA_THING = "EXTRA_THING";
 
     private Thing mThing;
     private DescriptionPhotosAdapter mDescriptionPhotosAdapter;
@@ -109,8 +108,15 @@ public class MapActivity extends BaseActivity implements ThingsMapFragment.Marke
     @Override
     public void onClusterItemClick(AbstractMarker abstractMarker) {
         mThing = abstractMarker.getThing();
-        displayThing();
-        mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+        //displayThing();
+        //TODO !
+        //mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+        launchThingDetailsActivity(mThing);
+    }
+
+    private void launchThingDetailsActivity(Thing thing) {
+        Intent intent = ThingDetailsActivity.buildLaunchIntent(MapActivity.this, thing);
+        startActivity(intent);
     }
 
     private void displayThing() {

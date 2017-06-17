@@ -48,8 +48,8 @@ import static android.app.Activity.RESULT_OK;
  * Created by root on 24.12.16.
  */
 
-public class AddThingPresenterImpl implements AddThingPresenter {
-    public final String TAG = AddThingPresenterImpl.class.getSimpleName();
+public class AddEditThingPresenterImpl implements AddEditThingPresenter {
+    public final String TAG = AddEditThingPresenterImpl.class.getSimpleName();
     private final int MAX_DESCRIPTION_PHOTO_NUMBER = 10;
     private final int PICK_THING_COVER_PHOTO = 111;
     private final int PICK_THING_DESCRIPTION_PHOTOS = 222;
@@ -96,7 +96,7 @@ public class AddThingPresenterImpl implements AddThingPresenter {
         });
     }
 
-    public AddThingPresenterImpl(AddThingActivity context) {
+    public AddEditThingPresenterImpl(AddThingActivity context) {
         mContext = context;
         mView = context;
         getUser();
@@ -104,7 +104,7 @@ public class AddThingPresenterImpl implements AddThingPresenter {
         getCategories();
     }
 
-    public AddThingPresenterImpl(AddThingEditableActivity context) {
+    public AddEditThingPresenterImpl(AddThingEditableActivity context) {
         mContext = context;
         mView = context;
         getUser();
@@ -180,6 +180,7 @@ public class AddThingPresenterImpl implements AddThingPresenter {
             mView.onError(R.string.error_select_type);
         } else if (!isCategorySelected()) {
             mView.onError(R.string.error_select_category);
+
         } else {
             configureDescriptionUrisForUpdate(descriptionPhotoItemList);
             configureThingForUpdate();
@@ -228,7 +229,7 @@ public class AddThingPresenterImpl implements AddThingPresenter {
                 Log.d(TAG, "onSuccess: coverPhotoDownloadURL: " + coverPhotoDownloadURL);
                 mThing.setPhoto(coverPhotoDownloadURL);
                 if (mDescriptionPhotoUris != null && !mDescriptionPhotoUris.isEmpty()) {
-                    uploadDescriptionPhotos();
+                    uploadDescriptionPhotosForUpdate();
                 } else {
                     //TODO final update
                     updateThing(mThing);
@@ -259,7 +260,7 @@ public class AddThingPresenterImpl implements AddThingPresenter {
                 Log.d(TAG, "onSuccess: descriptionPhotoURL: " + descriptionPhotoURL);
                 mDescriptionPhotoPaths.add(descriptionPhotoURL);
                 if (!mDescriptionPhotoUris.isEmpty()) {
-                    uploadDescriptionPhotos();
+                    uploadDescriptionPhotosForUpdate();
                 } else {
                     mThing.setDescriptionPhotos(mDescriptionPhotoPaths);
                     //TODO final update

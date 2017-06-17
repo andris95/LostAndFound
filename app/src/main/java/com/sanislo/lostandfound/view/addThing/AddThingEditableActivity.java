@@ -57,8 +57,8 @@ import com.sanislo.lostandfound.R;
 import com.sanislo.lostandfound.interfaces.AddThingView;
 import com.sanislo.lostandfound.model.DescriptionPhotoItem;
 import com.sanislo.lostandfound.model.Thing;
-import com.sanislo.lostandfound.presenter.AddThingPresenter;
-import com.sanislo.lostandfound.presenter.AddThingPresenterImpl;
+import com.sanislo.lostandfound.presenter.AddEditThingPresenter;
+import com.sanislo.lostandfound.presenter.AddEditThingPresenterImpl;
 import com.sanislo.lostandfound.utils.FileUtils;
 import com.sanislo.lostandfound.view.BaseActivity;
 
@@ -82,7 +82,7 @@ import butterknife.OnClick;
  */
 
 public class AddThingEditableActivity extends BaseActivity implements AddThingView {
-    public final String TAG = AddThingActivity.class.getSimpleName();
+    public final String TAG = AddThingEditableActivity.class.getSimpleName();
     private final int PICK_THING_COVER_PHOTO = 111;
     private final int PICK_THING_DESCRIPTION_PHOTOS = 222;
     private final int PICK_THING_PLACE = 333;
@@ -126,7 +126,7 @@ public class AddThingEditableActivity extends BaseActivity implements AddThingVi
     private GoogleMap mGoogleMap;
     private MapFragment mMapFragment;
 
-    private AddThingPresenter mPresenter;
+    private AddEditThingPresenter mPresenter;
     private ArrayAdapter<String> mTypeAdapter;
     private String[] mTypeArray;
     private ArrayAdapter<String> mCategoriesAdapter;
@@ -173,17 +173,21 @@ public class AddThingEditableActivity extends BaseActivity implements AddThingVi
         setContentView(R.layout.activity_add_thing_custom_bottom_bar);
         ButterKnife.bind(this);
         supportPostponeEnterTransition();
-        mPresenter = new AddThingPresenterImpl(this);
+        mPresenter = new AddEditThingPresenterImpl(this);
         fetchIntent();
         showThing(mThing);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle(R.string.edit_thing);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        setupToolbar();
         initCategories();
         initTypeSpinner();
         initDescriptionPhotosAdapter();
         initMapView();
         setBottomBarItemClickListeners();
+    }
+
+    private void setupToolbar() {
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setTitle(R.string.edit_thing);
     }
 
     private void setBottomBarItemClickListeners() {
@@ -212,6 +216,7 @@ public class AddThingEditableActivity extends BaseActivity implements AddThingVi
     }
 
     private void showThing(Thing thing) {
+        Log.d(TAG, "showThing: " + thing);
         edtTitle.setText(thing.getTitle());
         edtDescription.setText(thing.getDescription());
         Glide.with(this)
@@ -630,7 +635,13 @@ public class AddThingEditableActivity extends BaseActivity implements AddThingVi
             if (children != null)
             for (String s : children) {
                 Log.d(TAG, "clearCacheDir: children: " + s);
-                new File(s).delete();
+                File file = new File(mTempDirectory, s);
+                if (file.exists()) {
+                    boolean isDeleted = file.delete();
+                    Log.d(TAG, "clearCacheDir: file " + s + " isDeleted: " + isDeleted);
+                } else {
+                    Log.d(TAG, "clearCacheDir: file not exists!");
+                }
             }
         }
 
@@ -644,10 +655,6 @@ public class AddThingEditableActivity extends BaseActivity implements AddThingVi
                 connection = (HttpURLConnection) url.openConnection();
                 connection.connect();
 
-                // this will be useful to display download percentage
-                // might be -1: server did not report the length
-                int fileLength = connection.getContentLength();
-
                 // download the file
                 input = connection.getInputStream();
                 String fileName = FileUtils.getFileNameFromUrl(fileUrl);
@@ -660,6 +667,7 @@ public class AddThingEditableActivity extends BaseActivity implements AddThingVi
                 Log.d(TAG, "downloadFile: " + fileName);
                 Log.d(TAG, "downloadFile: " + file.getAbsolutePath());
                 mCounter++;
+                Log.d(TAG, "downloadFile: " + fileName + " " + file.exists());
                 output = new FileOutputStream(file);
 
                 byte data[] = new byte[4096];

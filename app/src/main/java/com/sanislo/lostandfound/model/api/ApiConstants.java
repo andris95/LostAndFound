@@ -5,7 +5,7 @@ package com.sanislo.lostandfound.model.api;
  */
 
 public class ApiConstants {
-    public static final String BASE_API                         = "http://192.168.43.44:3000/";
+    public static final String BASE_API                         = "http://192.168.10.107:3000/";
 
     public static final String THINGS                           = "things";
     public static final String CATEGORIES                       = "categories";

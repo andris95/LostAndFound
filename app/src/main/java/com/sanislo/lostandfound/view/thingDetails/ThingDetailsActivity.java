@@ -2,6 +2,7 @@ package com.sanislo.lostandfound.view.thingDetails;
 
 import android.app.FragmentTransaction;
 import android.app.SharedElementCallback;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -103,6 +104,12 @@ public class ThingDetailsActivity extends BaseActivity implements ThingDetailsVi
 
     private DescriptionPhotosAdapter mDescriptionPhotosAdapter;
     private Bundle mTmpReenterState;
+
+    public static final Intent buildLaunchIntent(Context context, Thing thing) {
+        Intent intent = new Intent(context, ThingDetailsActivity.class);
+        intent.putExtra(EXTRA_THING, thing);
+        return intent;
+    }
 
     private final SharedElementCallback mCallback = new SharedElementCallback() {
         @Override

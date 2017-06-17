@@ -56,8 +56,8 @@ import com.mikepenz.fastadapter_extensions.drag.SimpleDragCallback;
 import com.sanislo.lostandfound.R;
 import com.sanislo.lostandfound.interfaces.AddThingView;
 import com.sanislo.lostandfound.model.DescriptionPhotoItem;
-import com.sanislo.lostandfound.presenter.AddThingPresenter;
-import com.sanislo.lostandfound.presenter.AddThingPresenterImpl;
+import com.sanislo.lostandfound.presenter.AddEditThingPresenter;
+import com.sanislo.lostandfound.presenter.AddEditThingPresenterImpl;
 
 import java.util.Collections;
 import java.util.List;
@@ -125,7 +125,7 @@ public class AddThingActivity extends AppCompatActivity implements AddThingView 
     private GoogleMap mGoogleMap;
     private MapFragment mMapFragment;
 
-    private AddThingPresenter mPresenter;
+    private AddEditThingPresenter mPresenter;
     private ArrayAdapter<String> mTypeAdapter;
     private String[] mTypeArray;
     private ArrayAdapter<String> mCategoriesAdapter;
@@ -166,7 +166,7 @@ public class AddThingActivity extends AppCompatActivity implements AddThingView 
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle(R.string.new_thing);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        mPresenter = new AddThingPresenterImpl(this);
+        mPresenter = new AddEditThingPresenterImpl(this);
         initCategories();
         initTypeSpinner();
         initDescriptionPhotosAdapter();

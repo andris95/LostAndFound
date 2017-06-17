@@ -16,6 +16,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 
@@ -85,6 +86,17 @@ public class MyThingsActivity extends BaseActivity implements ThingsContract.Vie
     private void initToolbar() {
         setSupportActionBar(mToolbar);
         getSupportActionBar().setTitle(R.string.my_things);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private void initBitmapsForSwipe() {
@@ -103,7 +115,8 @@ public class MyThingsActivity extends BaseActivity implements ThingsContract.Vie
         rvThings.setLayoutManager(mLinearLayoutManager);
         rvThings.setAdapter(mThingAdapter);
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(mItemTouchHelperCallback);
-        itemTouchHelper.attachToRecyclerView(rvThings);
+        //TODO attach this or not?
+        //itemTouchHelper.attachToRecyclerView(rvThings);
     }
 
     private ItemTouchHelper.SimpleCallback mItemTouchHelperCallback =
