@@ -14,6 +14,7 @@ import com.google.android.gms.location.places.ui.PlacePicker;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.sanislo.lostandfound.R;
@@ -180,7 +181,6 @@ public class AddEditThingPresenterImpl implements AddEditThingPresenter {
             mView.onError(R.string.error_select_type);
         } else if (!isCategorySelected()) {
             mView.onError(R.string.error_select_category);
-
         } else {
             configureDescriptionUrisForUpdate(descriptionPhotoItemList);
             configureThingForUpdate();
@@ -214,11 +214,20 @@ public class AddEditThingPresenterImpl implements AddEditThingPresenter {
         }
     }
 
+    private int mDeletePosition = 0;
+    private void clearFirebaseFileFolder() {
+        List<String> descriptionPhotos = mThing.getDescriptionPhotos();
+
+            StorageReference storageReference =
+                    FirebaseStorage.getInstance().getReferenceFromUrl(descriptionPhotos.get(0));
+
+    }
+
     private void uploadCoverPhotoForUpdate() {
         UploadTask uploadCoverPhotoTask = mStorageReference
                 .child(mUser.getUid())
                 .child(FirebaseConstants.THINGS)
-                .child(String.valueOf(mTimestamp))
+                .child(String.valueOf(mThing.getTimestamp()))
                 .child(FirebaseConstants.THING_COVER_PHOTO)
                 .child(FileUtils.getFileName(mContext, mCoverPhotoUri))
                 .putFile(mCoverPhotoUri);
@@ -249,7 +258,7 @@ public class AddEditThingPresenterImpl implements AddEditThingPresenter {
         UploadTask descriptionPhotoUploadTask = mStorageReference
                 .child(mUser.getUid())
                 .child(FirebaseConstants.THINGS)
-                .child(String.valueOf(mTimestamp))
+                .child(String.valueOf(mThing.getTimestamp()))
                 .child(FirebaseConstants.THING_DESCRIPTION_PHOTOS)
                 .child(FileUtils.getFileName(mContext, uri))
                 .putFile(uri);
