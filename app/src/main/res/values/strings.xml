@@ -25,6 +25,8 @@
     <string name="updating_profile_title">Updating profile</string>
     <string name="updating_profile_content">Hold on, updating profile...</string>
     <string name="profile_updated">Your profile has been updated successfully!</string>
+    <string name="old_password">Old password</string>
+    <string name="new_password">New password</string>
 
     <!-- Select avatar text -->
     <string name="select_avatar_image">Select avatar image</string>
@@ -48,6 +50,7 @@
     <string name="forgot_password">Forgot Your Password? Click here!</string>
     <string name="signup_progress_title">Creating account</string>
     <string name="signup_progress_content">Hold on, Your account is being created!</string>
+    <string name="check_your_mail">An e-mail has been sent to you with more information!</string>
 
     <!-- Error messages -->
     <string name="invalid_email">The email address is invalid!</string>

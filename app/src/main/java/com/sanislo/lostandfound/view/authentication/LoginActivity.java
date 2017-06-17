@@ -3,11 +3,17 @@ package com.sanislo.lostandfound.view.authentication;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.text.TextUtils;
+import android.util.Log;
 import android.widget.EditText;
 import android.widget.TextView;
 
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.sanislo.lostandfound.R;
 import com.sanislo.lostandfound.model.User;
@@ -31,7 +37,6 @@ public class LoginActivity extends BaseActivity implements LoginView {
     TextView tvLogo;
 
     public final String TAG = LoginActivity.class.getSimpleName();
-
 
     private FirebaseAuth mFirebaseAuth = FirebaseAuth.getInstance();
     private String mEmail, mPassword;
@@ -127,5 +132,48 @@ public class LoginActivity extends BaseActivity implements LoginView {
     @Override
     public void onError(int errorMessageResId) {
         makeToast(errorMessageResId);
+    }
+
+    @OnClick(R.id.btn_reset_password)
+    public void onClickResetPassword() {
+        String email = edtEmail.getText().toString();
+        if (TextUtils.isEmpty(email)) {
+            onError(R.string.error_email_cant_be_blank);
+        } else if (isValidEmail(email)) {
+            sendPasswordResetEmail(email);
+        } else {
+            onError(R.string.invalid_email);
+        }
+    }
+
+    private void sendPasswordResetEmail(String email) {
+        FirebaseAuth.getInstance()
+                .sendPasswordResetEmail(email)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isComplete() && task.isSuccessful()) {
+                            makeToast(R.string.check_your_mail);
+                        }
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.d(TAG, "onFailure: onClickResetPassword");
+                        if (e != null) {
+                            e.printStackTrace();
+                            makeToast(e.getLocalizedMessage());
+                        }
+                    }
+                });
+    }
+
+    private boolean isValidEmail(CharSequence target) {
+        if (TextUtils.isEmpty(target)) {
+            return false;
+        } else {
+            return android.util.Patterns.EMAIL_ADDRESS.matcher(target).matches();
+        }
     }
 }
