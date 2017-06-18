@@ -20,9 +20,6 @@ import com.sanislo.lostandfound.R;
 import com.sanislo.lostandfound.model.User;
 import com.sanislo.lostandfound.model.api.ApiModel;
 import com.sanislo.lostandfound.model.api.ApiModelImpl;
-import com.sanislo.lostandfound.model.firebaseModel.FirebaseUser;
-import com.sanislo.lostandfound.utils.FirebaseConstants;
-import com.sanislo.lostandfound.utils.FirebaseUtils;
 
 import java.util.List;
 
@@ -42,7 +39,6 @@ public class LoginPresenterImpl implements LoginPresenter {
     private FirebaseAuth mFirebaseAuth;
     private String mEmail;
     private String mPassword;
-    private FirebaseUser mFirebaseUser;
 
     public LoginPresenterImpl(LoginView view) {
         mView = view;
@@ -71,26 +67,37 @@ public class LoginPresenterImpl implements LoginPresenter {
                 GoogleSignInResult googleSignInResult = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
                 handeGoogleSignInResult(googleSignInResult);
             } else if (resultCode == Activity.RESULT_CANCELED) {
+                try {
+                    GoogleSignInResult googleSignInResult = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
+                    Log.d(TAG, "onActivityResult: " + googleSignInResult.toString());
+                    Log.d(TAG, "onActivityResult: " + googleSignInResult.getStatus());
+                } catch (Exception e) {
+                    Log.d(TAG, "onActivityResult: EEE");
+                    e.printStackTrace();
+                }
                 mView.onError(R.string.error_google_signin);
             }
         }
     }
 
+    private User mUser;
     private void handeGoogleSignInResult(GoogleSignInResult googleSignInResult) {
         if (googleSignInResult.isSuccess()) {
             // Google Sign In was successful, authenticate with Firebase
             GoogleSignInAccount resultSignInAccount = googleSignInResult.getSignInAccount();
             String displayName = resultSignInAccount.getDisplayName();
+            String firstName = resultSignInAccount.getGivenName();
+            String lastName = resultSignInAccount.getFamilyName();
             String email = resultSignInAccount.getEmail();
-            String id = resultSignInAccount.getId();
             String photoURL = resultSignInAccount.getPhotoUrl().toString();
-            mFirebaseUser = new FirebaseUser.Builder().setFullName(displayName)
-                    .setFirstName(resultSignInAccount.getGivenName())
-                    .setLastName(resultSignInAccount.getFamilyName())
-                    .setAvatarURL(photoURL)
-                    .setUid(id)
-                    .setEmailAddress(email)
-                    .build();
+            mUser = new User();
+            mUser.setFirstName(firstName);
+            mUser.setLastName(lastName);
+            mUser.setFullName(firstName + " " + lastName);
+            mUser.setEmailAddress(email);
+            mUser.setAvatarURL(photoURL);
+            //TODO we set the uid later!
+            //mUser.setUid(uid);
             firebaseAuthWithGoogle(resultSignInAccount);
         }
     }
@@ -98,26 +105,34 @@ public class LoginPresenterImpl implements LoginPresenter {
     private void firebaseAuthWithGoogle(GoogleSignInAccount googleSignInAccount) {
         AuthCredential authCredential = GoogleAuthProvider.getCredential(googleSignInAccount.getIdToken(), null);
         Log.d(TAG, "firebaseAuthWithGoogle: " + authCredential.toString());
-        mFirebaseAuth.signInWithCredential(authCredential).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+        mFirebaseAuth.signInWithCredential(authCredential)
+                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
+                mUser.setUid(FirebaseAuth.getInstance().getCurrentUser().getUid());
                 saveOrUpdateUser();
             }
         });
     }
 
     private void saveOrUpdateUser() {
-        FirebaseUtils.getDatabase().getReference()
-                .child(FirebaseConstants.USERS)
-                .child(mFirebaseAuth.getCurrentUser().getUid())
-                .updateChildren(mFirebaseUser.toHashMap())
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        //TODO fix google sign in
-                        // mView.onUserSignedIn(mFirebaseUser);
-                    }
-                });
+        ApiModel apiModel = new ApiModelImpl();
+        Call<Void> call = apiModel.saveUser(mUser);
+        call.enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if (response.isSuccessful()) {
+                    mView.onUserSignedIn(mUser);
+                } else {
+                    mView.onError("Error creating user");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                t.printStackTrace();
+            }
+        });
     }
 
     private void signInWithEmail() {

@@ -7,7 +7,7 @@ import android.content.Intent;
  */
 
 public interface LoginPresenter {
-    public static final int RC_GOOGLE_SIGNIN = 222228;
+    public static final int RC_GOOGLE_SIGNIN = 228;
     void login(String email, String password);
     void onActivityResult(int requestCode, int resultCode, Intent data);
 }

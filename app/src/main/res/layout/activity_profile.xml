@@ -89,7 +89,8 @@
             android:layout_centerHorizontal="true"
             android:layout_below="@+id/til_last_name"
             android:textColor="@color/md_white_1000"
-            android:textColorHint="@color/md_white_1000">
+            android:textColorHint="@color/md_white_1000"
+            android:visibility="invisible">
 
             <EditText
                 android:id="@+id/edt_old_password"
@@ -112,7 +113,8 @@
             android:layout_centerHorizontal="true"
             android:layout_below="@+id/til_old_password"
             android:textColor="@color/md_white_1000"
-            android:textColorHint="@color/md_white_1000">
+            android:textColorHint="@color/md_white_1000"
+            android:visibility="invisible">
 
             <EditText
                 android:id="@+id/edt_new_password"

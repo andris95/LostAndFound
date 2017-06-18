@@ -15,11 +15,19 @@
       },
       "oauth_client": [
         {
+          "client_id": "1074777416292-9dj5dub88hp90r2puldcs3fabve843qp.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.sanislo.lostandfound",
+            "certificate_hash": "a23ae2a75cac6091aedac4ae7f3bf1b89e7cbd98"
+          }
+        },
+        {
           "client_id": "1074777416292-6g5kpi8ptv3pkg9djt5rov480ccj3jv7.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.sanislo.lostandfound",
-            "certificate_hash": "097D8E4CF13F33B543A28A7EFEF814D8CB1D7E62"
+            "certificate_hash": "097d8e4cf13f33b543a28a7efef814d8cb1d7e62"
           }
         },
         {

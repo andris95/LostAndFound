@@ -64,7 +64,7 @@ public class LoginActivity extends BaseActivity implements LoginView {
 
     private void initGoogleSignIn() {
         gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken("313315758776-olfcv9m81n4hv7gt3tm7n1l0oedfmodv.apps.googleusercontent.com")
+                .requestIdToken("1074777416292-6a73597ab06se6j88i8lc2pm78ttq70q.apps.googleusercontent.com")
                 .requestEmail()
                 .requestProfile()
                 .build();
