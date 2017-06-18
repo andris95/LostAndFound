@@ -54,7 +54,8 @@
 
     <!-- Error messages -->
     <string name="invalid_email">The email address is invalid!</string>
-    <string name="invalid_password">The password is invalid! Your password should contain at least ...</string>
+    <string name="invalid_password">The password is invalid! Your password should contain at least 8 characters,
+        one uppercase letter and 2 numbers.</string>
     <string name="invalid_first_name">Invalid first name!</string>
     <string name="invalid_last_name">Invalid last name!</string>
 

@@ -224,6 +224,7 @@ public class AddEditThingPresenterImpl implements AddEditThingPresenter {
     }
 
     private void uploadCoverPhotoForUpdate() {
+        Log.d(TAG, "uploadCoverPhotoForUpdate: " + mCoverPhotoUri.toString());
         UploadTask uploadCoverPhotoTask = mStorageReference
                 .child(mUser.getUid())
                 .child(FirebaseConstants.THINGS)
@@ -525,8 +526,15 @@ public class AddEditThingPresenterImpl implements AddEditThingPresenter {
     private void incrementTotalByteCount(Uri uri) {
         String path = FileUtils.getPath(mContext, uri);
         //if (TextUtils.isEmpty(path)) return;
-        File file = new File(path);
-        if (file.exists()) {
+        Log.d(TAG, "incrementTotalByteCount: " + path);
+        Log.d(TAG, "incrementTotalByteCount: " + uri.toString());
+        File file;
+        if (TextUtils.isEmpty(path)) {
+            file = new File(uri.toString());
+        } else {
+            file = new File(path);
+        }
+        if (file != null && file.exists()) {
             mTotalBytesToTransfer += file.length();
             Log.d(TAG, "incrementTotalByteCount: " + mTotalBytesToTransfer);
         }

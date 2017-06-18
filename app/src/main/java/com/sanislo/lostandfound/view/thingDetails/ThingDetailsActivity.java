@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -73,8 +74,16 @@ public class ThingDetailsActivity extends BaseActivity implements ThingDetailsVi
     @BindView(R.id.tv_thing_type)
     TextView tvType;
 
-    @BindView(R.id.tv_returned)
-    TextView tvReturned;
+    /*@BindView(R.id.tv_returned)
+    TextView tvReturned;*/
+
+    /*@Nullable
+    @BindView(R.id.cb_returned)
+    CheckBox cbReturned;*/
+
+    @Nullable
+    @BindView(R.id.iv_returned)
+    ImageView ivReturned;
 
     @BindView(R.id.tv_category)
     TextView tvCategory;
@@ -87,9 +96,6 @@ public class ThingDetailsActivity extends BaseActivity implements ThingDetailsVi
 
     @BindView(R.id.rv_things_photos)
     RecyclerView rvDescriptionPhotos;
-
-    @BindView(R.id.rv_things_comments)
-    RecyclerView rvComments;
 
     @BindView(R.id.fl_map_container)
     FrameLayout flMapContainer;
@@ -362,9 +368,14 @@ public class ThingDetailsActivity extends BaseActivity implements ThingDetailsVi
     }
 
     private void setReturned() {
-        tvReturned.setText(mThing.isReturned() ?
+        /*tvReturned.setText(mThing.isReturned() ?
                 R.string.returned_true
-                : R.string.returned_false);
+                : R.string.returned_false);*/
+        //cbReturned.setChecked(mThing.isReturned());
+
+        ivReturned.setImageResource(mThing.isReturned() ?
+            R.drawable.checkbox_marked
+            : R.drawable.checkbox_blank);
     }
 
     private void setDescription() {

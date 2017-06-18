@@ -16,6 +16,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.AppCompatSpinner;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SwitchCompat;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.text.TextUtils;
@@ -123,6 +124,9 @@ public class AddThingEditableActivity extends BaseActivity implements AddThingVi
     @BindView(R.id.bottom_navigation)
     LinearLayout llBottomNavigation;
 
+    @BindView(R.id.sw_returned)
+    SwitchCompat swReturned;
+
     private GoogleMap mGoogleMap;
     private MapFragment mMapFragment;
 
@@ -170,7 +174,7 @@ public class AddThingEditableActivity extends BaseActivity implements AddThingVi
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add_thing_custom_bottom_bar);
+        setContentView(R.layout.activity_edit_thing);
         ButterKnife.bind(this);
         supportPostponeEnterTransition();
         mPresenter = new AddEditThingPresenterImpl(this);
@@ -219,6 +223,7 @@ public class AddThingEditableActivity extends BaseActivity implements AddThingVi
         Log.d(TAG, "showThing: " + thing);
         edtTitle.setText(thing.getTitle());
         edtDescription.setText(thing.getDescription());
+        swReturned.setChecked(mThing.isReturned());
         Glide.with(this)
                 .load(thing.getPhoto())
                 .listener(new RequestListener<String, GlideDrawable>() {
@@ -355,6 +360,7 @@ public class AddThingEditableActivity extends BaseActivity implements AddThingVi
         String description = edtDescription.getText().toString();
         mThing.setTitle(title);
         mThing.setDescription(description);
+        mThing.setReturned(swReturned.isChecked());
         mPresenter.updateThing(mThing, mDescriptionPhotosAdapter.getAdapterItems());
     }
 

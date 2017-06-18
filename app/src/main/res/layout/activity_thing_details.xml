@@ -90,7 +90,7 @@
                     tools:text="Electronics"/>
             </LinearLayout>
 
-            <LinearLayout
+            <RelativeLayout
                 android:id="@+id/ll_returned"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -100,15 +100,23 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
                     android:text="@string/returned"/>
 
-                <TextView
+                <!--<TextView
                     android:id="@+id/tv_returned"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="end"
-                    tools:text="Not yet"/>
-            </LinearLayout>
+                    tools:text="Not yet"/>-->
+
+                <ImageView
+                    android:id="@+id/iv_returned"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    tools:src="@drawable/checkbox_marked"
+                    android:layout_alignParentEnd="true"/>
+            </RelativeLayout>
 
             <TextView
                 android:id="@+id/tv_thing_description"
@@ -133,12 +141,6 @@
                 android:layout_height="150dp">
             </FrameLayout>
 
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/rv_things_comments"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/rv_contacts">
-            </android.support.v7.widget.RecyclerView>
         </RelativeLayout>
     </RelativeLayout>
 </ScrollView>

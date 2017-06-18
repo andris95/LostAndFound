@@ -8,6 +8,8 @@ import android.os.Build;
 import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
+import android.provider.OpenableColumns;
+import android.text.TextUtils;
 import android.util.Log;
 
 import java.io.File;
@@ -20,6 +22,7 @@ public class FileUtils {
     public static final String TAG = FileUtils.class.getSimpleName();
 
     public static String getFileName(String filePath) {
+        Log.d(TAG, "getFileName: " + filePath);
         String fileName = null;
         if (filePath == null) {
             return fileName;
@@ -28,13 +31,45 @@ public class FileUtils {
         if (file.exists()) {
             fileName = file.getName();
         }
+        Log.d(TAG, "getFileName: " + fileName);
+        Log.d(TAG, "getFileName: " + file.toString());
+        Log.d(TAG, "getFileName: " + file.getAbsolutePath());
+        Log.d(TAG, "getFileName: " + file.getPath());
         return fileName;
     }
 
     public static String getFileName(Context context, Uri uri) {
         String filePath = getPath(context, uri);
+        if (TextUtils.isEmpty(filePath)) {
+            filePath = uri.toString();;
+        }
         String fileName = getFileName(filePath);
+        if (TextUtils.isEmpty(fileName)) {
+            fileName = getFileNameVersionTwo(context, uri);
+        }
         return fileName;
+    }
+
+    private static final String getFileNameVersionTwo(Context context, Uri uri) {
+        String result = null;
+        if (uri.getScheme().equals("content")) {
+            Cursor cursor = context.getContentResolver().query(uri, null, null, null, null);
+            try {
+                if (cursor != null && cursor.moveToFirst()) {
+                    result = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
+                }
+            } finally {
+                cursor.close();
+            }
+        }
+        if (result == null) {
+            result = uri.getPath();
+            int cut = result.lastIndexOf('/');
+            if (cut != -1) {
+                result = result.substring(cut + 1);
+            }
+        }
+        return result;
     }
 
     /**

@@ -161,7 +161,7 @@ public class AddThingActivity extends AppCompatActivity implements AddThingView 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add_thing_custom_bottom_bar);
+        setContentView(R.layout.activity_add_thing);
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle(R.string.new_thing);

@@ -61,6 +61,16 @@
                     android:visibility="gone"/>
             </RelativeLayout>
 
+            <android.support.v7.widget.SwitchCompat
+                android:id="@+id/sw_returned"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:text="@string/returned"
+                tools:checked="true"
+                android:theme="@style/ReturnedSwitchStyle"
+                />
+
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
