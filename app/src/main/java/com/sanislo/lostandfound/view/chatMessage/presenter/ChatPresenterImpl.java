@@ -92,11 +92,11 @@ public class ChatPresenterImpl implements ChatPresenter {
 
     @Override
     public void sendMessage(String message) {
-        Log.d(TAG, "onClickSendMessage: " + message);
+        Log.d(TAG, "sendMessage: " + message);
         //TODO hardcode
-        if (TextUtils.isEmpty(message)) {
+        /*if (TextUtils.isEmpty(message)) {
             message = LOREM;
-        }
+        }*/
         if (TextUtils.isEmpty(message) || mUser == null) return;
         mChatView.onMessageSent();
         createNewChatMessage(message);
